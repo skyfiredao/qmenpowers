@@ -1,0 +1,77 @@
+# rules_hunlian.dat — 婚恋分析专用数据
+# Copyright (C) 2025 — Licensed under GPL-3.0
+
+# ===== 天干五合（干合/正缘配对）=====
+ganhe_甲=己
+ganhe_乙=庚
+ganhe_丙=辛
+ganhe_丁=壬
+ganhe_戊=癸
+ganhe_己=甲
+ganhe_庚=乙
+ganhe_辛=丙
+ganhe_壬=丁
+ganhe_癸=戊
+
+# ===== 沐浴位（天干 → 地支,宫号）=====
+# 桃花位。赤裸袒露，鱼水之欢，一夜情，淫荡，放纵，泄密。
+muyu_甲=子,1
+muyu_乙=巳,4
+muyu_丙=卯,3
+muyu_丁=申,2
+muyu_戊=卯,3
+muyu_己=申,2
+muyu_庚=午,9
+muyu_辛=亥,6
+muyu_壬=酉,7
+muyu_癸=寅,8
+
+# ===== 孤辰寡宿（生年地支三合局组 → 孤辰地支,寡宿地支）=====
+guchen_guasu_亥子丑=寅,戌
+guchen_guasu_寅卯辰=巳,丑
+guchen_guasu_巳午未=申,辰
+guchen_guasu_申酉戌=亥,未
+
+# ===== 孤辰寡宿化解 =====
+# 格式: 组=方位1地支,方位2地支,方位1生肖,方位2生肖
+# 亥子丑：寅孤戌寡。东北用亥（猪），西北用卯（兔）
+guchen_jiehua_亥子丑=亥,卯,猪,兔
+# 寅卯辰：巳孤丑寡。东南用申（猴），东北用子（鼠）
+guchen_jiehua_寅卯辰=申,子,猴,鼠
+# 巳午未：申孤辰寡。西南用巳（蛇/烛），东南用酉（鸡）
+guchen_jiehua_巳午未=巳,酉,烛,鸡
+# 申酉戌：亥孤未寡。西北用寅（猫），西南用午（马）
+guchen_jiehua_申酉戌=寅,午,猫,马
+
+# ===== 三奇 =====
+sanqi=乙,丙,丁
+
+# ===== 烂桃花标记 =====
+# 神煞: 太阴（私密）、玄武（偷人）
+lan_taohua_deities=太阴,玄武
+# 天干: 壬癸（风流）
+lan_taohua_stems=壬,癸
+
+# ===== 地支到宫位映射 =====
+dizhi_palace_子=1
+dizhi_palace_丑=8
+dizhi_palace_寅=8
+dizhi_palace_卯=3
+dizhi_palace_辰=4
+dizhi_palace_巳=4
+dizhi_palace_午=9
+dizhi_palace_未=2
+dizhi_palace_申=2
+dizhi_palace_酉=7
+dizhi_palace_戌=6
+dizhi_palace_亥=6
+
+# ===== 对宫映射 =====
+duigong_1=9
+duigong_9=1
+duigong_2=8
+duigong_8=2
+duigong_3=7
+duigong_7=3
+duigong_4=6
+duigong_6=4

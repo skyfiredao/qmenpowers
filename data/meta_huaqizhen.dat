@@ -1,0 +1,180 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# meta_huaqizhen.dat — 八门化气阵 metadata
+# 天干五合、天干所克、六害检测规则
+
+# ==============================================
+# 天干五合 (Tiangan Five Combinations)
+# 缺某天干时，找其合化天干替代
+# ==============================================
+wuhe_甲=己
+wuhe_乙=庚
+wuhe_丙=辛
+wuhe_丁=壬
+wuhe_戊=癸
+wuhe_己=甲
+wuhe_庚=乙
+wuhe_辛=丙
+wuhe_壬=丁
+wuhe_癸=戊
+
+# ==============================================
+# 天干所克 (What each stem conquers)
+# 用于计算干财：日干所克的天干 = 日干财
+# 同五行的两个天干都算
+# ==============================================
+ke_甲=戊,己
+ke_乙=戊,己
+ke_丙=庚,辛
+ke_丁=庚,辛
+ke_戊=壬,癸
+ke_己=壬,癸
+ke_庚=甲,乙
+ke_辛=甲,乙
+ke_壬=丙,丁
+ke_癸=丙,丁
+
+# ==============================================
+# 天干五行 (Tiangan Wuxing)
+# ==============================================
+gan_wuxing_甲=木
+gan_wuxing_乙=木
+gan_wuxing_丙=火
+gan_wuxing_丁=火
+gan_wuxing_戊=土
+gan_wuxing_己=土
+gan_wuxing_庚=金
+gan_wuxing_辛=金
+gan_wuxing_壬=水
+gan_wuxing_癸=水
+
+# ==============================================
+# 地支五行 (Dizhi Wuxing) — 用于月令五行判断
+# ==============================================
+zhi_wuxing_子=水
+zhi_wuxing_丑=土
+zhi_wuxing_寅=木
+zhi_wuxing_卯=木
+zhi_wuxing_辰=土
+zhi_wuxing_巳=火
+zhi_wuxing_午=火
+zhi_wuxing_未=土
+zhi_wuxing_申=金
+zhi_wuxing_酉=金
+zhi_wuxing_戌=土
+zhi_wuxing_亥=水
+
+# ==============================================
+# 五行生克关系 (Wuxing Sheng-Ke)
+# sheng_X = X 生什么
+# ke_wx_X = X 克什么
+# ==============================================
+sheng_木=火
+sheng_火=土
+sheng_土=金
+sheng_金=水
+sheng_水=木
+
+ke_wx_木=土
+ke_wx_火=金
+ke_wx_土=水
+ke_wx_金=木
+ke_wx_水=火
+
+# ==============================================
+# 六害标记 (Six Hazards)
+# 对应盘中的 boolean 字段名
+# 刑=ji_xing, 墓=rumu_*, 庚=geng, 虎=白虎(deity),
+# 迫=men_po, 空=kong_wang
+# ==============================================
+liuhai_markers=ji_xing,rumu_gan,rumu_star,rumu_gate,geng,men_po,kong_wang
+
+# ==============================================
+# 财富七要害符号定位
+# type: stem/gate/deity/special
+# ==============================================
+caifu_0_name=戊
+caifu_0_type=stem
+caifu_0_desc=本钱,工资,存款,不动产,本金,现金流
+
+caifu_1_name=生门
+caifu_1_type=gate
+caifu_1_desc=利润,增长,回报,利息,投资回报,市场交易获利
+
+caifu_2_name=六合
+caifu_2_type=deity
+caifu_2_desc=合作关系,融资,供应链,合伙,金融,人脉运作
+
+caifu_3_name=月令
+caifu_3_type=special
+caifu_3_desc=大环境,财富数量级,求财难度,天时
+
+caifu_4_name=行业
+caifu_4_type=special
+caifu_4_desc=取财渠道,具体挣钱渠道
+
+caifu_5_name=时干
+caifu_5_type=stem_hour
+caifu_5_desc=时机,客户,平台支持,市场需求,前景
+
+caifu_6_name=干财
+caifu_6_type=special
+caifu_6_desc=控制力,可控可用资源上限
+caifu_count=7
+
+# ==============================================
+# 事业七要害符号定位
+# ==============================================
+shiye_0_name=开门
+shiye_0_type=gate
+shiye_0_desc=所在公司或单位,运行情况,氛围,人际关系
+
+shiye_1_name=景门
+shiye_1_type=gate
+shiye_1_desc=展示业绩,考核,面试,成果,个人形象
+
+shiye_2_name=玄武
+shiye_2_type=deity
+shiye_2_desc=阴险小人,暗中算计,陷阱,谎言,虚假承诺
+
+shiye_3_name=庚
+shiye_3_type=stem_geng
+shiye_3_desc=大困难,压力,竞争对手,不留情敌人
+
+shiye_4_name=行业
+shiye_4_type=special
+shiye_4_desc=是否合适,岗位适配
+
+shiye_5_name=符使
+shiye_5_type=special
+shiye_5_desc=直属上级,值符直属领导,值使二把手
+
+shiye_6_name=诸天干
+shiye_6_type=special
+shiye_6_desc=各角色人事,年干大老板,月干同事,时干下属
+shiye_count=7
+
+# ==============================================
+# 意象→天干映射 (Yixiang → Tiangan)
+# 所在意的事物，对应的天干
+# ==============================================
+yixiang_财富=戊
+yixiang_暴力=庚
+yixiang_权威=甲
+yixiang_突破=辛
+yixiang_表现=丙
+yixiang_情欲=癸
+
+# ==============================================
+# 对宫映射 (Opposite Palace Mapping)
+# 玄武/庚/白虎影响本宫和对宫
+# ==============================================
+duigong_1=9
+duigong_9=1
+duigong_2=8
+duigong_8=2
+duigong_3=7
+duigong_7=3
+duigong_4=6
+duigong_6=4

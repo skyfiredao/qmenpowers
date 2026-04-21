@@ -1,0 +1,9 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 九宫遍历顺序 (跳过中五宫, 8个宫位)
+# 定义洛书九宫的环形拓扑结构
+# 坎1→艮8→震3→巽4→离9→坤2→兑7→乾6
+# 用于天盘(星)、人盘(门)、神盘的转动布局
+# 阳遁顺行用 +offset，阴遁逆行用 -offset
+LUOSHU_ORDER=1,8,3,4,9,2,7,6

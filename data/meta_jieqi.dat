@@ -1,0 +1,8 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 24 solar term names in order (index 0-23)
+JIEQI_NAMES=小寒,大寒,立春,雨水,惊蛰,春分,清明,谷雨,立夏,小满,芒种,夏至,小暑,大暑,立秋,处暑,白露,秋分,寒露,霜降,立冬,小雪,大雪,冬至
+
+# Which indices are 节 (vs 气): the 12 节 used by QMDJ
+JIE_INDICES=0,2,4,6,8,10,12,14,16,18,20,22

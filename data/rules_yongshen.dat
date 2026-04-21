@@ -1,0 +1,34 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 用神选取规则
+# 格式: 问事类型_优先级=元素类型,元素名称
+# 元素类型: star=星, gate=门, deity=神, stem=天干
+
+事业_0=gate,开门
+事业_1=star,天心
+
+求财_0=gate,生门
+求财_1=deity,六合
+
+婚姻感情_0=deity,六合
+婚姻感情_1=gate,景门
+婚姻感情_2=stem,乙
+
+疾病健康_0=star,天内
+疾病健康_1=gate,死门
+
+出行_0=gate,开门
+出行_1=deity,九天
+
+官司诉讼_0=gate,伤门
+官司诉讼_1=star,天英
+
+寻人寻物_0=deity,六合
+寻人寻物_1=gate,杜门
+
+天气_0=gate,景门
+天气_1=star,天英
+
+家宅风水_0=gate,生门
+家宅风水_1=star,天任

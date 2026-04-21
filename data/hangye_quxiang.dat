@@ -1,0 +1,89 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# hangye_quxiang.dat — 主流行业取象映射
+# 格式: hangye_行业名=符号类型,符号名[,符号类型,符号名...]
+# 符号类型: gate/star/deity/stem
+
+hangye_演艺=gate,景门,star,天英,stem,丙
+hangye_娱乐圈=gate,景门,star,天英,stem,丙
+hangye_网红=gate,景门,star,天英,stem,丙
+hangye_表演=gate,景门,star,天英,stem,丙
+hangye_西医=star,天心
+hangye_中医=stem,乙
+hangye_内科=star,天内
+hangye_外科=stem,辛
+hangye_经商=gate,生门
+hangye_合伙=deity,六合
+hangye_公务员=gate,休门
+hangye_领导=deity,值符
+hangye_教培=star,天辅
+hangye_老师=star,天辅
+hangye_玄学=deity,玄武
+hangye_哲学=deity,玄武
+hangye_军人=stem,庚,deity,白虎,star,天冲
+hangye_武职=stem,庚,deity,白虎,star,天冲
+hangye_检察院=star,天柱
+hangye_法院=star,天柱
+hangye_律师=star,天柱
+hangye_养老=gate,死门
+hangye_丧葬=gate,死门
+hangye_技术=gate,杜门
+hangye_芯片=gate,杜门
+hangye_码农=gate,杜门
+hangye_程序员=gate,杜门
+hangye_苦力=star,天任
+hangye_工人=star,天任
+hangye_农民=star,天任
+hangye_新闻=gate,惊门,deity,螣蛇
+hangye_记者=gate,惊门,deity,螣蛇
+hangye_金融=deity,六合,gate,生门
+hangye_投资=gate,生门,deity,六合
+hangye_房地产=stem,戊,gate,生门
+hangye_中介=deity,六合
+hangye_销售=gate,生门,stem,丙
+
+# -------- 九星行业补充 --------
+# 天蓬
+hangye_风月=star,天蓬
+hangye_酒吧=star,天蓬
+hangye_洗浴=star,天蓬
+hangye_餐饮=star,天蓬
+hangye_水产=star,天蓬
+# 天任
+hangye_建筑=star,天任
+hangye_土木=star,天任
+hangye_制造业=star,天任
+hangye_矿产=star,天任
+# 天冲
+hangye_军警=star,天冲,stem,庚,deity,白虎
+hangye_电器=star,天冲
+hangye_科技=star,天冲
+hangye_音乐=star,天冲
+# 天辅
+hangye_设计=star,天辅
+hangye_规划=star,天辅
+hangye_文教=star,天辅
+# 天英
+hangye_美容=star,天英,stem,丙
+hangye_模特=star,天英,stem,丙
+hangye_公关=star,天英,stem,丙
+hangye_社交=star,天英,stem,丙
+hangye_能源=star,天英
+# 天内
+hangye_医疗=star,天内
+hangye_卫生=star,天内
+hangye_医疗器械=star,天内
+hangye_肉品加工=star,天内
+# 天柱
+hangye_法官=star,天柱
+hangye_检察官=star,天柱
+hangye_重工业=star,天柱
+hangye_机械维修=star,天柱
+# 天心
+hangye_会计=star,天心
+hangye_审计=star,天心
+hangye_咨询=star,天心
+hangye_管理=star,天心
+# -------- 其他 --------
+hangye_心理咨询=stem,戊,gate,休门

@@ -1,0 +1,47 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 九宫名称 (index 1-9)
+PALACE_NAMES=坎1宫,坤2宫,震3宫,巽4宫,中5宫,乾6宫,兑7宫,艮8宫,离9宫
+
+# 先天八卦数 (伏羲先天, palace 1-9)
+XIANTIAN_NUM=6,8,4,5,0,1,2,7,3
+
+# 后天八卦数 (文王后天, palace 1-9)
+HOUTIAN_NUM=1,2,3,4,5,6,7,8,9
+
+# 各宫五行
+PALACE_WUXING=水,土,木,木,土,金,金,土,火
+
+# 各宫对应地支
+PALACE_DIZHI=子,未申,卯,辰巳,,戌亥,酉,丑寅,午
+
+# 各宫对应数字尾数 (河图五行配数)
+PALACE_WEISHU=1-6,2-7,3-8,3-8,5-0,4-9,4-9,5-0,2-7
+
+# 天干五行
+GAN_WUXING=木,木,火,火,土,土,金,金,水,水
+
+# 地支五行
+ZHI_WUXING=水,土,木,木,土,火,火,土,金,金,土,水
+
+# 五行生克关系
+WUXING_SHENGKE_木_火=生
+WUXING_SHENGKE_火_土=生
+WUXING_SHENGKE_土_金=生
+WUXING_SHENGKE_金_水=生
+WUXING_SHENGKE_水_木=生
+WUXING_SHENGKE_木_土=克
+WUXING_SHENGKE_土_水=克
+WUXING_SHENGKE_水_火=克
+WUXING_SHENGKE_火_金=克
+WUXING_SHENGKE_金_木=克
+
+# 驿马表
+YIMA_申子辰=寅
+YIMA_寅午戌=申
+YIMA_巳酉丑=亥
+YIMA_亥卯未=巳
+
+# 各宫方位
+PALACE_DIRECTION=北,西南,东,东南,中,西北,西,东北,南

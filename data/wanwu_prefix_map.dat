@@ -1,0 +1,64 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 符号名称→wanwu文件前缀映射
+# 格式: 类型_中文名=PREFIX
+
+# 九星 (wanwu_nine_stars.dat)
+STAR_天蓬=TIANPENG
+STAR_天内=TIANRUI
+STAR_天冲=TIANCHONG
+STAR_天辅=TIANFU
+STAR_天禽=TIANQIN
+STAR_天心=TIANXIN
+STAR_天柱=TIANZHU
+STAR_天任=TIANREN
+STAR_天英=TIANYING
+
+# 八门 (wanwu_eight_gates.dat)
+GATE_休门=休门
+GATE_死门=死门
+GATE_伤门=伤门
+GATE_杜门=杜门
+GATE_开门=开门
+GATE_惊门=惊门
+GATE_生门=生门
+GATE_景门=景门
+
+# 八神 (wanwu_eight_deities.dat)
+DEITY_值符=值符
+DEITY_螣蛇=螣蛇
+DEITY_太阴=太阴
+DEITY_六合=六合
+DEITY_白虎=白虎
+DEITY_玄武=玄武
+DEITY_九地=九地
+DEITY_九天=九天
+DEITY_勾陈=勾陈
+DEITY_朱雀=朱雀
+
+# 天干 (wanwu_tiangan.dat)
+GAN_甲=JIA
+GAN_乙=YI
+GAN_丙=BING
+GAN_丁=DING
+GAN_戊=WU
+GAN_己=JI
+GAN_庚=GENG
+GAN_辛=XIN
+GAN_壬=REN
+GAN_癸=GUI
+
+# 地支 (wanwu_dizhi.dat)
+ZHI_子=ZI
+ZHI_丑=CHOU
+ZHI_寅=YIN
+ZHI_卯=MAO
+ZHI_辰=CHEN
+ZHI_巳=SI
+ZHI_午=WU_ZHI
+ZHI_未=WEI
+ZHI_申=SHEN
+ZHI_酉=YOU
+ZHI_戌=XU
+ZHI_亥=HAI

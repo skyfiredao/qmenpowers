@@ -1,0 +1,7 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 八神排列顺序
+# 阳遁顺排，阴遁逆排（从值符开始）
+DEITY_YANG=值符,螣蛇,太阴,六合,白虎,玄武,九地,九天
+DEITY_YIN=值符,九天,九地,玄武,白虎,六合,太阴,螣蛇

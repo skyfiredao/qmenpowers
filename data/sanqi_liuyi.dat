@@ -1,0 +1,10 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 三奇六仪 fixed layout order (same for both 阳遁 and 阴遁)
+# 阳遁: palace numbers increment from ju; 阴遁: palace numbers decrement from ju
+SANQI_ORDER=戊,己,庚,辛,壬,癸,丁,丙,乙
+
+# 旬首 → 六仪 mapping
+# 甲子→戊, 甲戌→己, 甲申→庚, 甲午→辛, 甲辰→壬, 甲寅→癸
+XUNSHOU_LIUYI=戊,己,庚,辛,壬,癸

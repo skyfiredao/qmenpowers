@@ -1,0 +1,19 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# 十二状态名称 (index 0-11)
+STATE_NAMES=长生,沐浴,冠带,临官,帝旺,衰,病,死,墓,绝,胎,养
+
+# 各天干的长生起始地支（阳干顺行，阴干逆行）
+# 格式: START_干=地支index,direction
+# direction: 1=顺行(阳干), -1=逆行(阴干)
+START_甲=10,1
+START_乙=6,-1
+START_丙=2,1
+START_丁=9,-1
+START_戊=2,1
+START_己=9,-1
+START_庚=5,1
+START_辛=0,-1
+START_壬=8,1
+START_癸=3,-1
