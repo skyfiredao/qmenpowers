@@ -282,7 +282,7 @@ skill_qmenpowers/
   先天数: 7  后天数: 8  尾数: 5,0
 ```
 
-**JSON 模式**（`-j`）输出结构化 JSON，包含全部头部字段和一个宫位数组，每个宫位对象含所有已计算字段。适合通过 `jq` 处理或被其他程序调用。
+**JSON 模式**始终开启：每次运行都会根据 `--type` 写入结构化 JSON 文件，包含全部头部字段和一个宫位数组，每个宫位对象含所有已计算字段。文本输出同时显示在终端。
 
 ## 分析脚本
 
@@ -497,17 +497,11 @@ bin/qimen.sh "2026-04-18 10:00"
 # 命盘
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 
-# JSON 输出
-bin/qimen.sh -j "2026-04-18 10:00"
-
 # 天禽随天内走（而非默认的寄坤二宫）
 bin/qimen.sh --tianqin=follow-tiannei "2024-02-04 11:00"
 
 # 天禽随值符走
 bin/qimen.sh --tianqin=follow-zhifu "2024-02-04 11:00"
-
-# 只显示定局信息，不排完整盘
-bin/qimen.sh --info-only "2024-02-04 11:00"
 
 # 自定义 JSON 输出路径
 bin/qimen.sh --output=/tmp/plate.json "2026-04-18 10:00"
@@ -574,12 +568,10 @@ bin/qimen_xingge.sh
 日期时间格式: "YYYY-MM-DD HH:MM"（默认：当前时间）
 
 选项:
-  -j, --json          以 JSON 格式输出
   --type=TYPE         盘类型: "event"（默认）或 "birth"
                       event → ./qmen_event.json，birth → ./qmen_birth.json
   --output=PATH       JSON 文件输出路径（默认：根据 --type 决定）
   --tianqin=MODE      天禽处理模式: "jikun"（默认）, "follow-tiannei", 或 "follow-zhifu"
-  --info-only         仅显示局数判定信息
   -h, --help          显示帮助
 ```
 

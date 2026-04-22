@@ -26,29 +26,29 @@ _SHOW_WANWU=""
 # --- Help ---
 show_help() {
   cat <<'HELP'
-Usage: qimen_analyze.sh [OPTIONS]
+用法: qimen_analyze.sh [选项]
 
-奇门遁甲分析 (Qi Men Dun Jia Analysis)
+奇门遁甲分析
 万物类象查表 + 用神标记
 
-Options:
-  --input=PATH        Input plate JSON (default: ./qmen_event.json)
-  --output=PATH       Output analysis JSON (default: ./qmen_analysis.json)
-  --question=TYPE     Question type (required, see below)
-  --verbose           Full wanwu extraction (default: concise)
-  --wanwu              Show wanwu (万物类象) in text output
-  -h, --help          Show this help
+选项:
+  --input=PATH        输入起局 JSON（默认: ./qmen_event.json）
+  --output=PATH       输出分析 JSON（默认: ./qmen_analysis.json）
+  --question=TYPE     问题类型（必填，见下方）
+  --verbose           完整万物类象提取（默认精简）
+  --wanwu             文本输出中显示万物类象
+  -h, --help          显示帮助
 
-Question types:
-  事业          Career / official prospects
-  求财          Wealth / financial matters
-  婚姻感情      Marriage / relationships
-  疾病健康      Health / illness
-  出行          Travel / movement
-  官司诉讼      Lawsuits / legal disputes
-  寻人寻物      Finding people / lost items
-  天气          Weather
-  家宅风水      Home / feng shui
+问题类型:
+  事业          事业仕途
+  求财          求财理财
+  婚姻感情      婚姻感情
+  疾病健康      疾病健康
+  出行          出行远行
+  官司诉讼      官司诉讼
+  寻人寻物      寻人寻物
+  天气          天气气象
+  家宅风水      家宅风水
 HELP
 }
 

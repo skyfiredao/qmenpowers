@@ -90,6 +90,13 @@ _HL_TAOHUA_RIGAN_AT_MUYU="false"
 _HL_TAOHUA_GANHE_AT_MUYU="false"
 _HL_TAOHUA_RENGUIWITH_RIGAN="false"
 _HL_TAOHUA_RENGUIWITH_GANHE="false"
+_HL_RUMU_PALACES=""
+_HL_PIANCAI_STEM=""
+_HL_PIANCAI_SANQI="false"
+_HL_PIANCAI_SANQI_STEM=""
+_HL_ZHAN_SOURCES=""
+_HL_PROTECT_GANHE="true"
+_HL_PROTECT_LIUHE="true"
 
 _HL_FUYIN_PALACES=""
 _HL_FANYIN_PALACES=""
@@ -260,6 +267,72 @@ hl_detect_taohua() {
     fi
 }
 
+hl_compute_zhan_taohua() {
+    _HL_RUMU_PALACES=""
+    _HL_PIANCAI_STEM=""
+    _HL_PIANCAI_SANQI="false"
+    _HL_PIANCAI_SANQI_STEM=""
+    _HL_ZHAN_SOURCES=""
+    _HL_PROTECT_GANHE="true"
+    _HL_PROTECT_LIUHE="true"
+
+    local p stem
+
+    for p in 1 2 3 4 6 7 8 9; do
+        if (( ${QM_RUMU_GAN[$p]:-0} == 1 )); then
+            _HL_RUMU_PALACES="${_HL_RUMU_PALACES:+${_HL_RUMU_PALACES},}${p}"
+        fi
+    done
+
+    dl_get_v "ke_${_HL_RIGAN_STEM}"
+    _HL_PIANCAI_STEM="$_DL_RET"
+
+    if [[ "$_HL_PIANCAI_STEM" == "乙" || "$_HL_PIANCAI_STEM" == "丙" || "$_HL_PIANCAI_STEM" == "丁" ]]; then
+        _HL_PIANCAI_SANQI="true"
+        _HL_PIANCAI_SANQI_STEM="$_HL_PIANCAI_STEM"
+    fi
+
+    if [[ "$_HL_TAOHUA_XUANWU_RIGAN" == "true" || "$_HL_TAOHUA_XUANWU_GANHE" == "true" ]]; then
+        case ",${_HL_ZHAN_SOURCES}," in
+            *,玄武,*) ;;
+            *) _HL_ZHAN_SOURCES="${_HL_ZHAN_SOURCES:+${_HL_ZHAN_SOURCES},}玄武" ;;
+        esac
+    fi
+    if [[ "$_HL_TAOHUA_TAIYIN_RIGAN" == "true" || "$_HL_TAOHUA_TAIYIN_GANHE" == "true" ]]; then
+        case ",${_HL_ZHAN_SOURCES}," in
+            *,太阴,*) ;;
+            *) _HL_ZHAN_SOURCES="${_HL_ZHAN_SOURCES:+${_HL_ZHAN_SOURCES},}太阴" ;;
+        esac
+    fi
+    if [[ "$_HL_TAOHUA_RENGUIWITH_RIGAN" == "true" || "$_HL_TAOHUA_RENGUIWITH_GANHE" == "true" ]]; then
+        case ",${_HL_ZHAN_SOURCES}," in
+            *,壬癸,*) ;;
+            *) _HL_ZHAN_SOURCES="${_HL_ZHAN_SOURCES:+${_HL_ZHAN_SOURCES},}壬癸" ;;
+        esac
+    fi
+
+    if (( ${#_HL_TAOHUA_RIGAN_SANQI[@]} > 0 )); then
+        for stem in "${_HL_TAOHUA_RIGAN_SANQI[@]}"; do
+            if [[ "$stem" != "$_HL_PIANCAI_STEM" ]]; then
+                case ",${_HL_ZHAN_SOURCES}," in
+                    *,"${stem}",*) ;;
+                    *) _HL_ZHAN_SOURCES="${_HL_ZHAN_SOURCES:+${_HL_ZHAN_SOURCES},}${stem}" ;;
+                esac
+            fi
+        done
+    fi
+    if (( ${#_HL_TAOHUA_GANHE_SANQI[@]} > 0 )); then
+        for stem in "${_HL_TAOHUA_GANHE_SANQI[@]}"; do
+            if [[ "$stem" != "$_HL_PIANCAI_STEM" ]]; then
+                case ",${_HL_ZHAN_SOURCES}," in
+                    *,"${stem}",*) ;;
+                    *) _HL_ZHAN_SOURCES="${_HL_ZHAN_SOURCES:+${_HL_ZHAN_SOURCES},}${stem}" ;;
+                esac
+            fi
+        done
+    fi
+}
+
 hl_detect_fuyin_fanyin() {
     _HL_FUYIN_PALACES=""
     _HL_FANYIN_PALACES=""
@@ -361,25 +434,156 @@ hl_compute_guchen_guasu() {
     _HL_GC_GUCHEN="${gc_raw%%,*}"
     _HL_GC_GUASU="${gc_raw##*,}"
 
-    dl_get_v "guchen_jiehua_${group}"; local jh_raw="$_DL_RET"
-    local IFS=','
-    local parts=($jh_raw)
-    _HL_GC_JH_DZ1="${parts[0]:-}"
-    _HL_GC_JH_DZ2="${parts[1]:-}"
-    _HL_GC_JH_SX1="${parts[2]:-}"
-    _HL_GC_JH_SX2="${parts[3]:-}"
+    _HL_GC_JH_DZ1="$(_hl_dizhi_liuhe "$_HL_GC_GUCHEN")"
+    _HL_GC_JH_DZ2="$(_hl_dizhi_liuhe "$_HL_GC_GUASU")"
+    _HL_GC_JH_SX1="$(_hl_dizhi_shengxiao "$_HL_GC_JH_DZ1")"
+    _HL_GC_JH_SX2="$(_hl_dizhi_shengxiao "$_HL_GC_JH_DZ2")"
 }
 
 _hl_palaces_to_names() {
-    local nums="$1" result="" p pname pdir
+    local nums="$1" result="" p
     if [[ -z "$nums" ]]; then echo "无"; return; fi
     local IFS=','
     for p in $nums; do
-        dl_get_v "palace_${p}_name"; pname="$_DL_RET"
-        dl_get_v "palace_${p}_direction"; pdir="$_DL_RET"
-        result="${result:+${result} }${pname}(${pdir})"
+        result="${result:+${result} }$(_hl_palace_label "$p")"
     done
     echo "$result"
+}
+
+# --- Shared helpers (duplicated from caiguan for independence) ---
+
+_hl_stem_wuxing() {
+    case "$1" in
+        甲|乙) echo "木";; 丙|丁) echo "火";; 戊|己) echo "土";;
+        庚|辛) echo "金";; 壬|癸) echo "水";; *) echo "";;
+    esac
+}
+
+_hl_star_wuxing() {
+    local name="$1" i=0
+    while [[ $i -lt ${#STAR_NAMES[@]} ]]; do
+        if [[ "${STAR_NAMES[$i]}" == "$name" ]]; then
+            echo "${STAR_WUXING[$i]}"; return
+        fi
+        i=$((i + 1))
+    done
+}
+
+_hl_gate_wuxing() {
+    local name="$1" i=0
+    while [[ $i -lt ${#GATE_NAMES[@]} ]]; do
+        if [[ "${GATE_NAMES[$i]}" == "$name" ]]; then
+            echo "${GATE_WUXING[$i]}"; return
+        fi
+        i=$((i + 1))
+    done
+}
+
+_hl_star_jixi() {
+    local name="$1" i=0
+    while [[ $i -lt ${#STAR_NAMES[@]} ]]; do
+        if [[ "${STAR_NAMES[$i]}" == "$name" ]]; then
+            echo "${STAR_JIXI[$i]}"; return
+        fi
+        i=$((i + 1))
+    done
+}
+
+_hl_gate_jixi() {
+    local name="$1" i=0
+    while [[ $i -lt ${#GATE_NAMES[@]} ]]; do
+        if [[ "${GATE_NAMES[$i]}" == "$name" ]]; then
+            echo "${GATE_JIXI[$i]}"; return
+        fi
+        i=$((i + 1))
+    done
+}
+
+_hl_dizhi_direction() {
+    case "$1" in
+        子) echo "北";;
+        丑|寅) echo "东北";;
+        卯) echo "东";;
+        辰|巳) echo "东南";;
+        午) echo "南";;
+        未|申) echo "西南";;
+        酉) echo "西";;
+        戌|亥) echo "西北";;
+        *) echo "";;
+    esac
+}
+
+_hl_dizhi_liuhe() {
+    case "$1" in
+        子) echo "丑";; 丑) echo "子";;
+        寅) echo "亥";; 亥) echo "寅";;
+        卯) echo "戌";; 戌) echo "卯";;
+        辰) echo "酉";; 酉) echo "辰";;
+        巳) echo "申";; 申) echo "巳";;
+        午) echo "未";; 未) echo "午";;
+        *) echo "";;
+    esac
+}
+
+_hl_dizhi_shengxiao() {
+    case "$1" in
+        子) echo "鼠";; 丑) echo "牛";; 寅) echo "虎";; 卯) echo "兔";;
+        辰) echo "龙";; 巳) echo "蛇";; 午) echo "马";; 未) echo "羊";;
+        申) echo "猴";; 酉) echo "鸡";; 戌) echo "狗";; 亥) echo "猪";;
+        *) echo "";;
+    esac
+}
+
+_hl_palace_label() {
+    local p="$1"
+    if [[ $p -le 0 ]]; then echo "不在盘上"; return; fi
+    if [[ $p -eq 5 ]]; then echo "中5宫(中,土)"; return; fi
+    local bgua=""
+    case $p in
+        1) bgua="坎";; 2) bgua="坤";; 3) bgua="震";; 4) bgua="巽";;
+        6) bgua="乾";; 7) bgua="兑";; 8) bgua="艮";; 9) bgua="离";;
+    esac
+    dl_get_v "palace_${p}_direction" 2>/dev/null || true; local pdir="$_DL_RET"
+    dl_get_v "palace_${p}_wuxing" 2>/dev/null || true; local pwx="$_DL_RET"
+    echo "${bgua}${p}宫(${pdir},${pwx})"
+}
+
+_hl_print_palace_detail() {
+    local p="$1" indent="${2:-    }"
+    dl_get_v "palace_${p}_tian_gan" 2>/dev/null || true; local tg="$_DL_RET"
+    dl_get_v "palace_${p}_di_gan" 2>/dev/null || true; local dg="$_DL_RET"
+    dl_get_v "palace_${p}_star" 2>/dev/null || true; local star="$_DL_RET"
+    dl_get_v "palace_${p}_gate" 2>/dev/null || true; local gate="$_DL_RET"
+    dl_get_v "palace_${p}_deity" 2>/dev/null || true; local deity="$_DL_RET"
+    local tg_wx="" dg_wx=""
+    tg_wx="$(_hl_stem_wuxing "$tg")"
+    dg_wx="$(_hl_stem_wuxing "$dg")"
+    local star_jx="" star_wx="" gate_jx="" gate_wx=""
+    if [[ -n "$star" ]]; then
+        star_jx="$(_hl_star_jixi "$star")"
+        star_wx="$(_hl_star_wuxing "$star")"
+    fi
+    if [[ -n "$gate" ]]; then
+        gate_jx="$(_hl_gate_jixi "$gate")"
+        gate_wx="$(_hl_gate_wuxing "$gate")"
+    fi
+    [[ -n "$tg_wx" ]] && printf '%s天盘: %s(%s)\n' "$indent" "$tg" "$tg_wx" || printf '%s天盘: %s\n' "$indent" "$tg"
+    [[ -n "$dg_wx" ]] && printf '%s地盘: %s(%s)\n' "$indent" "$dg" "$dg_wx" || printf '%s地盘: %s\n' "$indent" "$dg"
+    if [[ -n "$star_wx" && -n "$star_jx" ]]; then
+        printf '%s星: %s(%s,%s)\n' "$indent" "$star" "$star_wx" "$star_jx"
+    elif [[ -n "$star_jx" ]]; then
+        printf '%s星: %s(%s)\n' "$indent" "$star" "$star_jx"
+    else
+        printf '%s星: %s\n' "$indent" "$star"
+    fi
+    if [[ -n "$gate_wx" && -n "$gate_jx" ]]; then
+        printf '%s门: %s(%s,%s)\n' "$indent" "$gate" "$gate_wx" "$gate_jx"
+    elif [[ -n "$gate_jx" ]]; then
+        printf '%s门: %s(%s)\n' "$indent" "$gate" "$gate_jx"
+    else
+        printf '%s门: %s\n' "$indent" "$gate"
+    fi
+    printf '%s神: %s\n' "$indent" "$deity"
 }
 
 _hl_print_palace_wanwu() {
@@ -440,152 +644,260 @@ hl_output_text() {
         printf '起局时间: %s\n' "$evt_dt"
         printf '起局四柱: %s %s %s %s\n' "$evt_sz_y" "$evt_sz_m" "$evt_sz_d" "$evt_sz_h"
     fi
-    printf '\n'
 
+    # --- 日干(自己) ---
     local rp=$_HL_RIGAN_PALACE
-    local rp_name="" rp_dir=""
-    if (( rp > 0 )); then
-        dl_get_v "palace_${rp}_name"; rp_name="$_DL_RET"
-        dl_get_v "palace_${rp}_direction"; rp_dir="$_DL_RET"
+    local rigan_wx=""
+    rigan_wx="$(_hl_stem_wuxing "$_HL_RIGAN_STEM")"
+    printf '日干(自己) — %s(%s) — %s\n' "$_HL_RIGAN_STEM" "$rigan_wx" "$(_hl_palace_label "$rp")"
+    if (( rp > 0 && rp != 5 )); then
+        _hl_print_palace_detail "$rp" "  "
     fi
-    printf '日干: %s  宫位: %s(%s)\n' "$_HL_RIGAN_STEM" "${rp_name:-未找到}" "${rp_dir:-}"
     _hl_print_palace_wanwu "$_HL_RIGAN_PALACE"
 
-    local gp=$_HL_GANHE_PALACE gp_name="" gp_dir=""
-    if (( gp > 0 )); then
-        dl_get_v "palace_${gp}_name"; gp_name="$_DL_RET"
-        dl_get_v "palace_${gp}_direction"; gp_dir="$_DL_RET"
+    # --- 干合(配偶星) ---
+    local gp=$_HL_GANHE_PALACE
+    local ganhe_wx=""
+    ganhe_wx="$(_hl_stem_wuxing "$_HL_GANHE_STEM")"
+    printf '\n干合(配偶星) — %s(%s) — %s\n' "$_HL_GANHE_STEM" "$ganhe_wx" "$(_hl_palace_label "$gp")"
+    printf '  干合代表配偶/伴侣，%s合%s\n' "$_HL_RIGAN_STEM" "$_HL_GANHE_STEM"
+    if (( gp > 0 && gp != 5 )); then
+        _hl_print_palace_detail "$gp" "  "
     fi
-    printf '干合: %s  宫位: %s(%s)\n' "$_HL_GANHE_STEM" "${gp_name:-未找到}" "${gp_dir:-}"
     _hl_print_palace_wanwu "$_HL_GANHE_PALACE"
 
-    local lp=$_HL_LIUHE_PALACE lp_name="" lp_dir=""
-    if (( lp > 0 )); then
-        dl_get_v "palace_${lp}_name"; lp_name="$_DL_RET"
-        dl_get_v "palace_${lp}_direction"; lp_dir="$_DL_RET"
+    # --- 六合(姻缘媒人) ---
+    local lp=$_HL_LIUHE_PALACE
+    printf '\n六合(姻缘媒人) — %s\n' "$(_hl_palace_label "$lp")"
+    printf '  人缘,合,媒,多,婚,恋,约,缘,人与人的亲密关系\n'
+    if (( lp > 0 && lp != 5 )); then
+        _hl_print_palace_detail "$lp" "  "
     fi
-    printf '六合: %s(%s)\n' "${lp_name:-未找到}" "${lp_dir:-}"
     _hl_print_palace_wanwu "$_HL_LIUHE_PALACE"
 
+    # --- 沐浴位(桃花位) ---
     dl_get_v "muyu_${_HL_RIGAN_STEM}"; local muyu_raw="$_DL_RET"
     local muyu_dz="${muyu_raw%%,*}" muyu_p="${muyu_raw##*,}"
-    local muyu_pname="" muyu_dir=""
-    if [[ -n "$muyu_p" ]]; then
-        dl_get_v "palace_${muyu_p}_name"; muyu_pname="$_DL_RET"
-        dl_get_v "palace_${muyu_p}_direction"; muyu_dir="$_DL_RET"
-    fi
-    printf '沐浴位: %s %s(%s)\n' "$muyu_dz" "${muyu_pname:-}" "${muyu_dir:-}"
+    printf '\n沐浴位(桃花位) — %s %s\n' "$muyu_dz" "$(_hl_palace_label "${muyu_p:-0}")"
+    printf '  赤裸袒露,鱼水之欢,一夜情,淫荡,放纵,泄密\n'
 
-    printf '\n'
-    printf '三奇:\n'
+    # --- 三奇 ---
+    printf '\n三奇:\n'
     local sq_stems=("乙" "丙" "丁")
     local sq_palaces=($_HL_SANQI_YI_PALACE $_HL_SANQI_BING_PALACE $_HL_SANQI_DING_PALACE)
-    local i sn sp
+    local sq_descs=("温柔,如沐春风" "热辣,骚女猛男" "妖艳,玉女,阴柔")
+    local i sn sp _sq_has_tongong=0
     for i in 0 1 2; do
         sn="${sq_stems[$i]}"
         sp="${sq_palaces[$i]}"
-        local sp_name=""
-        if (( sp > 0 )); then
-            dl_get_v "palace_${sp}_name"; sp_name="$_DL_RET"
-        fi
+        local sq_wx=""
+        sq_wx="$(_hl_stem_wuxing "$sn")"
         local with_rigan="" with_ganhe=""
-        if (( sp > 0 && sp == _HL_RIGAN_PALACE )); then with_rigan=" [与日干同宫]"; fi
-        if (( sp > 0 && sp == _HL_GANHE_PALACE )); then with_ganhe=" [与干合同宫]"; fi
-        printf '  %s: %s%s%s\n' "$sn" "${sp_name:-未找到}" "$with_rigan" "$with_ganhe"
+        if (( sp > 0 && sp == _HL_RIGAN_PALACE )); then with_rigan=" [与日干同宫]"; _sq_has_tongong=1; fi
+        if (( sp > 0 && sp == _HL_GANHE_PALACE )); then with_ganhe=" [与干合同宫]"; _sq_has_tongong=1; fi
+        printf '  %s(%s,%s): %s%s%s\n' "$sn" "$sq_wx" "${sq_descs[$i]}" "$(_hl_palace_label "$sp")" "$with_rigan" "$with_ganhe"
     done
+    if (( _sq_has_tongong )); then
+        printf '  日干和干合遇到三奇,沐浴在同宫,即为桃花\n'
+    fi
 
-    printf '\n'
-    printf '桃花检测:\n'
+    # --- 桃花检测 ---
     local _taohua_found=0
-    if (( ${#_HL_TAOHUA_RIGAN_SANQI[@]} > 0 )); then
-        printf '  日干与三奇同宫: %s\n' "${_HL_TAOHUA_RIGAN_SANQI[*]}"; _taohua_found=1
-    fi
-    if (( ${#_HL_TAOHUA_GANHE_SANQI[@]} > 0 )); then
-        printf '  干合与三奇同宫: %s\n' "${_HL_TAOHUA_GANHE_SANQI[*]}"; _taohua_found=1
-    fi
-    [[ "$_HL_TAOHUA_XUANWU_RIGAN" == "true" ]] && { printf '  玄武与日干同宫\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_XUANWU_GANHE" == "true" ]] && { printf '  玄武与干合同宫\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_TAIYIN_RIGAN" == "true" ]] && { printf '  太阴与日干同宫\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_TAIYIN_GANHE" == "true" ]] && { printf '  太阴与干合同宫\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_RIGAN_AT_MUYU" == "true" ]] && { printf '  日干在沐浴位\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_GANHE_AT_MUYU" == "true" ]] && { printf '  干合在沐浴位\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_RENGUIWITH_RIGAN" == "true" ]] && { printf '  壬癸与日干同宫\n'; _taohua_found=1; }
-    [[ "$_HL_TAOHUA_RENGUIWITH_GANHE" == "true" ]] && { printf '  壬癸与干合同宫\n'; _taohua_found=1; }
-    (( _taohua_found == 0 )) && printf '  无\n'
+    if (( ${#_HL_TAOHUA_RIGAN_SANQI[@]} > 0 )); then _taohua_found=1; fi
+    if (( ${#_HL_TAOHUA_GANHE_SANQI[@]} > 0 )); then _taohua_found=1; fi
+    [[ "$_HL_TAOHUA_XUANWU_RIGAN" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_XUANWU_GANHE" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_TAIYIN_RIGAN" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_TAIYIN_GANHE" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_RIGAN_AT_MUYU" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_GANHE_AT_MUYU" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_RENGUIWITH_RIGAN" == "true" ]] && _taohua_found=1
+    [[ "$_HL_TAOHUA_RENGUIWITH_GANHE" == "true" ]] && _taohua_found=1
+    if (( _taohua_found )); then
+        printf '\n桃花检测:\n'
+        printf '  烂桃花: 太阴(私密),玄武(偷人),壬癸(风流)\n'
+        if (( ${#_HL_TAOHUA_RIGAN_SANQI[@]} > 0 )); then
+            printf '  日干与三奇同宫: %s\n' "${_HL_TAOHUA_RIGAN_SANQI[*]}"
+        fi
+        if (( ${#_HL_TAOHUA_GANHE_SANQI[@]} > 0 )); then
+            printf '  干合与三奇同宫: %s\n' "${_HL_TAOHUA_GANHE_SANQI[*]}"
+        fi
+        [[ "$_HL_TAOHUA_XUANWU_RIGAN" == "true" ]] && printf '  玄武与日干同宫 — 偷人\n'
+        [[ "$_HL_TAOHUA_XUANWU_GANHE" == "true" ]] && printf '  玄武与干合同宫 — 偷人\n'
+        [[ "$_HL_TAOHUA_TAIYIN_RIGAN" == "true" ]] && printf '  太阴与日干同宫 — 私密\n'
+        [[ "$_HL_TAOHUA_TAIYIN_GANHE" == "true" ]] && printf '  太阴与干合同宫 — 私密\n'
+        [[ "$_HL_TAOHUA_RIGAN_AT_MUYU" == "true" ]] && printf '  日干在沐浴位\n'
+        [[ "$_HL_TAOHUA_GANHE_AT_MUYU" == "true" ]] && printf '  干合在沐浴位\n'
+        [[ "$_HL_TAOHUA_RENGUIWITH_RIGAN" == "true" ]] && printf '  壬癸与日干同宫 — 风流\n'
+        [[ "$_HL_TAOHUA_RENGUIWITH_GANHE" == "true" ]] && printf '  壬癸与干合同宫 — 风流\n'
 
-    printf '\n'
-    printf '伏吟反吟:\n'
-    printf '  伏吟宫: %s\n' "$(_hl_palaces_to_names "$_HL_FUYIN_PALACES")"
-    printf '  反吟宫: %s\n' "$(_hl_palaces_to_names "$_HL_FANYIN_PALACES")"
-    [[ "$_HL_IS_FUYIN_JU" == "true" ]] && printf '  *** 伏吟局 ***\n'
-    [[ "$_HL_IS_FANYIN_JU" == "true" ]] && printf '  *** 反吟局 ***\n'
-
-    printf '\n'
-    printf '空亡影响:\n'
-    [[ "$_HL_RIGAN_KW" == "true" ]] && printf '  日干空亡\n'
-    [[ "$_HL_GANHE_KW" == "true" ]] && printf '  干合空亡\n'
-    [[ "$_HL_LIUHE_KW" == "true" ]] && printf '  六合空亡\n'
-    if [[ "$_HL_RIGAN_KW" != "true" && "$_HL_GANHE_KW" != "true" && "$_HL_LIUHE_KW" != "true" ]]; then
-        printf '  无\n'
+        printf '斩桃花:\n'
+        local _zt_targets="" _zt_target_palaces="" _zt_p=""
+        if (( ${_HL_KW_PALACE_1:-0} > 0 )); then
+            _zt_targets="${_zt_targets:+${_zt_targets},}空亡$(_hl_palace_label "$_HL_KW_PALACE_1")"
+            _zt_target_palaces="${_zt_target_palaces:+${_zt_target_palaces},}${_HL_KW_PALACE_1}"
+        fi
+        if (( ${_HL_KW_PALACE_2:-0} > 0 )); then
+            case ",${_zt_target_palaces}," in
+                *,"${_HL_KW_PALACE_2}",*) ;;
+                *)
+                    _zt_targets="${_zt_targets:+${_zt_targets},}空亡$(_hl_palace_label "$_HL_KW_PALACE_2")"
+                    _zt_target_palaces="${_zt_target_palaces:+${_zt_target_palaces},}${_HL_KW_PALACE_2}"
+                    ;;
+            esac
+        fi
+        if [[ -n "$_HL_RUMU_PALACES" ]]; then
+            local IFS=','
+            for _zt_p in $_HL_RUMU_PALACES; do
+                [[ -n "$_zt_p" ]] || continue
+                case ",${_zt_target_palaces}," in
+                    *,"${_zt_p}",*) ;;
+                    *)
+                        _zt_targets="${_zt_targets:+${_zt_targets},}入墓$(_hl_palace_label "$_zt_p")"
+                        _zt_target_palaces="${_zt_target_palaces:+${_zt_target_palaces},}${_zt_p}"
+                        ;;
+                esac
+            done
+        fi
+        printf '  镇压目标宫位: %s\n' "${_zt_targets:-无}"
+        printf '  镇压: 将烂桃花象放入以上宫位方位\n'
+        if [[ -n "$_HL_ZHAN_SOURCES" ]]; then
+            local IFS=',' _zt_src
+            for _zt_src in $_HL_ZHAN_SOURCES; do
+                [[ -n "$_zt_src" ]] || continue
+                printf '  镇压%s: 将%s的象放入空亡/入墓宫的方位\n' "$_zt_src" "$_zt_src"
+            done
+        fi
+        if [[ "$_HL_PIANCAI_SANQI" == "true" ]]; then
+            printf '  偏财保护: %s奇(偏财)不可镇压,代表挣钱能力\n' "$_HL_PIANCAI_SANQI_STEM"
+        fi
+        printf '  保护干合(配偶),六合(人缘)\n'
     fi
 
-    printf '\n'
-    printf '艮坤刑迫:\n'
-    local _gen8_tags="" _kun2_tags=""
-    # 艮8宫
+    # --- 伏吟反吟 ---
+    local _fy_has=0
+    if [[ "$_HL_IS_FUYIN_JU" == "true" ]]; then
+        _fy_has=1
+    fi
+    if [[ "$_HL_IS_FANYIN_JU" == "true" ]]; then
+        _fy_has=1
+    fi
+    if (( _fy_has )); then
+        printf '\n伏吟反吟:\n'
+        if [[ "$_HL_IS_FUYIN_JU" == "true" ]]; then
+            printf '  伏吟局 — 执着,难受,孤独,大器晚成,心思专一,做事认真,不懂变通,感情严肃沉重,单纯单向\n'
+        fi
+        if [[ "$_HL_IS_FANYIN_JU" == "true" ]]; then
+            printf '  反吟局 — 折腾不断,很难长久,短期恋情,事多无暇,不稳定,朝三暮四,换来换去\n'
+        fi
+    fi
+
+    # --- 空亡影响 ---
+    local _kw_found=0
+    [[ "$_HL_RIGAN_KW" == "true" ]] && _kw_found=1
+    [[ "$_HL_GANHE_KW" == "true" ]] && _kw_found=1
+    [[ "$_HL_LIUHE_KW" == "true" ]] && _kw_found=1
+    if (( _kw_found )); then
+        printf '\n空亡影响:\n'
+        [[ "$_HL_RIGAN_KW" == "true" ]] && printf '  日干空亡 — 自己不现实，错失姻缘\n'
+        [[ "$_HL_GANHE_KW" == "true" ]] && printf '  干合空亡 — 意中人一直不出现\n'
+        [[ "$_HL_LIUHE_KW" == "true" ]] && printf '  六合空亡 — 互相有意愿，但没有交往的机会\n'
+        # kongwang remedy
+        local _kw_dz1="" _kw_dz2=""
+        dl_get_v "plate_kong_wang_0_branch" 2>/dev/null || true; _kw_dz1="$_DL_RET"
+        dl_get_v "plate_kong_wang_1_branch" 2>/dev/null || true; _kw_dz2="$_DL_RET"
+        if [[ -n "$_kw_dz1" || -n "$_kw_dz2" ]]; then
+            printf '  解空亡: 在空亡所在宫位放空亡对应的形象\n'
+            if [[ -n "$_kw_dz1" ]] && (( ${_HL_KW_PALACE_1:-0} > 0 )); then
+                local _kw_sx1=""
+                _kw_sx1="$(_hl_dizhi_shengxiao "$_kw_dz1")"
+                printf '  %s放%s(%s)的象\n' "$(_hl_palace_label "$_HL_KW_PALACE_1")" "$_kw_dz1" "$_kw_sx1"
+            fi
+            if [[ -n "$_kw_dz2" ]] && (( ${_HL_KW_PALACE_2:-0} > 0 )); then
+                local _kw_sx2=""
+                _kw_sx2="$(_hl_dizhi_shengxiao "$_kw_dz2")"
+                printf '  %s放%s(%s)的象\n' "$(_hl_palace_label "$_HL_KW_PALACE_2")" "$_kw_dz2" "$_kw_sx2"
+            fi
+        fi
+    fi
+
+    # --- 艮坤刑迫 ---
+    printf '\n艮坤刑迫:\n'
+    printf '  艮宫(东北)和坤宫(西南)属土(调和)，出问题则家庭出问题\n'
+    printf '  有击刑和门迫: 非常伤害感情。遇庚+白虎更甚: 受情伤，感情复杂\n'
+
+    printf '\n  艮8宫(东北,土):\n'
+    _hl_print_palace_detail 8 "    "
     if [[ -n "$_HL_GEN8_LIUHAI" ]]; then
-        local IFS=',' _lh_item=""
-        for _lh_item in $_HL_GEN8_LIUHAI; do
-            _gen8_tags="${_gen8_tags}[${_lh_item}] "
-        done
-    fi
-    if [[ -n "$_gen8_tags" ]]; then
-        printf '  艮8宫(东北): %s\n' "$_gen8_tags"
+        printf '    六害: %s\n' "$(_bz_format_liuhai_brackets "$_HL_GEN8_LIUHAI")"
     else
-        printf '  艮8宫(东北): 无刑迫\n'
+        printf '    六害: 无\n'
     fi
-    # 坤2宫
+
+    printf '\n  坤2宫(西南,土):\n'
+    _hl_print_palace_detail 2 "    "
     if [[ -n "$_HL_KUN2_LIUHAI" ]]; then
-        local IFS=',' _lh_item=""
-        for _lh_item in $_HL_KUN2_LIUHAI; do
-            _kun2_tags="${_kun2_tags}[${_lh_item}] "
-        done
-    fi
-    if [[ -n "$_kun2_tags" ]]; then
-        printf '  坤2宫(西南): %s\n' "$_kun2_tags"
+        printf '    六害: %s\n' "$(_bz_format_liuhai_brackets "$_HL_KUN2_LIUHAI")"
     else
-        printf '  坤2宫(西南): 无刑迫\n'
+        printf '    六害: 无\n'
     fi
+    printf '  用化气阵化解\n'
 
-    printf '\n'
-    printf '孤辰寡宿:\n'
-    printf '  组: %s  孤辰: %s  寡宿: %s\n' "$_HL_GC_GROUP" "$_HL_GC_GUCHEN" "$_HL_GC_GUASU"
-    printf '  化解: %s(%s) %s(%s)\n' "$_HL_GC_JH_DZ1" "$_HL_GC_JH_SX1" "$_HL_GC_JH_DZ2" "$_HL_GC_JH_SX2"
+    # --- 孤辰寡宿 ---
+    printf '\n孤辰寡宿:\n'
+    printf '  不同属相(生年地支)的孤辰和寡宿\n'
+    printf '  组: %s\n' "$_HL_GC_GROUP"
+    local _gc_p1="" _gc_p2=""
+    dl_get_v "dizhi_palace_${_HL_GC_GUCHEN}" 2>/dev/null || true; _gc_p1="$_DL_RET"
+    dl_get_v "dizhi_palace_${_HL_GC_GUASU}" 2>/dev/null || true; _gc_p2="$_DL_RET"
+    printf '  孤辰: %s — %s\n' "$_HL_GC_GUCHEN" "$(_hl_palace_label "${_gc_p1:-0}")"
+    printf '  寡宿: %s — %s\n' "$_HL_GC_GUASU" "$(_hl_palace_label "${_gc_p2:-0}")"
+    printf '  化解孤辰: %s放%s(%s)的象\n' "$(_hl_palace_label "${_gc_p1:-0}")" "$_HL_GC_JH_DZ1" "$_HL_GC_JH_SX1"
+    printf '  化解寡宿: %s放%s(%s)的象\n' "$(_hl_palace_label "${_gc_p2:-0}")" "$_HL_GC_JH_DZ2" "$_HL_GC_JH_SX2"
 
-    printf '\n'
-    printf '外情相关:\n'
-    local tp_name="" sm_name="" ding_name="" gui_name=""
-    local tp_dir="" sm_dir="" ding_dir="" gui_dir=""
-    if (( _HL_TIANPENG_PALACE > 0 )); then
-        dl_get_v "palace_${_HL_TIANPENG_PALACE}_name"; tp_name="$_DL_RET"
-        dl_get_v "palace_${_HL_TIANPENG_PALACE}_direction"; tp_dir="$_DL_RET"
-    fi
+    # --- 增加情趣 ---
+    printf '\n增加情趣:\n'
+    printf '  丁(男): 器官,大小,耐久力\n'
+    printf '  癸(女): 器官,大小,耐受力\n'
+    printf '  催情: 男催癸,女催丁\n'
+    printf '  生助丁癸,或将其放入日干宫\n'
+    printf '  在丁宫放木火,生助丁\n'
+    printf '  在癸宫放金水,生助癸\n'
+    printf '  情趣场合: 女方看到红色,男方看到蓝色,女方多带金玉首饰,房间点蜡烛\n'
+
     if (( _HL_SHANGMEN_PALACE > 0 )); then
-        dl_get_v "palace_${_HL_SHANGMEN_PALACE}_name"; sm_name="$_DL_RET"
-        dl_get_v "palace_${_HL_SHANGMEN_PALACE}_direction"; sm_dir="$_DL_RET"
+        printf '\n  伤门(刺激) — %s\n' "$(_hl_palace_label "$_HL_SHANGMEN_PALACE")"
+        printf '    姿势,花样,挑逗,不满足\n'
+        printf '    短期将天干和干合放入伤门所在宫方位,适用特殊性癖,切记只能短期\n'
+        if (( _HL_SHANGMEN_PALACE != 5 )); then
+            _hl_print_palace_detail "$_HL_SHANGMEN_PALACE" "    "
+        fi
     fi
+
+    if (( _HL_TIANPENG_PALACE > 0 )); then
+        printf '\n  天蓬(性魅力) — %s\n' "$(_hl_palace_label "$_HL_TIANPENG_PALACE")"
+        printf '    极致的性魅力,致命吸引力\n'
+        printf '    多穿毛绒绒,女性爱毛绒,男友魅力爆棚\n'
+        printf '    养猫狗也是创造情趣,情感补偿,养大狗,情趣猛\n'
+        printf '    将蓝黑色带毛的东西放到日干宫\n'
+        if (( _HL_TIANPENG_PALACE != 5 )); then
+            _hl_print_palace_detail "$_HL_TIANPENG_PALACE" "    "
+        fi
+    fi
+
     if (( _HL_DING_PALACE > 0 )); then
-        dl_get_v "palace_${_HL_DING_PALACE}_name"; ding_name="$_DL_RET"
-        dl_get_v "palace_${_HL_DING_PALACE}_direction"; ding_dir="$_DL_RET"
+        printf '\n  丁奇(男) — %s\n' "$(_hl_palace_label "$_HL_DING_PALACE")"
+        if (( _HL_DING_PALACE != 5 )); then
+            _hl_print_palace_detail "$_HL_DING_PALACE" "    "
+        fi
     fi
+
     if (( _HL_GUI_PALACE > 0 )); then
-        dl_get_v "palace_${_HL_GUI_PALACE}_name"; gui_name="$_DL_RET"
-        dl_get_v "palace_${_HL_GUI_PALACE}_direction"; gui_dir="$_DL_RET"
+        printf '\n  癸水(女) — %s\n' "$(_hl_palace_label "$_HL_GUI_PALACE")"
+        if (( _HL_GUI_PALACE != 5 )); then
+            _hl_print_palace_detail "$_HL_GUI_PALACE" "    "
+        fi
     fi
-    printf '  天蓬: %s(%s)\n' "${tp_name:-未找到}" "${tp_dir:-}"
-    printf '  伤门: %s(%s)\n' "${sm_name:-未找到}" "${sm_dir:-}"
-    printf '  丁奇: %s(%s)\n' "${ding_name:-未找到}" "${ding_dir:-}"
-    printf '  癸水: %s(%s)\n' "${gui_name:-未找到}" "${gui_dir:-}"
 }
 
 _hl_palace_info_json() {
@@ -743,6 +1055,74 @@ hl_output_json() {
         j_taohua_ganhe_sanqi="[]"
     fi
 
+    local _json_taohua_found="false"
+    if (( ${#_HL_TAOHUA_RIGAN_SANQI[@]} > 0 )); then _json_taohua_found="true"; fi
+    if (( ${#_HL_TAOHUA_GANHE_SANQI[@]} > 0 )); then _json_taohua_found="true"; fi
+    [[ "$_HL_TAOHUA_XUANWU_RIGAN" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_XUANWU_GANHE" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_TAIYIN_RIGAN" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_TAIYIN_GANHE" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_RIGAN_AT_MUYU" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_GANHE_AT_MUYU" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_RENGUIWITH_RIGAN" == "true" ]] && _json_taohua_found="true"
+    [[ "$_HL_TAOHUA_RENGUIWITH_GANHE" == "true" ]] && _json_taohua_found="true"
+
+    local j_rumu_palaces="[]" j_target_palaces="[]" j_zhan_sources="[]"
+    local _arr="[" _first=1 _p="" _target_csv=""
+    if [[ -n "$_HL_RUMU_PALACES" ]]; then
+        local IFS=','
+        for _p in $_HL_RUMU_PALACES; do
+            [[ -n "$_p" ]] || continue
+            if (( _first )); then _first=0; else _arr+=", "; fi
+            _arr+="$_p"
+        done
+    fi
+    _arr+="]"
+    j_rumu_palaces="$_arr"
+
+    if (( ${_HL_KW_PALACE_1:-0} > 0 )); then
+        _target_csv="${_target_csv:+${_target_csv},}${_HL_KW_PALACE_1}"
+    fi
+    if (( ${_HL_KW_PALACE_2:-0} > 0 )); then
+        case ",${_target_csv}," in
+            *,"${_HL_KW_PALACE_2}",*) ;;
+            *) _target_csv="${_target_csv:+${_target_csv},}${_HL_KW_PALACE_2}" ;;
+        esac
+    fi
+    if [[ -n "$_HL_RUMU_PALACES" ]]; then
+        local IFS=','
+        for _p in $_HL_RUMU_PALACES; do
+            [[ -n "$_p" ]] || continue
+            case ",${_target_csv}," in
+                *,"${_p}",*) ;;
+                *) _target_csv="${_target_csv:+${_target_csv},}${_p}" ;;
+            esac
+        done
+    fi
+    _arr="["; _first=1
+    if [[ -n "$_target_csv" ]]; then
+        local IFS=','
+        for _p in $_target_csv; do
+            [[ -n "$_p" ]] || continue
+            if (( _first )); then _first=0; else _arr+=", "; fi
+            _arr+="$_p"
+        done
+    fi
+    _arr+="]"
+    j_target_palaces="$_arr"
+
+    if [[ -n "$_HL_ZHAN_SOURCES" ]]; then
+        local _srcs=() _src
+        local IFS=','
+        for _src in $_HL_ZHAN_SOURCES; do
+            [[ -n "$_src" ]] || continue
+            _srcs+=("$_src")
+        done
+        if (( ${#_srcs[@]} > 0 )); then
+            j_zhan_sources="$(_hl_array_json "${_srcs[@]}")"
+        fi
+    fi
+
     local j_gen8_liuhai_arr j_kun2_liuhai_arr
     j_gen8_liuhai_arr="$(_hl_liuhai_json_array "$_HL_GEN8_LIUHAI")"
     j_kun2_liuhai_arr="$(_hl_liuhai_json_array "$_HL_KUN2_LIUHAI")"
@@ -818,6 +1198,20 @@ hl_output_json() {
     printf '    "rengui_with_gan_he": %s\n' "$_HL_TAOHUA_RENGUIWITH_GANHE" >&3
     printf '  },\n' >&3
 
+    _hl_je_v "$_HL_PIANCAI_STEM"; local j_piancai_stem="$_JE"
+    _hl_je_v "$_HL_PIANCAI_SANQI_STEM"; local j_piancai_sanqi_stem="$_JE"
+    printf '  "zhan_taohua": {\n' >&3
+    printf '    "has_taohua": %s,\n' "$_json_taohua_found" >&3
+    printf '    "rumu_palaces": %s,\n' "$j_rumu_palaces" >&3
+    printf '    "target_palaces": %s,\n' "$j_target_palaces" >&3
+    printf '    "sources": %s,\n' "$j_zhan_sources" >&3
+    printf '    "piancai_stem": "%s",\n' "$j_piancai_stem" >&3
+    printf '    "piancai_sanqi": %s,\n' "$_HL_PIANCAI_SANQI" >&3
+    printf '    "piancai_sanqi_stem": "%s",\n' "$j_piancai_sanqi_stem" >&3
+    printf '    "protect_ganhe": %s,\n' "$_HL_PROTECT_GANHE" >&3
+    printf '    "protect_liuhe": %s\n' "$_HL_PROTECT_LIUHE" >&3
+    printf '  },\n' >&3
+
     printf '  "fuyin_fanyin": {\n' >&3
     printf '    "fuyin_palaces": "%s",\n' "$j_fuyin_palaces" >&3
     printf '    "fanyin_palaces": "%s",\n' "$j_fanyin_palaces" >&3
@@ -825,9 +1219,17 @@ hl_output_json() {
     printf '    "is_fanyin_ju": %s\n' "$_HL_IS_FANYIN_JU" >&3
     printf '  },\n' >&3
 
+    local _kw_json_dz1="" _kw_json_dz2=""
+    dl_get_v "plate_kong_wang_0_branch" 2>/dev/null || true; _kw_json_dz1="$_DL_RET"
+    dl_get_v "plate_kong_wang_1_branch" 2>/dev/null || true; _kw_json_dz2="$_DL_RET"
+    _hl_je_v "$_kw_json_dz1"; local j_kw_dz1="$_JE"
+    _hl_je_v "$_kw_json_dz2"; local j_kw_dz2="$_JE"
+
     printf '  "kongwang": {\n' >&3
     printf '    "palace_1": %s,\n' "${_HL_KW_PALACE_1:-0}" >&3
     printf '    "palace_2": %s,\n' "${_HL_KW_PALACE_2:-0}" >&3
+    printf '    "branch_1": "%s",\n' "$j_kw_dz1" >&3
+    printf '    "branch_2": "%s",\n' "$j_kw_dz2" >&3
     printf '    "ri_gan_kw": %s,\n' "$_HL_RIGAN_KW" >&3
     printf '    "gan_he_kw": %s,\n' "$_HL_GANHE_KW" >&3
     printf '    "liuhe_kw": %s\n' "$_HL_LIUHE_KW" >&3
@@ -850,14 +1252,24 @@ hl_output_json() {
     printf '    }\n' >&3
     printf '  },\n' >&3
 
+    local _gc_json_p1="" _gc_json_p2="" _gc_json_jp1="" _gc_json_jp2=""
+    dl_get_v "dizhi_palace_${_HL_GC_GUCHEN}" 2>/dev/null || true; _gc_json_p1="$_DL_RET"
+    dl_get_v "dizhi_palace_${_HL_GC_GUASU}" 2>/dev/null || true; _gc_json_p2="$_DL_RET"
+    dl_get_v "dizhi_palace_${_HL_GC_JH_DZ1}" 2>/dev/null || true; _gc_json_jp1="$_DL_RET"
+    dl_get_v "dizhi_palace_${_HL_GC_JH_DZ2}" 2>/dev/null || true; _gc_json_jp2="$_DL_RET"
+
     printf '  "guchen_guasu": {\n' >&3
     printf '    "group": "%s",\n' "$j_gc_group" >&3
     printf '    "guchen": "%s",\n' "$j_gc_guchen" >&3
+    printf '    "guchen_palace": %s,\n' "${_gc_json_p1:-0}" >&3
     printf '    "guasu": "%s",\n' "$j_gc_guasu" >&3
+    printf '    "guasu_palace": %s,\n' "${_gc_json_p2:-0}" >&3
     printf '    "jiehua": {\n' >&3
     printf '      "dizhi_1": "%s",\n' "$j_gc_dz1" >&3
-    printf '      "dizhi_2": "%s",\n' "$j_gc_dz2" >&3
+    printf '      "palace_1": %s,\n' "${_gc_json_jp1:-0}" >&3
     printf '      "shengxiao_1": "%s",\n' "$j_gc_sx1" >&3
+    printf '      "dizhi_2": "%s",\n' "$j_gc_dz2" >&3
+    printf '      "palace_2": %s,\n' "${_gc_json_jp2:-0}" >&3
     printf '      "shengxiao_2": "%s"\n' "$j_gc_sx2" >&3
     printf '    }\n' >&3
     printf '  },\n' >&3
@@ -910,6 +1322,7 @@ hl_run_analysis() {
     hl_find_ding_gui
 
     hl_detect_taohua
+    hl_compute_zhan_taohua
     hl_detect_fuyin_fanyin
     hl_check_kongwang
     hl_check_gen_kun

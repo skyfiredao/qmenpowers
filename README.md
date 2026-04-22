@@ -283,7 +283,7 @@ Two output modes are available.
   先天数: 7  后天数: 8  尾数: 5,0
 ```
 
-**JSON mode** (`-j`) outputs a structured JSON object containing all header fields and an array of palace objects, each with every computed field. Suitable for piping to `jq` or consuming from other programs.
+**JSON mode** is always-on: every run writes a structured JSON file (based on `--type`) containing all header fields and an array of palace objects, each with every computed field. The text output is displayed on the terminal simultaneously.
 
 ## Analysis Script
 
@@ -498,17 +498,11 @@ bin/qimen.sh "2026-04-18 10:00"
 # Birth plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 
-# JSON output
-bin/qimen.sh -j "2026-04-18 10:00"
-
 # Tianqin follows Tiannei (instead of default jikun)
 bin/qimen.sh --tianqin=follow-tiannei "2024-02-04 11:00"
 
 # Tianqin follows Zhifu star
 bin/qimen.sh --tianqin=follow-zhifu "2024-02-04 11:00"
-
-# Show Ju determination info only (no full plate)
-bin/qimen.sh --info-only "2024-02-04 11:00"
 
 # Custom JSON output path
 bin/qimen.sh --output=/tmp/plate.json "2026-04-18 10:00"
@@ -575,12 +569,10 @@ Usage: qimen.sh [OPTIONS] [DATETIME]
 DATETIME format: "YYYY-MM-DD HH:MM" (default: current time)
 
 Options:
-  -j, --json          Output as JSON
   --type=TYPE         Plate type: "event" (default) or "birth"
                       event → ./qmen_event.json, birth → ./qmen_birth.json
   --output=PATH       JSON file output path (default: based on --type)
   --tianqin=MODE      天禽 handling: "jikun" (default), "follow-tiannei", or "follow-zhifu"
-  --info-only         Show ju determination info only
   -h, --help          Show this help
 ```
 

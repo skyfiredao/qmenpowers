@@ -65,11 +65,11 @@ hq_wuxing_relation() {
 hq_wuxing_relation_cn() {
     local rel="$1"
     case "$rel" in
-        sheng)       echo "扩张，量大" ;;
-        tong)        echo "稳健，量大" ;;
-        bei_ke)      echo "努力，量小" ;;
-        sheng_target) echo "损耗，量小" ;;
-        ke_target)   echo "大亏，量小" ;;
+        sheng)       echo "月令生，扩张，量大。生助" ;;
+        tong)        echo "月令同，稳健，量大。生助" ;;
+        bei_ke)      echo "克月令，努力，量小" ;;
+        sheng_target) echo "生月令，损耗，量小" ;;
+        ke_target)   echo "月令克，大亏，量小。最差" ;;
         *)           echo "" ;;
     esac
 }
@@ -611,16 +611,47 @@ bz_generate_miexiang() {
             fi
         fi
 
-        eval "local safe=\"\${safe_palaces:-7;1}\""
-        safe="${safe//;/,}"
-
-        local safe_dirs="" _sp
-        local IFS=','
-        for _sp in $safe; do
-            dl_get_v "palace_${_sp}_direction" 2>/dev/null || true
-            safe_dirs="${safe_dirs:+${safe_dirs},}${_DL_RET}(${_sp}宫)"
+        eval "local safe_raw=\"\${safe_palaces:-7;1}\""
+        local safe_candidates="${safe_raw//;/ }"
+        local safe="" _sp
+        local _saved_ifs="$IFS"
+        IFS=' '
+        for _sp in $safe_candidates; do
+            local _sp_liuhai="${_BZ_PAL_LIUHAI[$_sp]:-}"
+            if [[ -n "$_sp_liuhai" ]]; then
+                continue
+            fi
+            if [[ -n "$tg" ]]; then
+                dl_get_v "jinbi_${tg}" 2>/dev/null || true
+                local _sp_jinbi="$_DL_RET"
+                local _sp_jinbi_list="${_sp_jinbi//;/ }"
+                _sp_jinbi_list="${_sp_jinbi_list//,/ }"
+                local _sp_blocked=0 _sp_jp
+                for _sp_jp in $_sp_jinbi_list; do
+                    if [[ "$_sp_jp" == "$_sp" ]]; then
+                        _sp_blocked=1
+                        break
+                    fi
+                done
+                if (( _sp_blocked )); then
+                    continue
+                fi
+            fi
+            safe="${safe:+${safe},}${_sp}"
         done
-        IFS=','
+        IFS="$_saved_ifs"
+
+        local safe_dirs=""
+        if [[ -n "$safe" ]]; then
+            local IFS=','
+            for _sp in $safe; do
+                dl_get_v "palace_${_sp}_direction" 2>/dev/null || true
+                safe_dirs="${safe_dirs:+${safe_dirs},}${_DL_RET}(${_sp}宫)"
+            done
+            IFS=','
+        else
+            safe_dirs="无安全方位"
+        fi
 
         dl_get_v "palace_${p}_name" 2>/dev/null || true; local pname="$_DL_RET"
         dl_get_v "palace_${p}_direction" 2>/dev/null || true; local pdir="$_DL_RET"
@@ -734,6 +765,36 @@ _bz_format_liuhai_brackets() {
     echo "$result"
 }
 
+# Map gate name to wuxing
+_bz_gate_wuxing() {
+    case "$1" in
+        休门) echo "水" ;;
+        死门) echo "土" ;;
+        伤门) echo "木" ;;
+        杜门) echo "木" ;;
+        开门) echo "金" ;;
+        惊门) echo "金" ;;
+        生门) echo "土" ;;
+        景门) echo "火" ;;
+        *) echo "" ;;
+    esac
+}
+
+# Map palace number to wuxing
+_bz_palace_wuxing() {
+    local idx=$(($1 - 1))
+    echo "${PALACE_WUXING[$idx]-}"
+}
+
+# Map palace number to bagua name
+_bz_palace_bagua() {
+    case "$1" in
+        1) echo "坎" ;; 2) echo "坤" ;; 3) echo "震" ;; 4) echo "巽" ;;
+        6) echo "乾" ;; 7) echo "兑" ;; 8) echo "艮" ;; 9) echo "离" ;;
+        *) echo "" ;;
+    esac
+}
+
 _bz_build_wanwu_symbol_line() {
     local label="$1" map_type="$2" symbol="$3"
     [[ -z "$symbol" ]] && return 0
@@ -798,6 +859,7 @@ bz_generate_prescription() {
     local p
     _BZ_BUZHEN_TEXT_BLOCK=""
     _BZ_JINBI_TEXT_BLOCK=""
+    _BZ_PAL_PLAN_TEXT=()
 
     for p in 1 2 3 4 6 7 8 9; do
         local liuhai="${_BZ_PAL_LIUHAI[$p]}"
@@ -866,7 +928,21 @@ bz_generate_prescription() {
 
             _bz_je_v "$jx_move_str"; local j_move="$_JE"
 
-            _bz_pal_text="${_bz_pal_text}    压击刑:
+            local _jx_he_desc=""
+            local _jx_mi=0
+            local IFS='|' _jx_m_item
+            for _jx_m_item in $jx_move_str; do
+                [[ -z "$_jx_m_item" ]] && continue
+                if [[ $_jx_mi -lt ${#tg_arr[@]} ]]; then
+                    [[ -n "$_jx_he_desc" ]] && _jx_he_desc="${_jx_he_desc}，"
+                    _jx_he_desc="${_jx_he_desc}${tg_arr[$_jx_mi]}合${_jx_m_item}"
+                fi
+                _jx_mi=$((_jx_mi + 1))
+            done
+            IFS=','
+            local _jx_bagua; _jx_bagua="$(_bz_palace_bagua "$p")"
+            _bz_pal_text="${_bz_pal_text}    压击刑(${jx_move_str//|/}击刑 → 用合化解: ${_jx_he_desc}):
+      先灭象: 将${jx_move_str//|/}的象移出${_jx_bagua}宫
 "
             for tg_item in "${tg_arr[@]}"; do
                 local _xt; _xt="$(_bz_get_xiang_tg_text "$tg_item")"
@@ -912,8 +988,17 @@ bz_generate_prescription() {
                 actions="${actions}
           { \"type\": \"压入墓\", \"tiangan\": [], \"dizhi\": [{ \"branch\": \"${j_rd}\", \"position\": \"低处\", \"xiang\": ${xj} }], \"move_away\": \"\" }"
 
+                local _rm_chong_target=""
+                case "$rumu_dz" in
+                    子) _rm_chong_target="午" ;; 午) _rm_chong_target="子" ;;
+                    丑) _rm_chong_target="未" ;; 未) _rm_chong_target="丑" ;;
+                    寅) _rm_chong_target="申" ;; 申) _rm_chong_target="寅" ;;
+                    卯) _rm_chong_target="酉" ;; 酉) _rm_chong_target="卯" ;;
+                    辰) _rm_chong_target="戌" ;; 戌) _rm_chong_target="辰" ;;
+                    巳) _rm_chong_target="亥" ;; 亥) _rm_chong_target="巳" ;;
+                esac
                 local _xd; _xd="$(_bz_get_xiang_dz_text "$rumu_dz")"
-                _bz_pal_text="${_bz_pal_text}    压入墓(${rumu_desc}):
+                _bz_pal_text="${_bz_pal_text}    压入墓(${rumu_desc} → 用冲打开墓库: ${rumu_dz}冲${_rm_chong_target}):
       地支 ${rumu_dz} — 低处 ${_xd}
 "
                 _bz_placed_items+=("dz:${rumu_dz}")
@@ -952,7 +1037,10 @@ bz_generate_prescription() {
                         actions="${actions}
           { \"type\": \"压门迫\", \"gate\": \"${j_mg}\", \"tiangan\": [], \"dizhi\": [${mp_dz_json} ], \"move_away\": \"\" }"
 
-                        _bz_pal_text="${_bz_pal_text}    压门迫:
+                        local _mp_gate_wx; _mp_gate_wx="$(_bz_gate_wuxing "$mp_gate")"
+                        local _mp_pal_wx; _mp_pal_wx="$(_bz_palace_wuxing "$p")"
+                        local _mp_bagua; _mp_bagua="$(_bz_palace_bagua "$p")"
+                        _bz_pal_text="${_bz_pal_text}    压门迫(${mp_gate}(${_mp_gate_wx})克${_mp_bagua}宫(${_mp_pal_wx}) → 用合化解):
 "
                         for mp_dz_item in "${mp_dz_arr[@]}"; do
                             local _xd; _xd="$(_bz_get_xiang_dz_text "$mp_dz_item")"
@@ -997,7 +1085,7 @@ bz_generate_prescription() {
           { \"type\": \"压庚白虎\", \"reason\": \"${j_rs}\", \"tiangan\": [{ \"stem\": \"${j_yg}\", \"position\": \"高处\", \"xiang\": ${xj}, \"jinbi\": ${jinbi_flag} }], \"dizhi\": [], \"move_away\": \"\" }"
 
             local _xt; _xt="$(_bz_get_xiang_tg_text "$yg_stem")"
-            _bz_pal_text="${_bz_pal_text}    压庚白虎:
+            _bz_pal_text="${_bz_pal_text}    压${reason_str}(${reason_str}凶煞 → ${yg_stem}合庚，以柔克刚):
       天干 ${yg_stem} — 高处 ${_xt}
 "
             _bz_placed_items+=("tg:${yg_stem}")
@@ -1017,14 +1105,36 @@ bz_generate_prescription() {
             fi
             _bz_je_v "$pw"; local j_pw="$_JE"
             _bz_je_v "$pzhi"; local j_pz="$_JE"
+
+            local kong_dz_json="" kong_f=1
+            local _kw_remaining="$pzhi"
+            while [[ -n "$_kw_remaining" ]]; do
+                local _kw_branch="" _kw_candidate
+                for _kw_candidate in 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥; do
+                    if [[ "$_kw_remaining" == "${_kw_candidate}"* ]]; then
+                        _kw_branch="$_kw_candidate"
+                        _kw_remaining="${_kw_remaining#$_kw_candidate}"
+                        break
+                    fi
+                done
+                [[ -z "$_kw_branch" ]] && break
+                local xj
+                xj="$(_bz_get_xiang_dz_json "$_kw_branch")"
+                _bz_je_v "$_kw_branch"; local j_kb="$_JE"
+                (( kong_f )) || kong_dz_json="${kong_dz_json},"
+                kong_f=0
+                kong_dz_json="${kong_dz_json} { \"branch\": \"${j_kb}\", \"position\": \"低处\", \"xiang\": ${xj} }"
+            done
+
             (( a_first )) || actions="${actions},"
             a_first=0
             actions="${actions}
-          { \"type\": \"填空亡\", \"tiangan\": [], \"dizhi\": [], \"move_away\": \"\", \"wuxing\": \"${j_pw}\", \"palace_dizhi\": \"${j_pz}\", \"note\": \"补${j_pw}\" }"
-            _bz_pal_text="${_bz_pal_text}    填空亡: 补${pw}
+          { \"type\": \"填空亡\", \"tiangan\": [], \"dizhi\": [${kong_dz_json} ], \"move_away\": \"\", \"wuxing\": \"${j_pw}\", \"palace_dizhi\": \"${j_pz}\", \"note\": \"补${j_pw}\" }"
+            local _kong_bagua; _kong_bagua="$(_bz_palace_bagua "$p")"
+            _bz_pal_text="${_bz_pal_text}    填空亡(${_kong_bagua}宫虚假不实 → 缺${pw}补${pw}):
 "
 
-            local _kw_remaining="$pzhi"
+            _kw_remaining="$pzhi"
             while [[ -n "$_kw_remaining" ]]; do
                 local _kw_branch="" _kw_candidate
                 for _kw_candidate in 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥; do
@@ -1043,6 +1153,7 @@ bz_generate_prescription() {
         fi
 
         if [[ -z "$actions" ]]; then
+            _BZ_PAL_PLAN_TEXT[$p]=""
             continue
         fi
 
@@ -1061,6 +1172,7 @@ bz_generate_prescription() {
 
         local liuhai_fmt
         liuhai_fmt="$(_bz_format_liuhai_brackets "$liuhai")"
+        _BZ_PAL_PLAN_TEXT[$p]="$_bz_pal_text"
         _BZ_BUZHEN_TEXT_BLOCK="${_BZ_BUZHEN_TEXT_BLOCK}  ${pal_name}(${pal_dir}) 六害: ${liuhai_fmt}
 ${_bz_pal_text}"
         local _bz_wanwu_ref

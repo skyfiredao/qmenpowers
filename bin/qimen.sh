@@ -17,9 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- Defaults ---
-OUTPUT_MODE="text"
 TIANQIN_MODE="jikun"
-INFO_ONLY=0
 DATETIME_ARG=""
 PLATE_TYPE="event"
 JSON_OUTPUT_PATH=""
@@ -27,31 +25,25 @@ JSON_OUTPUT_PATH=""
 # --- Help ---
 show_help() {
   cat <<'HELP'
-Usage: qimen.sh [OPTIONS] [DATETIME]
+用法: qimen.sh [选项] [日期时间]
 
-奇门遁甲起局 (Qi Men Dun Jia Plate Setting)
+奇门遁甲起局
 时家奇门 · 置闰法
 
-DATETIME format: "YYYY-MM-DD HH:MM" (default: current time)
+日期时间格式: "YYYY-MM-DD HH:MM"（默认：当前时间）
 
-Options:
-  -j, --json          Output as JSON
-  --type=TYPE         Plate type: "event" (default) or "birth"
-                      event → ./qmen_event.json, birth → ./qmen_birth.json
-  --tianqin=MODE      天禽 handling: "jikun" (default), "follow-tiannei", or "follow-zhifu"
-  --output=PATH       JSON output file path (overrides --type default)
-  --info-only         Show ju determination info only
-  -h, --help          Show this help
+选项:
+  --type=TYPE         盘类型: "event"（默认）或 "birth"
+                      event → ./qmen_event.json，birth → ./qmen_birth.json
+  --tianqin=MODE      天禽寄宫: "jikun"（默认寄坤）, "follow-tiannei", "follow-zhifu"
+  --output=PATH       JSON 输出路径（覆盖 --type 默认路径）
+  -h, --help          显示帮助
 HELP
 }
 
 # --- Parse options ---
 while (( $# > 0 )); do
   case "$1" in
-    -j|--json)
-      OUTPUT_MODE="json"
-      shift
-      ;;
     --tianqin=*)
       TIANQIN_MODE="${1#--tianqin=}"
       shift
@@ -62,10 +54,6 @@ while (( $# > 0 )); do
       ;;
     --output=*)
       JSON_OUTPUT_PATH="${1#--output=}"
-      shift
-      ;;
-    --info-only)
-      INFO_ONLY=1
       shift
       ;;
     -h|--help)
@@ -132,19 +120,5 @@ export QM_TIANQIN_MODE="${TIANQIN_MODE}"
 
 # --- Compute and output ---
 qm_compute_plate "$Y" "$M" "$D" "$HOUR" "$MIN"
-
-if (( INFO_ONLY )); then
-  echo "局: $QM_JU_TYPE ${QM_JU_NUM}局 ($QM_YUAN)"
-  (( QM_IS_RUN )) && echo "闰局"
-  echo "值符: $QM_ZHIFU_STAR  值使: $QM_ZHISHI_GATE"
-  echo "四柱: $(cal_ganzhi_name $QM_YEAR_GZ) $(cal_ganzhi_name $QM_MONTH_GZ) $(cal_ganzhi_name $QM_DAY_GZ) $(cal_ganzhi_name $QM_HOUR_GZ)"
-elif [[ "$OUTPUT_MODE" == "json" ]]; then
-  qm_output_json
-else
-  qm_output_text
-fi
-
-# Always write JSON file (except info-only mode)
-if (( ! INFO_ONLY )); then
-  qm_write_json_file "$JSON_OUTPUT_PATH"
-fi
+qm_output_text
+qm_write_json_file "$JSON_OUTPUT_PATH"

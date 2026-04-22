@@ -270,7 +270,7 @@ qm_output_text() {
 }
 
 ###############################################################################
-# qm_output_json — Output valid JSON with complete plate data
+# _qm_generate_json / qm_write_json_file — JSON output
 ###############################################################################
 
 _qm_generate_json() {
@@ -486,10 +486,6 @@ _qm_generate_json() {
 
     printf '\n  }\n' >&"$fd"
     printf '}\n' >&"$fd"
-}
-
-qm_output_json() {
-    _qm_generate_json 1
 }
 
 qm_write_json_file() {
