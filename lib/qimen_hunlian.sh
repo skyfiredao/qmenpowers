@@ -2,7 +2,7 @@
 # Copyright (C) 2025 — Licensed under GPL-3.0
 # See https://www.gnu.org/licenses/gpl-3.0.html
 # qimen_hunlian.sh — 婚恋分析 core computation library.
-# Sourced AFTER data_loader.sh, qimen_analysis.sh, qimen_banmenhuaqizhen.sh.
+# Sourced AFTER data_loader.sh, qimen_json.sh, qimen_banmenhuaqizhen.sh.
 
 # --- JSON helpers ---
 _JE=""
@@ -251,16 +251,16 @@ hl_detect_taohua() {
 
     if (( rp > 0 )); then
         local tg="" dg=""
-        dl_get_v "palace_${rp}_tian_gan"; tg="$_DL_RET"
-        dl_get_v "palace_${rp}_di_gan"; dg="$_DL_RET"
+        dl_get_v "palace_${rp}_tian_gan" 2>/dev/null || true; tg="$_DL_RET"
+        dl_get_v "palace_${rp}_di_gan" 2>/dev/null || true; dg="$_DL_RET"
         if [[ "$tg" == "壬" || "$tg" == "癸" || "$dg" == "壬" || "$dg" == "癸" ]]; then
             _HL_TAOHUA_RENGUIWITH_RIGAN="true"
         fi
     fi
     if (( gp > 0 )); then
         local tg="" dg=""
-        dl_get_v "palace_${gp}_tian_gan"; tg="$_DL_RET"
-        dl_get_v "palace_${gp}_di_gan"; dg="$_DL_RET"
+        dl_get_v "palace_${gp}_tian_gan" 2>/dev/null || true; tg="$_DL_RET"
+        dl_get_v "palace_${gp}_di_gan" 2>/dev/null || true; dg="$_DL_RET"
         if [[ "$tg" == "壬" || "$tg" == "癸" || "$dg" == "壬" || "$dg" == "癸" ]]; then
             _HL_TAOHUA_RENGUIWITH_GANHE="true"
         fi
@@ -569,6 +569,7 @@ _hl_print_palace_detail() {
     fi
     [[ -n "$tg_wx" ]] && printf '%s天盘: %s(%s)\n' "$indent" "$tg" "$tg_wx" || printf '%s天盘: %s\n' "$indent" "$tg"
     [[ -n "$dg_wx" ]] && printf '%s地盘: %s(%s)\n' "$indent" "$dg" "$dg_wx" || printf '%s地盘: %s\n' "$indent" "$dg"
+    printf '%s神: %s\n' "$indent" "$deity"
     if [[ -n "$star_wx" && -n "$star_jx" ]]; then
         printf '%s星: %s(%s,%s)\n' "$indent" "$star" "$star_wx" "$star_jx"
     elif [[ -n "$star_jx" ]]; then
@@ -583,7 +584,6 @@ _hl_print_palace_detail() {
     else
         printf '%s门: %s\n' "$indent" "$gate"
     fi
-    printf '%s神: %s\n' "$indent" "$deity"
 }
 
 _hl_print_palace_wanwu() {
@@ -1296,7 +1296,7 @@ hl_output_json() {
 hl_run_analysis() {
     local input_path="$1" birth_path="$2" output_path="$3"
 
-    qa_parse_plate_json "$input_path"
+    qj_parse_plate_json "$input_path"
 
     _hl_extract_birth_header "$birth_path"
 
@@ -1329,9 +1329,9 @@ hl_run_analysis() {
     hl_compute_guchen_guasu "$nian_zhi"
 
     # Lookup wanwu for key palaces
-    (( _HL_RIGAN_PALACE > 0 )) && qa_lookup_wanwu "$_HL_RIGAN_PALACE"
-    (( _HL_GANHE_PALACE > 0 )) && qa_lookup_wanwu "$_HL_GANHE_PALACE"
-    (( _HL_LIUHE_PALACE > 0 )) && qa_lookup_wanwu "$_HL_LIUHE_PALACE"
+    (( _HL_RIGAN_PALACE > 0 )) && qj_lookup_wanwu "$_HL_RIGAN_PALACE"
+    (( _HL_GANHE_PALACE > 0 )) && qj_lookup_wanwu "$_HL_GANHE_PALACE"
+    (( _HL_LIUHE_PALACE > 0 )) && qj_lookup_wanwu "$_HL_LIUHE_PALACE"
 
     hl_output_text
 

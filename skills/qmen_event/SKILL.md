@@ -1,6 +1,7 @@
-# 奇门遁甲解盘 (Qi Men Dun Jia Interpretation)
+# 奇门遁甲问事局 (Qi Men Dun Jia Event Reading)
 
-> 对话式奇门遁甲起局与解读技能。引导用户提供信息，调用起局引擎，生成中文叙事解读。
+> 对话式奇门遁甲问事局起局与解读技能。引导用户提供信息，调用起局引擎，生成中文叙事解读。
+> **本技能仅用于问事局。** 生日局请使用化气阵体系技能（qmen_caiguan/qmen_hunlian/qmen_xingge/qmen_huaqizhen）。
 
 ## Trigger
 
@@ -8,6 +9,24 @@
 - 奇门遁甲、起局、解盘、占卜、算卦
 - Divination, fortune telling, Qi Men reading
 - 任何暗示想要进行奇门占断的提问（如"帮我看看这件事"、"最近运势如何"）
+- 用户直接问事（如"帮我算一卦"、"我想问问工作"）
+
+---
+
+## 入口路由（重要）
+
+**问事局和生日局是两套不同的体系，不要混用（除非用户明确要求）。**
+
+| 用户行为 | 判断 | 使用技能 |
+|---------|------|---------|
+| 上来就问事（"帮我看看这件事"、"问问工作"、"最近运势"） | 问事局 | `qmen_event`（本技能） |
+| 上来就说生日时间（"我1990年出生"、"帮我看看性格"） | 生日局 | `qmen_caiguan`/`qmen_hunlian`/`qmen_xingge`/`qmen_huaqizhen` |
+| 问财运/事业深度诊断 + 给了生日时间 | 生日局 | `qmen_caiguan` |
+| 问婚恋/桃花/脱单 + 给了生日时间 | 生日局 | `qmen_hunlian` |
+| 问性格分析 + 给了生日时间 | 生日局 | `qmen_xingge` |
+| 问布阵/化解/风水摆件 + 给了生日时间 | 生日局 | `qmen_huaqizhen` |
+
+**本技能（qmen_event）只处理问事局。** 生日局的财官、婚恋、性格等问题由化气阵体系的脚本和技能回答。除非用户明确说"用问事局看化气阵"，否则两套体系不要混用。
 
 ---
 
@@ -72,25 +91,25 @@ bin/qimen.sh --type=birth "1990-05-20 08:00"
 
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_analyze.sh --question=事业
+bin/qimen_event.sh --question=事业
 ```
 
 **脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结或改写任何一行输出。**
 
-脚本读取 `./qmen_event.json`，写入 `./qmen_analysis.json`。
+脚本读取 `./qmen_event.json`，写入 `./qmen_event_analysis.json`。
 
 **如果有命盘**，额外分析命盘（同样适用脚本输出规则，禁止截断、省略、总结或改写）：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_analyze.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
+bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
 ```
 
 ### Step 5: 解盘
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_analysis.json`（以及命盘分析 JSON，如果有的话），按照「解盘框架」生成中文叙事解读。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_event_analysis.json`（以及命盘分析 JSON，如果有的话），按照「解盘框架」生成中文叙事解读。
 
 ```
-Read: {SKILL_DIR}/qmen_analysis.json
+Read: {SKILL_DIR}/qmen_event_analysis.json
 ```
 
 解读输出使用中文，语气自然流畅，避免机械罗列。具体框架见下方「解盘框架」章节。
@@ -122,13 +141,13 @@ Read: {SKILL_DIR}/qmen_analysis.json
 - 如果模糊（如"最近运势"），追问用户最关心的具体方面
 - 如果一个问题跨两个类型（如"跳槽加薪"涉及事业和求财），选择用户最核心的关注点，或分两次分析
 
-**婚姻感情深度分析提示：** 如果用户问及婚恋方向的深度问题（如脱单、桃花、出轨、斩桃花、情趣、孤辰寡宿等），提示用户可以使用 `qmen_hunlian`（婚恋分析）技能获得更专业的分析和化解方案。本技能（qmen_analysis）只提供基础的婚姻感情解盘。
+**婚姻感情深度分析提示：** 如果用户问及婚恋方向的深度问题（如脱单、桃花、出轨、斩桃花、情趣、孤辰寡宿等），提示用户可以使用 `qmen_hunlian`（婚恋分析）技能获得更专业的分析和化解方案（需要生日时间）。本技能（qmen_event）只提供问事局层面的基础婚姻感情解盘。
 
 ---
 
 ## 解盘框架
 
-读取 `qmen_analysis.json` 后，按以下七步生成解读。每一步说明了该读什么数据、关注什么、如何表达。
+读取 `qmen_event_analysis.json` 后，按以下七步生成解读。每一步说明了该读什么数据、关注什么、如何表达。
 
 ### 第一步：盘面概览
 
@@ -273,7 +292,7 @@ AI 推理用神宫与日干宫五行关系时，参照以下表：
 - 可用 `--verbose` 重新运行分析获取更详细的万物类象数据：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_analyze.sh --input=./qmen_event.json --question=事业 --output=./qmen_analysis_verbose.json --verbose
+bin/qimen_event.sh --input=./qmen_event.json --question=事业 --output=./qmen_event_analysis_verbose.json --verbose
 ```
 
 ### 更换问事类型
@@ -282,9 +301,9 @@ bin/qimen_analyze.sh --input=./qmen_event.json --question=事业 --output=./qmen
 - 用新的问事类型重新分析：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_analyze.sh --question=求财
+bin/qimen_event.sh --question=求财
 ```
-- 读取新的 `qmen_analysis.json`，重新走一遍解盘框架
+- 读取新的 `qmen_event_analysis.json`，重新走一遍解盘框架
 
 ### 追问某个格局
 用户问"这个门迫是什么意思"或"空亡影响大吗"：
@@ -299,7 +318,7 @@ bin/qimen.sh --type=birth "1990-05-20 08:00"
 ```
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_analyze.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
+bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
 ```
 读取命盘分析 JSON，输出第七步「命盘参考」。
 
@@ -325,12 +344,12 @@ workdir: /Users/dzf8tt/tmp/gmtools_infinite_pilot_aia/skill_qmenpowers
 ```
 skill_qmenpowers/
 ├── bin/qimen.sh              # 起局脚本
-├── bin/qimen_analyze.sh      # 分析脚本
-├── qmen_event.json           # 事件盘输出（运行后生成）
-├── qmen_birth.json           # 命盘输出（运行后生成）
-├── qmen_analysis.json        # 分析输出（运行后生成）
+├── bin/qimen_event.sh        # 问事局分析脚本
+├── qmen_event.json           # 问事局输出（运行后生成）
+├── qmen_birth.json           # 命盘输出（运行后生成，可选）
+├── qmen_event_analysis.json  # 问事局分析输出（运行后生成）
 ├── lib/                      # 引擎库（不需要直接调用）
 └── data/                     # 数据文件（不需要直接调用）
 ```
 
-JSON 输出文件会写在 `workdir` 所指向的目录中。读取分析结果时，路径为 `{workdir}/qmen_analysis.json`。
+JSON 输出文件会写在 `workdir` 所指向的目录中。读取分析结果时，路径为 `{workdir}/qmen_event_analysis.json`。

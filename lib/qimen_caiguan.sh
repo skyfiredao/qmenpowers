@@ -113,6 +113,7 @@ _hq_print_palace_detail() {
     else
         printf '%s地盘: %s\n' "$indent" "$dg"
     fi
+    printf '%s神: %s\n' "$indent" "$deity"
     if [[ -n "$star_wx" && -n "$star_jx" ]]; then
         printf '%s星: %s(%s,%s)\n' "$indent" "$star" "$star_wx" "$star_jx"
     elif [[ -n "$star_jx" ]]; then
@@ -127,7 +128,6 @@ _hq_print_palace_detail() {
     else
         printf '%s门: %s\n' "$indent" "$gate"
     fi
-    printf '%s神: %s\n' "$indent" "$deity"
 }
 
 # --- Build palace label: 八卦N宫(方位·五行) ---
@@ -276,16 +276,16 @@ hq_analyze_gan_cai() {
     local first=1
     IFS=','
     for stem in $seen; do
-        hq_find_stem_palace "$stem"
-        local di_palace=$_HQ_FOUND_PALACE
         hq_find_stem_palace_tian "$stem"
         local tian_palace=$_HQ_FOUND_PALACE
+        hq_find_stem_palace "$stem"
+        local di_palace=$_HQ_FOUND_PALACE
 
         local use_palace=0
-        if [[ $di_palace -gt 0 ]]; then
-            use_palace=$di_palace
-        elif [[ $tian_palace -gt 0 ]]; then
+        if [[ $tian_palace -gt 0 ]]; then
             use_palace=$tian_palace
+        elif [[ $di_palace -gt 0 ]]; then
+            use_palace=$di_palace
         fi
 
         local liuhai_str="" liuhai_count=0 palace_json="null"
@@ -398,8 +398,12 @@ hq_derive_hangye() {
     _HQ_HANGYE_STAR_CAREER=""
     _HQ_HANGYE_JSON="null"
 
-    hq_find_stem_palace "戊"
+    hq_find_stem_palace_tian "戊"
     local p=$_HQ_FOUND_PALACE
+    if [[ $p -le 0 ]]; then
+        hq_find_stem_palace "戊"
+        p=$_HQ_FOUND_PALACE
+    fi
     [[ $p -le 0 ]] && return
     _HQ_HANGYE_PALACE=$p
 
@@ -511,10 +515,10 @@ hq_analyze_tiangan_roles() {
         read -r role desc stem <<< "$role_stem"
         IFS=','
 
-        hq_find_stem_palace "$stem"
+        hq_find_stem_palace_tian "$stem"
         local p=$_HQ_FOUND_PALACE
         if [[ $p -eq 0 ]]; then
-            hq_find_stem_palace_tian "$stem"
+            hq_find_stem_palace "$stem"
             p=$_HQ_FOUND_PALACE
         fi
 
@@ -830,7 +834,7 @@ ENDJSON
 hq_run_analysis() {
     local input_path="$1" birth_year_stem="$2" output_path="$3"
 
-    qa_parse_plate_json "$input_path"
+    qj_parse_plate_json "$input_path"
 
     hq_compute_yuegling
     hq_compute_gan_cai "$birth_year_stem"

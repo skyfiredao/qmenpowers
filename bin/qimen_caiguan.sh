@@ -70,7 +70,7 @@ dl_load_file "$BASE_DIR/data/wanwu_huaqizhen.dat"
 dl_load_file "$BASE_DIR/data/nine_stars.dat"
 dl_load_file "$BASE_DIR/data/eight_gates.dat"
 
-source "$BASE_DIR/lib/qimen_analysis.sh"
+source "$BASE_DIR/lib/qimen_json.sh"
 source "$BASE_DIR/lib/qimen_banmenhuaqizhen.sh"
 source "$BASE_DIR/lib/qimen_caiguan.sh"
 
@@ -80,7 +80,7 @@ _extract_birth_year_stem() {
     if [[ "$line" == *'"year":'* ]]; then
       local val="${line#*\"year\": \"}"
       val="${val%%\"*}"
-      _qa_extract_stem "$val"
+      _qj_extract_stem "$val"
       return 0
     fi
   done < "$BIRTH_JSON_PATH"

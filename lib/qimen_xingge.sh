@@ -478,6 +478,21 @@ _xg_print_role_text() {
         printf '  行为: %s\n' "$stem_xw"
     fi
 
+    # 神
+    if [[ -n "$deity" ]]; then
+        printf '\n'
+        printf '  神: %s\n' "$deity"
+        if [[ -n "$deity_xg" ]]; then
+            printf '  性格: %s\n' "$deity_xg"
+        fi
+        if [[ -n "$deity_yx" ]]; then
+            printf '  原型: %s\n' "$deity_yx"
+        fi
+        if [[ -n "$deity_xw" ]]; then
+            printf '  行为: %s\n' "$deity_xw"
+        fi
+    fi
+
     # 星
     if [[ -n "$star" ]]; then
         printf '\n'
@@ -505,21 +520,6 @@ _xg_print_role_text() {
         fi
         if [[ -n "$gate_xw" ]]; then
             printf '  行为: %s\n' "$gate_xw"
-        fi
-    fi
-
-    # 神
-    if [[ -n "$deity" ]]; then
-        printf '\n'
-        printf '  神: %s\n' "$deity"
-        if [[ -n "$deity_xg" ]]; then
-            printf '  性格: %s\n' "$deity_xg"
-        fi
-        if [[ -n "$deity_yx" ]]; then
-            printf '  原型: %s\n' "$deity_yx"
-        fi
-        if [[ -n "$deity_xw" ]]; then
-            printf '  行为: %s\n' "$deity_xw"
         fi
     fi
 }

@@ -72,7 +72,7 @@ dl_load_file "$BASE_DIR/data/wanwu_eight_deities.dat"
 dl_load_file "$BASE_DIR/data/wanwu_tiangan.dat"
 dl_load_file "$BASE_DIR/data/wanwu_dizhi.dat"
 
-source "$BASE_DIR/lib/qimen_analysis.sh"
+source "$BASE_DIR/lib/qimen_json.sh"
 source "$BASE_DIR/lib/qimen_banmenhuaqizhen.sh"
 source "$BASE_DIR/lib/qimen_hunlian.sh"
 

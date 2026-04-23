@@ -17,9 +17,10 @@ SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- Defaults ---
-TIANQIN_MODE="jikun"
+TIANQIN_MODE="follow-tiannei"
 DATETIME_ARG=""
-PLATE_TYPE="event"
+PLATE_TYPE=""
+PLATE_TYPE_EXPLICIT=0
 JSON_OUTPUT_PATH=""
 
 # --- Help ---
@@ -33,9 +34,10 @@ show_help() {
 日期时间格式: "YYYY-MM-DD HH:MM"（默认：当前时间）
 
 选项:
-  --type=TYPE         盘类型: "event"（默认）或 "birth"
+  --type=TYPE         盘类型: "event" 或 "birth"
+                      默认自动选择: 指定时间→birth, 当前时间→event
                       event → ./qmen_event.json，birth → ./qmen_birth.json
-  --tianqin=MODE      天禽寄宫: "jikun"（默认寄坤）, "follow-tiannei", "follow-zhifu"
+  --tianqin=MODE      天禽寄宫: "follow-tiannei"（默认随天芮）, "jikun", "follow-zhifu"
   --output=PATH       JSON 输出路径（覆盖 --type 默认路径）
   -h, --help          显示帮助
 HELP
@@ -50,6 +52,7 @@ while (( $# > 0 )); do
       ;;
     --type=*)
       PLATE_TYPE="${1#--type=}"
+      PLATE_TYPE_EXPLICIT=1
       shift
       ;;
     --output=*)
@@ -72,7 +75,15 @@ while (( $# > 0 )); do
   esac
 done
 
-# --- Validate type and set default output path ---
+# --- Auto-select plate type ---
+# 规则：显式 --type 优先；否则有日期参数=birth，无=event
+if [[ -z "$PLATE_TYPE" ]]; then
+  if [[ -n "$DATETIME_ARG" ]]; then
+    PLATE_TYPE="birth"
+  else
+    PLATE_TYPE="event"
+  fi
+fi
 case "$PLATE_TYPE" in
   event|birth) ;;
   *) echo "Error: invalid --type value: $PLATE_TYPE (expected: event or birth)" >&2; exit 1 ;;
@@ -121,4 +132,11 @@ export QM_TIANQIN_MODE="${TIANQIN_MODE}"
 # --- Compute and output ---
 qm_compute_plate "$Y" "$M" "$D" "$HOUR" "$MIN"
 qm_output_text
+if [[ "$PLATE_TYPE" == "birth" ]]; then
+  echo ""
+  echo "盘类型: 生日局 → $JSON_OUTPUT_PATH"
+else
+  echo ""
+  echo "盘类型: 问事局 → $JSON_OUTPUT_PATH"
+fi
 qm_write_json_file "$JSON_OUTPUT_PATH"

@@ -568,24 +568,27 @@ qm_determine_ju() {
     fi
 
     # Step 5: Handle overflow to next 节气
+    # 置闰法: 符头周期到了(>=15天)，只有下个节气已到才切换
     local effective_term_year="$term_year"
     local effective_term_index="$term_index"
     local effective_days="$days_since_futou"
 
     if (( days_since_futou >= total_cycle_days )); then
-        # Check if the next 节气 has actually started before jumping
         local next_ty next_ti
         read -r next_ty next_ti <<< "$(_qm_next_term_after "$term_year" "$term_index")"
         local jdn_next_jieqi
         jdn_next_jieqi=$(_qm_jieqi_jdn "$next_ty" "$next_ti") 2>/dev/null
+        local do_switch=0
         if [[ -n "$jdn_next_jieqi" ]] && (( jdn_now >= jdn_next_jieqi )); then
-            # Next 节气 has started -> use it
+            do_switch=1
+        elif (( term_index % 2 == 1 )); then
+            do_switch=1
+        fi
+        if (( do_switch )); then
             effective_term_year="$next_ty"
             effective_term_index="$next_ti"
             effective_days=$((days_since_futou - total_cycle_days))
         fi
-        # Otherwise: next 节气 hasn't arrived yet, stay with current term
-        # and keep effective_days = days_since_futou (will wrap via % 15 in yuan calc)
     fi
 
     # Also handle: if previous 节气 had 置闰 that extends into current period
@@ -774,9 +777,8 @@ qm_rotate_heaven() {
     local tianqin_palace=0
     local mode="${QM_TIANQIN_MODE:-jikun}"
 
+    QM_TIANQIN_STEM="${QM_EARTH[5]}"
     if (( QM_ZHIFU_STAR_INDEX == 4 )); then
-        QM_HEAVEN[$target_for_rot]=4
-        QM_HEAVEN_STEM[$target_for_rot]="${QM_EARTH[5]}"
         tianqin_palace=$target_for_rot
     else
         case "$mode" in
@@ -786,7 +788,7 @@ qm_rotate_heaven() {
             follow-zhifu)
                 tianqin_palace=$target_for_rot
                 ;;
-            *)
+            *)  # follow-tiannei (default): find where 天内(star index 1) landed
                 local _tp
                 for ((_tp=1; _tp<=9; _tp++)); do
                     if (( _tp != 5 && QM_HEAVEN[_tp] == 1 )); then
@@ -815,27 +817,32 @@ qm_rotate_human() {
     local gate_palace="$QM_ZHIFU_ORIG_PALACE"
     if (( gate_palace == 5 )); then gate_palace=2; fi
 
+    local step_palace="$QM_ZHIFU_ORIG_PALACE"
+
     local step_dir=1
     [[ "$QM_JU_TYPE" != "阳遁" ]] && step_dir=-1
 
     local s
     for ((s=0; s<branch_steps; s++)); do
-        gate_palace=$((gate_palace + step_dir))
-        if (( gate_palace > 9 )); then gate_palace=1; fi
-        if (( gate_palace < 1 )); then gate_palace=9; fi
-        if (( gate_palace == 5 )); then gate_palace=$((gate_palace + step_dir)); fi
-        if (( gate_palace > 9 )); then gate_palace=1; fi
-        if (( gate_palace < 1 )); then gate_palace=9; fi
+        step_palace=$((step_palace + step_dir))
+        if (( step_palace > 9 )); then step_palace=1; fi
+        if (( step_palace < 1 )); then step_palace=9; fi
     done
 
-    QM_ZHISHI_TARGET_PALACE=$gate_palace
+    if (( step_palace == 5 )); then
+        step_palace=$((step_palace + step_dir))
+        if (( step_palace > 9 )); then step_palace=1; fi
+        if (( step_palace < 1 )); then step_palace=9; fi
+    fi
 
-    local orig_ring_pos gate_ring_pos ring_offset
-    local orig_for_gate="$QM_ZHIFU_ORIG_PALACE"
-    if (( orig_for_gate == 5 )); then orig_for_gate=2; fi
-    orig_ring_pos=$(_qm_palace_pos_luoshu8 "$orig_for_gate") || return 1
-    gate_ring_pos=$(_qm_palace_pos_luoshu8 "$gate_palace") || {
-        echo "ERROR: invalid gate target palace: $gate_palace" >&2
+    QM_ZHISHI_TARGET_PALACE=$step_palace
+
+    [[ -n "${QM_DEBUG:-}" ]] && echo "DEBUG rotate_human: hour_gz=$hour_gz xun_shou=$xun_shou branch_steps=$branch_steps start_palace=$QM_ZHIFU_ORIG_PALACE gate_palace=$gate_palace target_palace=$step_palace" >&2
+
+    local orig_ring_pos ring_offset gate_ring_pos
+    orig_ring_pos=$(_qm_palace_pos_luoshu8 "$gate_palace") || return 1
+    gate_ring_pos=$(_qm_palace_pos_luoshu8 "$step_palace") || {
+        echo "ERROR: invalid gate target palace: $step_palace" >&2
         return 1
     }
     ring_offset=$((gate_ring_pos - orig_ring_pos))
@@ -919,19 +926,47 @@ qm_calc_twelve_states() {
         local start_branch direction
         IFS=',' read -r start_branch direction <<< "$start_data"
 
-        local palace_dizhi primary_branch palace_branch_index
-        palace_dizhi="${PALACE_DIZHI[$((p - 1))]}"
-        primary_branch="${palace_dizhi:0:1}"
-        palace_branch_index=$(_qm_branch_index_by_char "$primary_branch") || {
-            QM_STATES[$p]=""
-            continue
-        }
+        local earth_dizhi
+        earth_dizhi="${PALACE_DIZHI[$((p - 1))]}"
+        local dizhi_len=${#earth_dizhi}
 
-        local dist
-        if (( direction == 1 )); then
-            dist=$(((palace_branch_index - start_branch + 12) % 12))
+        local earth_branch_index dist
+        if (( dizhi_len == 1 )); then
+            earth_branch_index=$(_qm_branch_index_by_char "$earth_dizhi") || {
+                QM_STATES[$p]=""
+                continue
+            }
+            if (( direction == 1 )); then
+                dist=$(((earth_branch_index - start_branch + 12) % 12))
+            else
+                dist=$(((start_branch - earth_branch_index + 12) % 12))
+            fi
         else
-            dist=$(((start_branch - palace_branch_index + 12) % 12))
+            local changsheng_char="${earth_dizhi:$((dizhi_len - 1)):1}"
+            local changsheng_idx
+            changsheng_idx=$(_qm_branch_index_by_char "$changsheng_char") || {
+                QM_STATES[$p]=""
+                continue
+            }
+            if (( direction == 1 )); then
+                dist=$(((changsheng_idx - start_branch + 12) % 12))
+            else
+                dist=$(((start_branch - changsheng_idx + 12) % 12))
+            fi
+            local muku_char="${earth_dizhi:0:1}"
+            local muku_idx muku_dist
+            muku_idx=$(_qm_branch_index_by_char "$muku_char") || {
+                QM_STATES[$p]=""
+                continue
+            }
+            if (( direction == 1 )); then
+                muku_dist=$(((muku_idx - start_branch + 12) % 12))
+            else
+                muku_dist=$(((start_branch - muku_idx + 12) % 12))
+            fi
+            if (( muku_dist == 8 )); then
+                dist=$muku_dist
+            fi
         fi
         QM_STATES[$p]="${STATE_NAMES[$dist]}"
     done

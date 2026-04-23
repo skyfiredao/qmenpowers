@@ -6,7 +6,7 @@
 # gan_cai computation, symbol location, palace summary, yuegling relations,
 # and the full buzhen (布阵) pipeline.
 #
-# Sourced AFTER data_loader.sh, qimen_analysis.sh (for qa_parse_plate_json),
+# Sourced AFTER data_loader.sh, qimen_json.sh (for qj_parse_plate_json),
 # and required .dat files are loaded.
 
 # --- JSON helpers ---
@@ -83,7 +83,23 @@ hq_find_stem_palace() {
     for p in 1 2 3 4 5 6 7 8 9; do
         dl_get_v "palace_${p}_di_gan" 2>/dev/null || true; di="$_DL_RET"
         if [[ "$di" == "$target_stem" ]]; then
-            _HQ_FOUND_PALACE=$p
+            if (( p == 5 )); then
+                local _tqp=""
+                dl_get_v "plate_tianqin_host_palace" 2>/dev/null || true; _tqp="$_DL_RET"
+                if [[ -n "$_tqp" && "$_tqp" != "0" ]]; then
+                    _HQ_FOUND_PALACE=$_tqp
+                else
+                    local _jt=""
+                    dl_get_v "plate_ju_type" 2>/dev/null || true; _jt="$_DL_RET"
+                    if [[ "$_jt" == "阳遁" ]]; then
+                        _HQ_FOUND_PALACE=2
+                    else
+                        _HQ_FOUND_PALACE=8
+                    fi
+                fi
+            else
+                _HQ_FOUND_PALACE=$p
+            fi
             return 0
         fi
     done
@@ -101,6 +117,13 @@ hq_find_stem_palace_tian() {
             return 0
         fi
     done
+    local tqs="" tqp=""
+    dl_get_v "plate_tianqin_stem" 2>/dev/null || true; tqs="$_DL_RET"
+    dl_get_v "plate_tianqin_host_palace" 2>/dev/null || true; tqp="$_DL_RET"
+    if [[ "$tqs" == "$target_stem" && -n "$tqp" && "$tqp" != "0" ]]; then
+        _HQ_FOUND_PALACE=$tqp
+        return 0
+    fi
     return 0
 }
 
@@ -270,24 +293,24 @@ hq_locate_symbol() {
 
     case "$type" in
         stem)
-            hq_find_stem_palace "$name"
+            hq_find_stem_palace_tian "$name"
             if [[ $_HQ_FOUND_PALACE -eq 0 ]]; then
-                hq_find_stem_palace_tian "$name"
+                hq_find_stem_palace "$name"
             fi
             ;;
         stem_hour)
             local hour_gz stem
             dl_get_v "plate_si_zhu_hour" 2>/dev/null || true; hour_gz="$_DL_RET"
             stem="$(_hq_extract_stem "$hour_gz")"
-            hq_find_stem_palace "$stem"
+            hq_find_stem_palace_tian "$stem"
             if [[ $_HQ_FOUND_PALACE -eq 0 ]]; then
-                hq_find_stem_palace_tian "$stem"
+                hq_find_stem_palace "$stem"
             fi
             ;;
         stem_geng)
-            hq_find_stem_palace "庚"
+            hq_find_stem_palace_tian "庚"
             if [[ $_HQ_FOUND_PALACE -eq 0 ]]; then
-                hq_find_stem_palace_tian "庚"
+                hq_find_stem_palace "庚"
             fi
             ;;
         gate)
@@ -1335,7 +1358,7 @@ ENDJSON
 bz_run_analysis() {
     local input_path="$1" birth_year_stem="$2" family_stems="$3" yixiang_concepts="$4" output_path="$5"
 
-    qa_parse_plate_json "$input_path"
+    qj_parse_plate_json "$input_path"
 
     bz_scan_all_palaces
     bz_identify_protected_stems "$birth_year_stem" "$family_stems" "$yixiang_concepts"

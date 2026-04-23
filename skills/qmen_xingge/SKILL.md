@@ -10,7 +10,7 @@
 - 出生局性格、命局性格
 - 内在性格、外在表现
 
-**注意**：如果用户需要婚恋分析，使用 `qmen_hunlian`。如果用户需要财运/事业诊断，使用 `qmen_caiguan`。如果用户需要布阵化解，使用 `qmen_huaqizhen`。如果用户需要通用解盘，使用 `qmen_analysis`。
+**注意**：如果用户需要婚恋分析，使用 `qmen_hunlian`。如果用户需要财运/事业诊断，使用 `qmen_caiguan`。如果用户需要布阵化解，使用 `qmen_huaqizhen`。如果用户需要问事局解盘，使用 `qmen_event`。
 
 ## 对话流程
 

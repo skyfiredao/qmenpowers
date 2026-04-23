@@ -238,12 +238,17 @@ qm_output_text() {
         printf '  地支: %s\n' "$pdizhi"
         printf '  天盘: %s(%s)\n' "$tian_gan" "$tian_gan_wx"
         printf '  地盘: %s(%s)\n' "$di_gan" "$di_gan_wx"
+        printf '  神  : %s\n' "$deity_name"
         printf '  星  : %s(%s)\n' "$star_name" "$star_jixi"
         if (( QM_TIANQIN_FOLLOW_PALACE == p && star_idx != 4 )); then
             printf '  星  : 天禽(中) [寄]\n'
+            if [[ -n "${QM_TIANQIN_STEM:-}" ]]; then
+                local tq_wx
+                tq_wx=$(_qm_stem_wuxing "$QM_TIANQIN_STEM")
+                printf '  天禽: %s(%s)\n' "$QM_TIANQIN_STEM" "$tq_wx"
+            fi
         fi
         printf '  门  : %s(%s)\n' "$gate_name" "$gate_jixi"
-        printf '  神  : %s\n' "$deity_name"
         if [[ -n "$state" ]]; then
             printf '  状态: %s\n' "$state"
         fi
@@ -336,6 +341,7 @@ _qm_generate_json() {
         "$(_qm_json_escape "$kw2")" "$(_qm_branch_to_palace "$QM_KONGWANG_2")" >&"$fd"
     printf '  "yi_ma": {"branch": "%s", "palace": %d},\n' \
         "$(_qm_json_escape "$ym")" "$(_qm_branch_to_palace "$QM_YIMA")" >&"$fd"
+    printf '  "tianqin_host_palace": %d,\n' "${QM_TIANQIN_FOLLOW_PALACE:-2}" >&"$fd"
     printf '  "palaces": {\n' >&"$fd"
 
     local first=1
@@ -458,6 +464,12 @@ _qm_generate_json() {
         printf '      "star_wuxing": "%s",\n' "$(_qm_json_escape "$star_wx")" >&"$fd"
         printf '      "star_jixi": "%s",\n' "$(_qm_json_escape "$star_jx")" >&"$fd"
         printf '      "tianqin": %s,\n' "$is_tianqin" >&"$fd"
+        if [[ "$is_tianqin" == "true" && -n "${QM_TIANQIN_STEM:-}" ]]; then
+            local tq_stem_wx
+            tq_stem_wx=$(_qm_stem_wuxing "$QM_TIANQIN_STEM")
+            printf '      "tianqin_stem": "%s",\n' "$(_qm_json_escape "$QM_TIANQIN_STEM")" >&"$fd"
+            printf '      "tianqin_stem_wuxing": "%s",\n' "$(_qm_json_escape "$tq_stem_wx")" >&"$fd"
+        fi
         printf '      "gate": "%s",\n' "$(_qm_json_escape "$gate_name")" >&"$fd"
         printf '      "gate_wuxing": "%s",\n' "$(_qm_json_escape "$gate_wx")" >&"$fd"
         printf '      "gate_jixi": "%s",\n' "$(_qm_json_escape "$gate_jx")" >&"$fd"

@@ -42,29 +42,33 @@
 ```
 skill_qmenpowers/
 ├── skills/
-│   ├── qmen_analysis/
-│   │   └── SKILL.md                # AI 解盘技能
+│   ├── qmen_event/
+│   │   └── SKILL.md                # 问事局解盘技能
 │   ├── qmen_caiguan/
 │   │   └── SKILL.md                # 财官诊断技能
 │   ├── qmen_huaqizhen/
 │   │   └── SKILL.md                # 化气阵布阵技能
 │   ├── qmen_hunlian/
 │   │   └── SKILL.md                # 婚恋分析技能
+│   ├── qmen_wanwu/
+│   │   └── SKILL.md                # 万物类象画像技能
 │   └── qmen_xingge/
 │       └── SKILL.md                # 性格分析技能
 ├── bin/
 │   ├── qimen.sh                    # 起局 CLI
-│   ├── qimen_analyze.sh            # 分析 CLI
+│   ├── qimen_event.sh              # 问事局分析 CLI
 │   ├── qimen_caiguan.sh            # 财官分析 CLI
 │   ├── qimen_huaqizhen.sh          # 化气阵布阵 CLI
 │   ├── qimen_hunlian.sh            # 婚恋分析 CLI
+│   ├── qimen_wanwu.sh              # 万物类象提取 CLI
 │   └── qimen_xingge.sh             # 性格分析 CLI
 ├── install.sh                      # 安装脚本
 ├── lib/
 │   ├── data_loader.sh              # 通用数据文件加载器
 │   ├── qimen_engine.sh             # 核心计算引擎
 │   ├── qimen_output.sh             # 输出格式化（文本 + JSON）
-│   ├── qimen_analysis.sh           # 分析库
+│   ├── qimen_json.sh               # 共享 JSON 解析与工具库
+│   ├── qimen_event.sh              # 问事局分析库
 │   ├── qimen_banmenhuaqizhen.sh    # 化气阵核心库
 │   ├── qimen_caiguan.sh            # 财官分析库
 │   ├── qimen_hunlian.sh            # 婚恋分析库
@@ -105,11 +109,13 @@ skill_qmenpowers/
 
 **`lib/qimen_output.sh`** 读取引擎填充的全局数组，格式化后输出。支持两种模式：人类可读的文本模式（逐宫列表 + 头部信息）和结构化 JSON。
 
-**`lib/qimen_analysis.sh`** 提供分析流水线：按问题类型选取用神、逐宫提取万物类象、81 组天干克应查表、格局标记汇总。
+**`lib/qimen_json.sh`** 提供共享 JSON 解析与工具函数：盘面 JSON 解析、日干/时干宫位查找、天干提取、万物类象查表。被所有分析 CLI 脚本使用。
+
+**`lib/qimen_event.sh`** 提供问事局专用分析流水线：按问题类型选取用神、标记用神宫位、81 组天干克应查表、格局标记汇总、文本/JSON 输出格式化。仅被 `bin/qimen_event.sh` 使用。
 
 **`bin/qimen.sh`** 是起局 CLI 封装。解析命令行参数，依次 source 库文件，调用引擎，再分发到对应的输出格式化函数。
 
-**`bin/qimen_analyze.sh`** 是分析 CLI。读取 `qimen.sh` 生成的起局 JSON，执行分析流水线，输出结构化分析 JSON。
+**`bin/qimen_event.sh`** 是问事局分析 CLI。读取 `qimen.sh` 生成的起局 JSON，执行分析流水线，输出结构化分析 JSON。仅用于问事局。
 
 **`lib/qimen_banmenhuaqizhen.sh`** 提供化气阵核心库：通用辅助函数、宫位查找、逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡）检测（含对宫影响：玄武/庚/白虎同时影响本宫和对宫）、月令五行生克关系计算（含中文含义标签：扩张/稳健/努力/损耗/大亏）、干财天干追踪（含天干五合回退及缺甲找值符宫干特殊规则）、符号定位工具、宫位摘要生成、月令关系，以及完整的布阵流水线：保护天干识别（日干/时干、生年干、家人干、意象干、值符/值使干）、八宫六害扫描、灭象清单生成（含安全方位推荐）、逐宫布阵方案（击刑用合、入墓用冲、门迫用合、庚/白虎用乙、空亡填象）、禁忌冲突检测、实物形象映射。
 
@@ -126,6 +132,8 @@ skill_qmenpowers/
 **`bin/qimen_hunlian.sh`** 是婚恋分析 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
 
 **`bin/qimen_xingge.sh`** 是性格分析 CLI。默认读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
+
+**`bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
 
 ## 数据文件
 
@@ -253,9 +261,9 @@ skill_qmenpowers/
   地支: 辰巳
   天盘: 己(土)
   地盘: 癸(水)
+  神  : 白虎
   星  : 天英(凶)
   门  : 生门(吉)
-  神  : 白虎
   状态: 衰
   格局: [干墓] [门墓]
   先天数: 5  后天数: 4  尾数: 3,8
@@ -264,9 +272,9 @@ skill_qmenpowers/
   地支: 卯
   天盘: 癸(水)
   地盘: 壬(水)
+  神  : 六合
   星  : 天辅(吉)
   门  : 休门(吉)
-  神  : 六合
   状态: 长生
   先天数: 4  后天数: 3  尾数: 3,8
 
@@ -274,9 +282,9 @@ skill_qmenpowers/
   地支: 丑寅
   天盘: 壬(水)
   地盘: 戊(土)
+  神  : 太阴
   星  : 天冲(吉)
   门  : 开门(吉)
-  神  : 太阴
   状态: 衰
   格局: [门墓]
   先天数: 7  后天数: 8  尾数: 5,0
@@ -286,7 +294,7 @@ skill_qmenpowers/
 
 ## 分析脚本
 
-分析脚本 `qimen_analyze.sh` 读取 `qimen.sh` 生成的起局 JSON，补充万物类象数据，根据问题类型标记用神宫位，输出结构化分析 JSON。
+分析脚本 `qimen_event.sh` 读取 `qimen.sh` 生成的起局 JSON，补充万物类象数据，根据问题类型标记用神宫位，输出结构化分析 JSON。
 
 ### 流水线
 
@@ -300,8 +308,8 @@ bin/qimen.sh "2026-04-18 10:00"
 # 生成 ./qmen_event.json
 
 # 第三步：运行分析
-bin/qimen_analyze.sh --question=事业
-# 读取 ./qmen_event.json，写入 ./qmen_analysis.json
+bin/qimen_event.sh --question=事业
+# 读取 ./qmen_event.json，写入 ./qmen_event_analysis.json
 ```
 
 ### 问题类型
@@ -330,11 +338,11 @@ bin/qimen_analyze.sh --question=事业
 ### CLI 参考
 
 ```
-Usage: qimen_analyze.sh [OPTIONS]
+Usage: qimen_event.sh [OPTIONS]
 
 Options:
   --input=PATH        输入起局 JSON（默认：./qmen_event.json）
-  --output=PATH       输出分析 JSON（默认：./qmen_analysis.json）
+  --output=PATH       输出分析 JSON（默认：./qmen_event_analysis.json）
   --question=TYPE     问题类型（必填）
   --verbose           完整万物类象提取（默认：精简模式）
   --wanwu             文本输出中显示万物类象（JSON 始终包含万物类象）
@@ -473,9 +481,48 @@ Options:
 依赖：./qmen_birth.json（用于读取出生日干和时干）
 ```
 
+## 万物类象提取脚本
+
+万物类象提取脚本 `qimen_wanwu.sh` 提取指定符号组合的全部万物类象对应。支持两种模式：盘面模式从盘面 JSON 中读取指定宫位的符号，手工模式直接接受符号参数。每个参数可选，至少提供一个。输出结构化文本和 JSON。
+
+### 流水线
+
+```bash
+# 盘面模式：从命盘提取
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen_wanwu.sh --palace=3
+
+# 手工模式：直接指定符号（任意组合，至少一个）
+bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state=帝旺
+
+# 手工模式：单个符号
+bin/qimen_wanwu.sh --gate=开门
+```
+
+### CLI 参考
+
+```
+用法: qimen_wanwu.sh [选项]
+
+盘面模式:
+  --input=PATH            输入盘面 JSON（默认：./qmen_birth.json）
+  --palace=N              宫位号（1-9）
+
+手工模式:
+  --stem=X                天干（如：丙）
+  --star=X                九星（如：天冲）
+  --gate=X                八门（如：伤门）
+  --deity=X               八神（如：九天）
+  --state=X               十二长生（如：帝旺）
+
+通用:
+  --output=PATH           输出 JSON（默认：./qmen_wanwu.json）
+  -h, --help              显示帮助
+```
+
 `skills/` 目录下的 `SKILL.md` 文件定义了 OpenCode AI 技能，用于驱动对话式解盘。
 
-**`qmen_analysis`** 驱动通用解盘：入局祝福 → 起局 → 运行分析 → 叙述式解读 → 追问。将用户的自由文本问题映射到 9 种标准问题类型。
+**`qmen_event`** 驱动问事局解盘：入局祝福 → 起局 → 运行分析 → 叙述式解读 → 追问。将用户的自由文本问题映射到 9 种标准问题类型。仅用于问事局；生日局分析使用化气阵技能家族（caiguan、hunlian、xingge、huaqizhen）。
 
 **`qmen_caiguan`**（财官诊断）驱动财富事业诊断：入局祝福 → 生成命盘 → 生成事件盘 → 运行财官分析 → 诊断财富和事业七要害 → "踩一捧一"建议 → 封局提醒。出生年天干自动从 `qmen_birth.json` 读取。
 
@@ -484,6 +531,8 @@ Options:
 **`qmen_hunlian`**（婚恋分析）驱动婚恋解读：入局祝福 → 生成命盘 → 生成事件盘 → 运行婚恋分析 → 按 5 个模块（脱单、死守、催桃花、斩桃花、情趣）加 4 个通用模块解读 → 封局提醒。
 
 **`qmen_xingge`**（性格分析）驱动性格解读：生成命盘 → 运行性格分析 → AI 综合日干（内在性格）和时干（外在性格）所在宫位的天干/星/门/神性格特征，给出完整性格画像。
+
+**`qmen_wanwu`**（万物类象画像）基于奇门符号组合生成创意画像描述。三种模式：场景（环境/氛围）、物品（形状/颜色/材质/功能）、人物（外貌/气质/行为）。符号灵活分配到不同维度（每个符号只用一次），十二长生优先级最低。支持迭代修改（风格、领域、时代调整），始终在万物类象数据范围内。
 
 ## 用法
 
@@ -509,13 +558,13 @@ bin/qimen.sh --output=/tmp/plate.json "2026-04-18 10:00"
 # 完整流水线：命盘 + 事件盘 + 分析
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_analyze.sh --question=事业
+bin/qimen_event.sh --question=事业
 
 # 自定义输入输出路径
-bin/qimen_analyze.sh --input=/tmp/plate.json --question=求财 --output=/tmp/analysis.json
+bin/qimen_event.sh --input=/tmp/plate.json --question=求财 --output=/tmp/analysis.json
 
 # 详细模式分析（完整万物类象）
-bin/qimen_analyze.sh --question=婚姻感情 --verbose
+bin/qimen_event.sh --question=婚姻感情 --verbose
 
 # 财官分析（自动从 qmen_birth.json 读取生年天干）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
@@ -555,6 +604,13 @@ bin/qimen_hunlian.sh --input=./qmen_event.json
 # 性格分析
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen_xingge.sh
+
+# 万物类象提取（盘面模式）
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen_wanwu.sh --palace=3
+
+# 万物类象提取（手工模式）
+bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 ```
 
 完整命令行参考：
@@ -583,7 +639,7 @@ bin/qimen_xingge.sh
 bash install.sh
 ```
 
-这会为每个 `qmen_*` 子技能在 `~/.config/opencode/skills/` 下创建独立的符号链接（如 `qmen_analysis`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_xingge`）。重启 OpenCode 即可加载这些技能。
+这会为每个 `qmen_*` 子技能在 `~/.config/opencode/skills/` 下创建独立的符号链接（如 `qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`）。重启 OpenCode 即可加载这些技能。
 
 ## 环境要求
 
