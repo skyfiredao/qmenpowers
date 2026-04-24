@@ -16,8 +16,7 @@ _resolve_link() {
 SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-INPUT_PATH="./qmen_birth.json"
-OUTPUT_PATH="./qmen_xingge.json"
+BIRTH_JSON_PATH="./qmen_birth.json"
 _SHOW_WANWU=""
 
 show_help() {
@@ -27,8 +26,6 @@ show_help() {
 出生局性格分析 — 内在·外在性格取象
 
 选项:
-  --input=PATH            输入出生局 JSON（默认: ./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认: ./qmen_xingge.json）
   --wanwu                 文本输出中显示万物类象
   -h, --help              显示帮助
 
@@ -38,16 +35,14 @@ HELP
 
 while (( $# > 0 )); do
   case "$1" in
-    --input=*)            INPUT_PATH="${1#--input=}"; shift ;;
-    --output=*)           OUTPUT_PATH="${1#--output=}"; shift ;;
     --wanwu)              _SHOW_WANWU="true"; shift ;;
     -h|--help)            show_help; exit 0 ;;
     *)                    echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
 
-if [[ ! -f "$INPUT_PATH" ]]; then
-  echo "Error: plate not found: $INPUT_PATH" >&2
+if [[ ! -f "$BIRTH_JSON_PATH" ]]; then
+  echo "Error: birth plate not found: $BIRTH_JSON_PATH" >&2
   echo "Generate it first: qimen.sh --type=birth \"YYYY-MM-DD HH:MM\"" >&2
   exit 1
 fi
@@ -55,15 +50,15 @@ fi
 source "$BASE_DIR/lib/data_loader.sh"
 
 # 先加载输入盘面 JSON（供默认键读取），再加载性格类象数据文件。
-dl_load_file "$INPUT_PATH"
+dl_load_file "$BIRTH_JSON_PATH"
 dl_load_file "$BASE_DIR/data/wanwu_huaqizhen.dat"
 
 source "$BASE_DIR/lib/qimen_xingge.sh"
 
 HUAQIZHEN_PATH="./qmen_huaqizhen.json"
 if [[ ! -f "$HUAQIZHEN_PATH" ]]; then
-  "$BASE_DIR/bin/qimen_huaqizhen.sh" --input="$INPUT_PATH" --output="$HUAQIZHEN_PATH" >/dev/null 2>&1 || true
+  "$BASE_DIR/bin/qimen_huaqizhen.sh" >/dev/null 2>&1 || true
 fi
 
-xg_run_analysis "$INPUT_PATH" "$OUTPUT_PATH" "$HUAQIZHEN_PATH"
-echo "性格分析已写入: $OUTPUT_PATH" >&2
+xg_run_analysis "$BIRTH_JSON_PATH" "./qmen_xingge.json" "$HUAQIZHEN_PATH"
+echo "性格分析已写入: ./qmen_xingge.json" >&2

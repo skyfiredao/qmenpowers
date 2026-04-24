@@ -18,7 +18,6 @@ BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- Defaults ---
 INPUT_PATH="./qmen_event.json"
-OUTPUT_PATH="./qmen_event_analysis.json"
 QUESTION_TYPE=""
 VERBOSE=0
 _SHOW_WANWU=""
@@ -33,7 +32,6 @@ show_help() {
 
 选项:
   --input=PATH        输入起局 JSON（默认: ./qmen_event.json）
-  --output=PATH       输出分析 JSON（默认: ./qmen_event_analysis.json）
   --question=TYPE     问题类型（必填，见下方）
   --verbose           完整万物类象提取（默认精简）
   --wanwu             文本输出中显示万物类象
@@ -56,7 +54,6 @@ HELP
 while (( $# > 0 )); do
   case "$1" in
     --input=*)   INPUT_PATH="${1#--input=}"; shift ;;
-    --output=*)  OUTPUT_PATH="${1#--output=}"; shift ;;
     --question=*) QUESTION_TYPE="${1#--question=}"; shift ;;
     --verbose)   VERBOSE=1; shift ;;
     --wanwu)     _SHOW_WANWU="true"; shift ;;
@@ -106,5 +103,5 @@ qj_lookup_wanwu 5 "$VERBOSE" stem_only
 qa_lookup_combination 5
 
 qa_output_analysis_text
-qa_output_analysis_json "$OUTPUT_PATH"
-echo "Analysis written to: $OUTPUT_PATH" >&2
+qa_output_analysis_json "./qmen_event_analysis.json"
+echo "Analysis written to: ./qmen_event_analysis.json" >&2

@@ -15,8 +15,6 @@ _resolve_link() {
 SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-INPUT_PATH="./qmen_birth.json"
-OUTPUT_PATH="./qmen_hunlian.json"
 BIRTH_JSON_PATH="./qmen_birth.json"
 _SHOW_WANWU=""
 
@@ -27,8 +25,6 @@ show_help() {
 婚恋分析 — 脱单·厮守·桃花·情趣
 
 选项:
-  --input=PATH            输入起局 JSON（默认: ./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认: ./qmen_hunlian.json）
   --wanwu                 文本输出中显示万物类象
   -h, --help              显示帮助
 
@@ -38,19 +34,11 @@ HELP
 
 while (( $# > 0 )); do
   case "$1" in
-    --input=*)            INPUT_PATH="${1#--input=}"; shift ;;
-    --output=*)           OUTPUT_PATH="${1#--output=}"; shift ;;
     --wanwu)              _SHOW_WANWU="true"; shift ;;
     -h|--help)            show_help; exit 0 ;;
     *)                    echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
-
-if [[ ! -f "$INPUT_PATH" ]]; then
-  echo "Error: plate not found: $INPUT_PATH" >&2
-  echo "Generate it first: qimen.sh \"YYYY-MM-DD HH:MM\"" >&2
-  exit 1
-fi
 
 if [[ ! -f "$BIRTH_JSON_PATH" ]]; then
   echo "Error: birth plate not found: $BIRTH_JSON_PATH" >&2
@@ -76,10 +64,5 @@ source "$BASE_DIR/lib/qimen_json.sh"
 source "$BASE_DIR/lib/qimen_banmenhuaqizhen.sh"
 source "$BASE_DIR/lib/qimen_hunlian.sh"
 
-_SHOW_EVENT_HEADER=""
-if [[ "$INPUT_PATH" != "$BIRTH_JSON_PATH" ]]; then
-  _SHOW_EVENT_HEADER="true"
-fi
-
-hl_run_analysis "$INPUT_PATH" "$BIRTH_JSON_PATH" "$OUTPUT_PATH"
-echo "Hunlian analysis written to: $OUTPUT_PATH" >&2
+hl_run_analysis "$BIRTH_JSON_PATH" "$BIRTH_JSON_PATH" "./qmen_hunlian.json"
+echo "Hunlian analysis written to: ./qmen_hunlian.json" >&2

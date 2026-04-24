@@ -15,8 +15,6 @@ _resolve_link() {
 SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-INPUT_PATH="./qmen_birth.json"
-OUTPUT_PATH="./qmen_caiguan.json"
 BIRTH_JSON_PATH="./qmen_birth.json"
 BIRTH_YEAR_STEM=""
 _SHOW_WANWU=""
@@ -28,8 +26,6 @@ show_help() {
 财官诊断 — 财富事业双维度分析
 
 选项:
-  --input=PATH            输入起局 JSON（默认: ./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认: ./qmen_caiguan.json）
   --wanwu                 文本输出中显示万物类象
   -h, --help              显示帮助
 
@@ -39,8 +35,6 @@ HELP
 
 while (( $# > 0 )); do
   case "$1" in
-    --input=*)            INPUT_PATH="${1#--input=}"; shift ;;
-    --output=*)           OUTPUT_PATH="${1#--output=}"; shift ;;
     --wanwu)              _SHOW_WANWU="true"; shift ;;
     -h|--help)            show_help; exit 0 ;;
     *)                    echo "Unknown option: $1" >&2; exit 1 ;;
@@ -120,10 +114,5 @@ if [[ -z "$BIRTH_YEAR_STEM" ]]; then
 fi
 _extract_birth_header
 
-_SHOW_EVENT_HEADER=""
-if [[ "$INPUT_PATH" != "$BIRTH_JSON_PATH" ]]; then
-  _SHOW_EVENT_HEADER="true"
-fi
-
-hq_run_analysis "$INPUT_PATH" "$BIRTH_YEAR_STEM" "$OUTPUT_PATH"
-echo "Caiguan analysis written to: $OUTPUT_PATH" >&2
+hq_run_analysis "$BIRTH_JSON_PATH" "$BIRTH_YEAR_STEM" "./qmen_caiguan.json"
+echo "Caiguan analysis written to: ./qmen_caiguan.json" >&2

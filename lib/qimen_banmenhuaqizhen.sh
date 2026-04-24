@@ -1236,6 +1236,7 @@ bz_output_text() {
 
     echo "化气阵分析"
     echo "========"
+    echo "分析盘面: ${_INPUT_SOURCE:-./qmen_birth.json}"
     if [[ -n "${_BIRTH_DATETIME:-}" ]]; then
         echo "出生时间: ${_BIRTH_DATETIME}"
     fi

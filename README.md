@@ -126,13 +126,13 @@ skill_qmenpowers/
 
 **`lib/qimen_xingge.sh`** provides the personality analysis pipeline: birth day stem (inner personality) and hour stem (outer personality) palace location, personality correspondence extraction from huaqizhen-specific wanwu data (stem, star, gate, deity personality traits per palace), wuxing color mapping, and structured text/JSON output.
 
-**`bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
+**`bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
 
 **`bin/qimen_huaqizhen.sh`** is the huaqizhen buzhen CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, takes optional family stems and yixiang concept stems, and outputs a structured buzhen JSON with miexiang list and per-palace placement plans.
 
-**`bin/qimen_hunlian.sh`** is the hunlian (marriage/romance) analysis CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth day stem, then outputs a structured hunlian analysis JSON with partner detection, taohua indicators, guchen/guasu assessment, and palace-level relationship diagnostics.
+**`bin/qimen_hunlian.sh`** is the hunlian (marriage/romance) analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth day stem, then outputs a structured hunlian analysis JSON with partner detection, taohua indicators, guchen/guasu assessment, and palace-level relationship diagnostics.
 
-**`bin/qimen_xingge.sh`** is the personality analysis CLI. It defaults to birth plate (`./qmen_birth.json`). It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
+**`bin/qimen_xingge.sh`** is the personality analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
 
 **`bin/qimen_wanwu.sh`** is the wanwu imagery extraction CLI. It supports two modes: palace mode (`--palace=N`) extracts all wanwu correspondences for a given palace from a plate JSON, and manual mode (`--stem/--star/--gate/--deity/--state`) accepts any combination of symbols directly. Each symbol is optional; at least one is required. Outputs structured text and JSON with full wanwu correspondences per symbol.
 
@@ -343,7 +343,6 @@ Usage: qimen_event.sh [OPTIONS]
 
 Options:
   --input=PATH        Input plate JSON (default: ./qmen_event.json)
-  --output=PATH       Output analysis JSON (default: ./qmen_event_analysis.json)
   --question=TYPE     Question type (required)
   --verbose           Full wanwu extraction (default: concise)
   --wanwu             Show wanwu (万物类象) in text output (JSON always includes wanwu)
@@ -352,7 +351,7 @@ Options:
 
 ## Huaqi Analysis Script (八门化气阵)
 
-The huaqi script `qimen_caiguan.sh` defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and auto-derives industry symbols from the plate. The birth year stem is auto-read from `./qmen_birth.json`.
+The huaqi script `qimen_caiguan.sh` reads the birth plate (`./qmen_birth.json`) only. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and auto-derives industry symbols from the plate. The birth year stem is auto-read from `./qmen_birth.json`.
 
 ### Pipeline
 
@@ -362,11 +361,6 @@ bin/qimen.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
 bin/qimen_caiguan.sh
 # Reads ./qmen_birth.json by default
-
-# With event plate
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
 ```
 
 ### CLI Reference
@@ -375,8 +369,6 @@ bin/qimen_caiguan.sh --input=./qmen_event.json
 Usage: qimen_caiguan.sh [OPTIONS]
 
 Options:
-  --input=PATH            Input plate JSON (default: ./qmen_birth.json)
-  --output=PATH           Output analysis JSON (default: ./qmen_caiguan.json)
   --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
   -h, --help              Show this help
 
@@ -400,7 +392,7 @@ bin/qimen_huaqizhen.sh
 # With event plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
+bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 ```
 
@@ -411,7 +403,6 @@ Usage: qimen_huaqizhen.sh [OPTIONS]
 
 Options:
   --input=PATH            Input plate JSON (default: ./qmen_birth.json)
-  --output=PATH           Output buzhen JSON (default: ./qmen_huaqizhen.json)
   --family-stems=S1,S2    Family members' birth year stems (optional)
   --yixiang=C1,C2         Concepts to protect: 财富,暴力,权威,突破,表现,情欲 (optional)
   --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
@@ -422,7 +413,7 @@ Requires: ./qmen_birth.json (for birth year stem)
 
 ## Hunlian Script (婚恋分析)
 
-The hunlian script `qimen_hunlian.sh` defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It performs marriage/romance analysis. It locates the birth day stem palace, identifies the gan-he (stem combination) partner, checks liuhe (six harmony) and muyu (bathing position), detects taohua (peach blossom) indicators across multiple dimensions (xuanwu, taiyin, ren/gui, sanqi co-location), scans fuyin/fanyin palaces, evaluates kongwang impact on partner positions, inspects gen/kun palace six-harm, computes guchen/guasu (lonely star) with jiehua remedies, and tracks special positions (tianpeng, shangmen, ding, gui). The birth day stem is auto-read from `./qmen_birth.json`.
+The hunlian script `qimen_hunlian.sh` reads the birth plate (`./qmen_birth.json`) only. It performs marriage/romance analysis. It locates the birth day stem palace, identifies the gan-he (stem combination) partner, checks liuhe (six harmony) and muyu (bathing position), detects taohua (peach blossom) indicators across multiple dimensions (xuanwu, taiyin, ren/gui, sanqi co-location), scans fuyin/fanyin palaces, evaluates kongwang impact on partner positions, inspects gen/kun palace six-harm, computes guchen/guasu (lonely star) with jiehua remedies, and tracks special positions (tianpeng, shangmen, ding, gui). The birth day stem is auto-read from `./qmen_birth.json`.
 
 ### Pipeline
 
@@ -432,11 +423,6 @@ bin/qimen.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
 bin/qimen_hunlian.sh
 # Reads ./qmen_birth.json by default
-
-# With event plate
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_hunlian.sh --input=./qmen_event.json
 ```
 
 ### CLI Reference
@@ -445,8 +431,6 @@ bin/qimen_hunlian.sh --input=./qmen_event.json
 Usage: qimen_hunlian.sh [OPTIONS]
 
 Options:
-  --input=PATH            Input plate JSON (default: ./qmen_birth.json)
-  --output=PATH           Output analysis JSON (default: ./qmen_hunlian.json)
   --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
   -h, --help              Show this help
 
@@ -473,8 +457,6 @@ bin/qimen_xingge.sh
 Usage: qimen_xingge.sh [OPTIONS]
 
 Options:
-  --input=PATH            Input plate JSON (default: ./qmen_birth.json)
-  --output=PATH           Output analysis JSON (default: ./qmen_xingge.json)
   --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
   -h, --help              Show this help
 
@@ -561,7 +543,7 @@ bin/qimen.sh "2026-04-18 10:00"
 bin/qimen_event.sh --question=事业
 
 # Run analysis with custom paths
-bin/qimen_event.sh --input=/tmp/plate.json --question=求财 --output=/tmp/analysis.json
+bin/qimen_event.sh --input=/tmp/plate.json --question=求财
 
 # Verbose analysis (all wanwu fields)
 bin/qimen_event.sh --question=婚姻感情 --verbose
@@ -569,11 +551,6 @@ bin/qimen_event.sh --question=婚姻感情 --verbose
 # Caiguan (auto-reads birth year from qmen_birth.json)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen_caiguan.sh
-
-# Caiguan with event plate
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
 
 # Buzhen (array placement)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
@@ -583,7 +560,7 @@ bin/qimen_huaqizhen.sh
 # Buzhen with event plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
+bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # Buzhen with family protection
@@ -595,11 +572,6 @@ bin/qimen_huaqizhen.sh --yixiang=财富,权威
 # Hunlian (marriage/romance analysis)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen_hunlian.sh
-
-# Hunlian with event plate
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_hunlian.sh --input=./qmen_event.json
 
 # Xingge (personality analysis)
 bin/qimen.sh --type=birth "1973-04-24 19:30"

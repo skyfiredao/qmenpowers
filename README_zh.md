@@ -125,13 +125,13 @@ skill_qmenpowers/
 
 **`lib/qimen_xingge.sh`** 提供性格分析流水线：出生日干（内在性格）和时干（外在性格）宫位定位、从化气阵专用万物类象数据中提取性格对应（每宫天干、星、门、神的性格特征）、五行颜色映射，以及结构化文本/JSON 输出。
 
-**`bin/qimen_caiguan.sh`** 是财官诊断 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生年天干，输出结构化财官分析 JSON，包含财富和事业要害诊断。
+**`bin/qimen_caiguan.sh`** 是财官诊断 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生年天干，输出结构化财官分析 JSON，包含财富和事业要害诊断。
 
 **`bin/qimen_huaqizhen.sh`** 是化气阵布阵 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生年天干，接收可选的家人天干和意象概念天干，输出结构化布阵 JSON，包含灭象清单和逐宫摆放处方。
 
-**`bin/qimen_hunlian.sh`** 是婚恋分析 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
+**`bin/qimen_hunlian.sh`** 是婚恋分析 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
 
-**`bin/qimen_xingge.sh`** 是性格分析 CLI。默认读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
+**`bin/qimen_xingge.sh`** 是性格分析 CLI。只读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
 
 **`bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
 
@@ -342,7 +342,6 @@ Usage: qimen_event.sh [OPTIONS]
 
 Options:
   --input=PATH        输入起局 JSON（默认：./qmen_event.json）
-  --output=PATH       输出分析 JSON（默认：./qmen_event_analysis.json）
   --question=TYPE     问题类型（必填）
   --verbose           完整万物类象提取（默认：精简模式）
   --wanwu             文本输出中显示万物类象（JSON 始终包含万物类象）
@@ -351,7 +350,7 @@ Options:
 
 ## 化气分析脚本（八门化气阵）
 
-化气脚本 `qimen_caiguan.sh` 默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘进行事件分析。它自动从 `./qmen_birth.json` 读取出生年天干，执行财富事业深度分析。它定位财富和事业两个维度的七要害，检测每宫六害（六害：刑、墓、庚、白虎、门迫、空亡），计算月令五行生克关系（含中文含义标签：扩张/稳健/努力/损耗/大亏），追踪干财天干（含天干五合回退及缺甲找值符宫干特殊规则），自动从盘面推算行业取象。
+化气脚本 `qimen_caiguan.sh` 只读取命盘（`./qmen_birth.json`）。它自动从 `./qmen_birth.json` 读取出生年天干，执行财富事业深度分析。它定位财富和事业两个维度的七要害，检测每宫六害（六害：刑、墓、庚、白虎、门迫、空亡），计算月令五行生克关系（含中文含义标签：扩张/稳健/努力/损耗/大亏），追踪干财天干（含天干五合回退及缺甲找值符宫干特殊规则），自动从盘面推算行业取象。
 
 ### 流水线
 
@@ -361,11 +360,6 @@ bin/qimen.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
 bin/qimen_caiguan.sh
 # 默认读取 ./qmen_birth.json
-
-# 使用事件盘
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
 ```
 
 ### CLI 参考
@@ -374,8 +368,6 @@ bin/qimen_caiguan.sh --input=./qmen_event.json
 Usage: qimen_caiguan.sh [OPTIONS]
 
 Options:
-  --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认：./qmen_caiguan.json）
   --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
   -h, --help              显示帮助
 
@@ -410,7 +402,6 @@ Usage: qimen_huaqizhen.sh [OPTIONS]
 
 Options:
   --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
-  --output=PATH           输出布阵 JSON（默认：./qmen_huaqizhen.json）
   --family-stems=S1,S2    家人出生年天干（可选）
   --yixiang=C1,C2         保护的意象概念：财富,暴力,权威,突破,表现,情欲（可选）
   --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
@@ -421,7 +412,7 @@ Options:
 
 ## 婚恋分析脚本
 
-婚恋脚本 `qimen_hunlian.sh` 默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘进行事件分析。它自动从 `./qmen_birth.json` 读取出生日干，执行婚恋分析。它定位出生日干宫位，识别干合配偶，检测六合与沐浴位，多维度检测桃花指标（玄武、太阴、壬/癸、三奇同宫），扫描伏吟/反吟宫位，评估空亡对配偶位的影响，检查艮/坤宫六害，计算孤辰寡宿（含解化方案），并追踪特殊位置（天蓬、伤门、丁、癸）。
+婚恋脚本 `qimen_hunlian.sh` 只读取命盘（`./qmen_birth.json`）。它自动从 `./qmen_birth.json` 读取出生日干，执行婚恋分析。它定位出生日干宫位，识别干合配偶，检测六合与沐浴位，多维度检测桃花指标（玄武、太阴、壬/癸、三奇同宫），扫描伏吟/反吟宫位，评估空亡对配偶位的影响，检查艮/坤宫六害，计算孤辰寡宿（含解化方案），并追踪特殊位置（天蓬、伤门、丁、癸）。
 
 ### 流水线
 
@@ -431,11 +422,6 @@ bin/qimen.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
 bin/qimen_hunlian.sh
 # 默认读取 ./qmen_birth.json
-
-# 使用事件盘
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_hunlian.sh --input=./qmen_event.json
 ```
 
 ### CLI 参考
@@ -444,8 +430,6 @@ bin/qimen_hunlian.sh --input=./qmen_event.json
 Usage: qimen_hunlian.sh [OPTIONS]
 
 Options:
-  --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认：./qmen_hunlian.json）
   --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
   -h, --help              显示帮助
 
@@ -472,8 +456,6 @@ bin/qimen_xingge.sh
 Usage: qimen_xingge.sh [OPTIONS]
 
 Options:
-  --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
-  --output=PATH           输出分析 JSON（默认：./qmen_xingge.json）
   --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
   -h, --help              显示帮助
 
@@ -560,7 +542,7 @@ bin/qimen.sh "2026-04-18 10:00"
 bin/qimen_event.sh --question=事业
 
 # 自定义输入输出路径
-bin/qimen_event.sh --input=/tmp/plate.json --question=求财 --output=/tmp/analysis.json
+bin/qimen_event.sh --input=/tmp/plate.json --question=求财
 
 # 详细模式分析（完整万物类象）
 bin/qimen_event.sh --question=婚姻感情 --verbose
@@ -568,11 +550,6 @@ bin/qimen_event.sh --question=婚姻感情 --verbose
 # 财官分析（自动从 qmen_birth.json 读取生年天干）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen_caiguan.sh
-
-# 财官分析（使用事件盘）
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
 
 # 布阵
 bin/qimen.sh --type=birth "1973-04-24 19:30"
@@ -582,7 +559,7 @@ bin/qimen_huaqizhen.sh
 # 布阵（使用事件盘）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
+bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # 布阵（含家人保护）
@@ -594,11 +571,6 @@ bin/qimen_huaqizhen.sh --yixiang=财富,权威
 # 婚恋分析
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen_hunlian.sh
-
-# 婚恋分析（使用事件盘）
-bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_hunlian.sh --input=./qmen_event.json
 
 # 性格分析
 bin/qimen.sh --type=birth "1973-04-24 19:30"

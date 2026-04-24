@@ -16,7 +16,6 @@ SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 INPUT_PATH="./qmen_birth.json"
-OUTPUT_PATH="./qmen_huaqizhen.json"
 BIRTH_JSON_PATH="./qmen_birth.json"
 FAMILY_STEMS=""
 YIXIANG_STEMS=""
@@ -30,7 +29,6 @@ show_help() {
 
 选项:
   --input=PATH            输入起局 JSON（默认: ./qmen_birth.json）
-  --output=PATH           输出布阵 JSON（默认: ./qmen_huaqizhen.json）
   --family-stems=S1,S2    家人出生年天干（可选，逗号分隔）
   --yixiang=X1,X2         意象保护（财富,暴力,权威,突破,表现,情欲）
   --wanwu                 文本输出中显示万物类象
@@ -43,7 +41,6 @@ HELP
 while (( $# > 0 )); do
   case "$1" in
     --input=*)            INPUT_PATH="${1#--input=}"; shift ;;
-    --output=*)           OUTPUT_PATH="${1#--output=}"; shift ;;
     --family-stems=*)     FAMILY_STEMS="${1#--family-stems=}"; shift ;;
     --yixiang=*)          YIXIANG_STEMS="${1#--yixiang=}"; shift ;;
     --wanwu)              _SHOW_WANWU="true"; shift ;;
@@ -133,9 +130,10 @@ fi
 _extract_birth_header
 
 _SHOW_EVENT_HEADER=""
+_INPUT_SOURCE="$INPUT_PATH"
 if [[ "$INPUT_PATH" != "$BIRTH_JSON_PATH" ]]; then
   _SHOW_EVENT_HEADER="true"
 fi
 
-bz_run_analysis "$INPUT_PATH" "$BIRTH_YEAR_STEM" "$FAMILY_STEMS" "$YIXIANG_STEMS" "$OUTPUT_PATH"
-echo "Huaqizhen analysis written to: $OUTPUT_PATH" >&2
+bz_run_analysis "$INPUT_PATH" "$BIRTH_YEAR_STEM" "$FAMILY_STEMS" "$YIXIANG_STEMS" "./qmen_huaqizhen.json"
+echo "Huaqizhen analysis written to: ./qmen_huaqizhen.json" >&2

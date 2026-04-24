@@ -77,9 +77,9 @@ bin/qimen.sh
 bin/qimen.sh "2024-03-15 14:30"
 ```
 
-**脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结或改写任何一行输出。**
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。排盘输出通常有50行以上，必须逐行完整展示。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
 
-**如果用户要求命盘参考**，额外排一张命盘（同样适用脚本输出规则，禁止截断、省略、总结或改写）：
+**如果用户要求命盘参考**，额外排一张命盘（同样适用脚本输出规则，禁止截断、省略、总结、改写或概括）：
 ```bash
 # workdir: {SKILL_DIR}
 bin/qimen.sh --type=birth "1990-05-20 08:00"
@@ -94,14 +94,14 @@ bin/qimen.sh --type=birth "1990-05-20 08:00"
 bin/qimen_event.sh --question=事业
 ```
 
-**脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结或改写任何一行输出。**
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
 
 脚本读取 `./qmen_event.json`，写入 `./qmen_event_analysis.json`。
 
-**如果有命盘**，额外分析命盘（同样适用脚本输出规则，禁止截断、省略、总结或改写）：
+**如果有命盘**，额外分析命盘（同样适用脚本输出规则，禁止截断、省略、总结、改写或概括）：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
+bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --verbose
 ```
 
 ### Step 5: 解盘
@@ -294,8 +294,10 @@ AI 推理用神宫与日干宫五行关系时，参照以下表：
 - 可用 `--verbose` 重新运行分析获取更详细的万物类象数据：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_event.sh --input=./qmen_event.json --question=事业 --output=./qmen_event_analysis_verbose.json --verbose
+bin/qimen_event.sh --input=./qmen_event.json --question=事业 --verbose
 ```
+
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
 
 ### 更换问事类型
 用户说"那换成看财运呢"：
@@ -305,6 +307,9 @@ bin/qimen_event.sh --input=./qmen_event.json --question=事业 --output=./qmen_e
 # workdir: {SKILL_DIR}
 bin/qimen_event.sh --question=求财
 ```
+
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
+
 - 读取新的 `qmen_event_analysis.json`，重新走一遍解盘框架
 
 ### 追问某个格局
@@ -318,10 +323,16 @@ bin/qimen_event.sh --question=求财
 # workdir: {SKILL_DIR}
 bin/qimen.sh --type=birth "1990-05-20 08:00"
 ```
+
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
+
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --output=./qmen_birth_analysis.json --verbose
+bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --verbose
 ```
+
+**⚠️ 脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结、改写或以"输出如下"等方式概括任何一行输出。**
+
 读取命盘分析 JSON，输出第七步「命盘参考」。
 
 ---
