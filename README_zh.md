@@ -25,8 +25,8 @@
 
 **天禽寄宫。** 天禽星居中五宫，中宫无门，需要寄宫。通过 `--tianqin=MODE` 选择三种模式：
 
-- **`jikun`**（默认）：天禽固定寄坤二宫，不随转盘变动。这是最传统的做法。
-- **`follow-tiannei`**：天禽随天内走。天盘转动后，天内落在哪宫，天禽就寄在该宫。天禽属阴土，与天内同气，故随之最合理。
+- **`follow-tiannei`**（默认）：天禽随天内走。天盘转动后，天内落在哪宫，天禽就寄在该宫。天禽属阴土，与天内同气，故随之最合理。
+- **`jikun`**：天禽固定寄坤二宫，不随转盘变动。这是最传统的做法。
 - **`follow-zhifu`**：天禽随值符星走，值符转到哪宫天禽就寄在该宫。
 
 无论哪种模式，天禽所寄宫位会在该宫原有星旁额外显示 `天禽(中) [寄]`。
@@ -351,7 +351,7 @@ Options:
 
 ## 化气分析脚本（八门化气阵）
 
-化气脚本 `qimen_caiguan.sh` 默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘进行事件分析。它自动从 `./qmen_birth.json` 读取出生年天干，执行财富事业深度分析。它定位财富和事业两个维度的七要害，检测每宫六害（六害：刑、墓、庚、白虎、门迫、空亡），计算月令五行生克关系（含中文含义标签：扩张/稳健/努力/损耗/大亏），追踪干财天干（含天干五合回退及缺甲找值符宫干特殊规则），匹配行业符号。
+化气脚本 `qimen_caiguan.sh` 默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘进行事件分析。它自动从 `./qmen_birth.json` 读取出生年天干，执行财富事业深度分析。它定位财富和事业两个维度的七要害，检测每宫六害（六害：刑、墓、庚、白虎、门迫、空亡），计算月令五行生克关系（含中文含义标签：扩张/稳健/努力/损耗/大亏），追踪干财天干（含天干五合回退及缺甲找值符宫干特殊规则），自动从盘面推算行业取象。
 
 ### 流水线
 
@@ -359,13 +359,13 @@ Options:
 # 默认用法（命盘分析）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_caiguan.sh --job=西医
+bin/qimen_caiguan.sh
 # 默认读取 ./qmen_birth.json
 
 # 使用事件盘
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json --job=西医
+bin/qimen_caiguan.sh --input=./qmen_event.json
 ```
 
 ### CLI 参考
@@ -376,7 +376,6 @@ Usage: qimen_caiguan.sh [OPTIONS]
 Options:
   --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
   --output=PATH           输出分析 JSON（默认：./qmen_caiguan.json）
-  --job=NAME              职业/行业名称（可选，用于行业取象匹配）
   --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
   -h, --help              显示帮助
 
@@ -540,14 +539,14 @@ bin/qimen_wanwu.sh --gate=开门
 # 当前时间
 bin/qimen.sh
 
-# 指定时间（事件盘，默认）
+# 指定时间（自动识别为命盘）
 bin/qimen.sh "2026-04-18 10:00"
 
-# 命盘
+# 命盘（显式指定）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 
-# 天禽随天内走（而非默认的寄坤二宫）
-bin/qimen.sh --tianqin=follow-tiannei "2024-02-04 11:00"
+# 天禽寄坤二宫（传统做法，而非默认的随天芮）
+bin/qimen.sh --tianqin=jikun "2024-02-04 11:00"
 
 # 天禽随值符走
 bin/qimen.sh --tianqin=follow-zhifu "2024-02-04 11:00"
@@ -568,12 +567,12 @@ bin/qimen_event.sh --question=婚姻感情 --verbose
 
 # 财官分析（自动从 qmen_birth.json 读取生年天干）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh --job=西医
+bin/qimen_caiguan.sh
 
 # 财官分析（使用事件盘）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json --job=西医
+bin/qimen_caiguan.sh --input=./qmen_event.json
 
 # 布阵
 bin/qimen.sh --type=birth "1973-04-24 19:30"
@@ -624,10 +623,11 @@ bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 日期时间格式: "YYYY-MM-DD HH:MM"（默认：当前时间）
 
 选项:
-  --type=TYPE         盘类型: "event"（默认）或 "birth"
+  --type=TYPE         盘类型: "event" 或 "birth"
+                      默认自动选择: 指定时间→birth, 当前时间→event
                       event → ./qmen_event.json，birth → ./qmen_birth.json
   --output=PATH       JSON 文件输出路径（默认：根据 --type 决定）
-  --tianqin=MODE      天禽处理模式: "jikun"（默认）, "follow-tiannei", 或 "follow-zhifu"
+  --tianqin=MODE      天禽寄宫: "follow-tiannei"（默认，随天芮）, "jikun", 或 "follow-zhifu"
   -h, --help          显示帮助
 ```
 

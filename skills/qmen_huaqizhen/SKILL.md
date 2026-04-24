@@ -120,11 +120,13 @@ bin/qimen_huaqizhen.sh --family-stems=甲,丙 --yixiang=财富,权威
 
 ### Step 5: 解读
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_huaqizhen.json`，按照「布阵解读框架」生成布阵方案。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_huaqizhen.json`，逐字段确认数据后，按照「布阵解读框架」生成布阵方案。
 
 ```
 Read: {SKILL_DIR}/qmen_huaqizhen.json
 ```
+
+**强制约束：生成解读前，必须先读取 `qmen_huaqizhen.json` 并逐字段确认所有数据。禁止凭记忆或推测解读，所有分析内容必须来自 JSON 中的实际字段值。**
 
 ### Step 6: 追问处理
 

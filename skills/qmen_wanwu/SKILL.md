@@ -66,15 +66,25 @@ bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state
 
 ### Step 2: 调用工具
 
-执行 `qimen_wanwu.sh`，获取万物类象数据。
+执行 `qimen_wanwu.sh`，获取万物类象数据。脚本默认写入 `./qmen_wanwu.json`。
 
 **脚本输出规则：将脚本的全部 stdout 输出原样粘贴展示给用户。禁止截断、省略、总结或改写任何一行输出。**
 
-### Step 3: 生成描述
+### Step 3: 读取 JSON 数据
 
-根据工具输出的万物类象数据，按选定模式生成画像描述。
+**必须先完成 Step 2 的脚本执行**，然后用 Read 工具读取 `./qmen_wanwu.json`，逐字段确认每个符号的万物类象数据。
 
-#### 核心规则
+```
+Read: {SKILL_DIR}/qmen_wanwu.json
+```
+
+**强制约束：生成描述前，必须先读取 `qmen_wanwu.json` 并逐字段确认所有 wanwu 数据。禁止凭记忆或推测生成描述，所有描述元素必须来自 JSON 中的实际字段值。**
+
+### Step 4: 生成描述
+
+根据 JSON 中读取到的万物类象数据，按选定模式生成画像描述。
+
+#### 核心规则（基于 JSON 数据）
 
 1. **每个符号在一次描述中只映射一个维度，不重复使用**
    - 例如：天干映射颜色，九星映射形状，八门映射行为，八神映射气质
@@ -146,3 +156,24 @@ bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state
 2. 不需要祝福语、封局等仪式流程
 3. 如果用户想从描述转入分析（如"这个人运势怎么样"），引导到对应的分析技能（qmen_event/qmen_caiguan等）
 4. 手工模式下只输入一个符号也可以工作，描述维度会相应减少
+
+---
+
+## 工作目录
+
+**所有 Bash 命令必须使用 `workdir` 参数**，指向技能目录：
+
+```
+workdir: /Users/dzf8tt/tmp/gmtools_infinite_pilot_aia/skill_qmenpowers
+```
+
+技能目录下的相关文件：
+```
+skill_qmenpowers/
+├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_wanwu.sh        # 万物类象提取脚本
+├── qmen_birth.json           # 命盘输出（运行后生成，盘面模式输入）
+├── qmen_wanwu.json           # 万物类象输出（运行后生成，AI必须读取此文件）
+├── lib/                      # 引擎库（不需要直接调用）
+└── data/                     # 数据文件（不需要直接调用）
+```

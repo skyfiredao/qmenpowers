@@ -93,11 +93,13 @@ bin/qimen_caiguan.sh
 
 ### Step 5: 解读
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_caiguan.json`，按照「解读框架」生成中文叙事分析。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_caiguan.json`，逐字段确认数据后，按照「解读框架」生成中文叙事分析。
 
 ```
 Read: {SKILL_DIR}/qmen_caiguan.json
 ```
+
+**强制约束：生成解读前，必须先读取 `qmen_caiguan.json` 并逐字段确认所有数据。禁止凭记忆或推测解读，所有分析内容必须来自 JSON 中的实际字段值。**
 
 ### Step 6: 追问处理
 

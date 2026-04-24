@@ -26,8 +26,8 @@ The system was historically used for military strategy, site selection, and timi
 
 **Tianqin palace assignment.** The star Tianqin (天禽, Heavenly Bird) sits in the center palace (5-palace), which has no gate and therefore needs a hosting palace. Three modes are available via `--tianqin=MODE`:
 
-- **`jikun`** (default): Tianqin lodges permanently in the Kun 2-palace (寄坤二宫), regardless of plate rotation. This is the most traditional convention.
-- **`follow-tiannei`**: Tianqin follows wherever Tiannei (天内) goes. When the heaven plate rotates, Tiannei and Tianqin share the same palace. This preserves Tianqin's yin-earth affinity with Tiannei's yin-earth nature.
+- **`follow-tiannei`** (default): Tianqin follows wherever Tiannei (天内) goes. When the heaven plate rotates, Tiannei and Tianqin share the same palace. This preserves Tianqin's yin-earth affinity with Tiannei's yin-earth nature.
+- **`jikun`**: Tianqin lodges permanently in the Kun 2-palace (寄坤二宫), regardless of plate rotation. This is the most traditional convention.
 - **`follow-zhifu`**: Tianqin follows the Zhifu (值符) duty star to its rotated palace.
 
 In all modes, the hosting palace displays Tianqin with a `[寄]` (lodging) marker alongside the palace's own rotated star.
@@ -352,7 +352,7 @@ Options:
 
 ## Huaqi Analysis Script (八门化气阵)
 
-The huaqi script `qimen_caiguan.sh` defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and matches industry symbols. The birth year stem is auto-read from `./qmen_birth.json`.
+The huaqi script `qimen_caiguan.sh` defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and auto-derives industry symbols from the plate. The birth year stem is auto-read from `./qmen_birth.json`.
 
 ### Pipeline
 
@@ -360,13 +360,13 @@ The huaqi script `qimen_caiguan.sh` defaults to birth plate (`./qmen_birth.json`
 # Default usage (birth plate analysis)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_caiguan.sh --job=西医
+bin/qimen_caiguan.sh
 # Reads ./qmen_birth.json by default
 
 # With event plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json --job=西医
+bin/qimen_caiguan.sh --input=./qmen_event.json
 ```
 
 ### CLI Reference
@@ -377,7 +377,6 @@ Usage: qimen_caiguan.sh [OPTIONS]
 Options:
   --input=PATH            Input plate JSON (default: ./qmen_birth.json)
   --output=PATH           Output analysis JSON (default: ./qmen_caiguan.json)
-  --job=NAME              Job/industry for symbol mapping (optional)
   --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
   -h, --help              Show this help
 
@@ -541,14 +540,14 @@ Common:
 # Current time
 bin/qimen.sh
 
-# Specific datetime (event plate, default)
+# Specific datetime (auto-detected as birth plate)
 bin/qimen.sh "2026-04-18 10:00"
 
-# Birth plate
+# Birth plate (explicit)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 
-# Tianqin follows Tiannei (instead of default jikun)
-bin/qimen.sh --tianqin=follow-tiannei "2024-02-04 11:00"
+# Tianqin lodges in Kun 2-palace (traditional, instead of default follow-tiannei)
+bin/qimen.sh --tianqin=jikun "2024-02-04 11:00"
 
 # Tianqin follows Zhifu star
 bin/qimen.sh --tianqin=follow-zhifu "2024-02-04 11:00"
@@ -569,12 +568,12 @@ bin/qimen_event.sh --question=婚姻感情 --verbose
 
 # Caiguan (auto-reads birth year from qmen_birth.json)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh --job=西医
+bin/qimen_caiguan.sh
 
 # Caiguan with event plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json --job=西医
+bin/qimen_caiguan.sh --input=./qmen_event.json
 
 # Buzhen (array placement)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
@@ -625,10 +624,11 @@ Usage: qimen.sh [OPTIONS] [DATETIME]
 DATETIME format: "YYYY-MM-DD HH:MM" (default: current time)
 
 Options:
-  --type=TYPE         Plate type: "event" (default) or "birth"
+  --type=TYPE         Plate type: "event" or "birth"
+                      Auto-selects: specified time → birth, current time → event
                       event → ./qmen_event.json, birth → ./qmen_birth.json
   --output=PATH       JSON file output path (default: based on --type)
-  --tianqin=MODE      天禽 handling: "jikun" (default), "follow-tiannei", or "follow-zhifu"
+  --tianqin=MODE      天禽 handling: "follow-tiannei" (default, follows Tiannei), "jikun", or "follow-zhifu"
   -h, --help          Show this help
 ```
 

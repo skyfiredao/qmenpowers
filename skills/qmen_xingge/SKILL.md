@@ -72,7 +72,9 @@ bin/qimen_xingge.sh
 
 ### Step 5: 综合解读
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_xingge.json`，按以下框架综合成性格画像。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_xingge.json`，逐字段确认数据后，按以下框架综合成性格画像。
+
+**强制约束：生成解读前，必须先读取 `qmen_xingge.json` 并逐字段确认所有数据。禁止凭记忆或推测解读，所有分析内容必须来自 JSON 中的实际字段值。**
 
 #### 解读框架
 
@@ -142,3 +144,24 @@ bin/qimen_xingge.sh
 4. **综合不是罗列**——AI 的价值在于把四个元素的关键词融合成一个有血有肉的人格画像，而不是机械地列出每个元素的描述
 5. 起局数据范围有限（约 1899-2100），太早的出生年可能无法起局
 6. 本技能属于**八门化气阵体系**，有分析+化解建议能力（可引导到 huaqizhen 进行化解）
+
+---
+
+## 工作目录
+
+**所有 Bash 命令必须使用 `workdir` 参数**，指向技能目录：
+
+```
+workdir: /Users/dzf8tt/tmp/gmtools_infinite_pilot_aia/skill_qmenpowers
+```
+
+技能目录下的相关文件：
+```
+skill_qmenpowers/
+├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_xingge.sh       # 性格分析脚本
+├── qmen_birth.json           # 命盘输出（运行后生成）
+├── qmen_xingge.json          # 性格分析输出（运行后生成，AI必须读取此文件）
+├── lib/                      # 引擎库（不需要直接调用）
+└── data/                     # 数据文件（不需要直接调用）
+```

@@ -106,11 +106,13 @@ bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --output=./qmen_b
 
 ### Step 5: 解盘
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_event_analysis.json`（以及命盘分析 JSON，如果有的话），按照「解盘框架」生成中文叙事解读。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_event_analysis.json`（以及命盘分析 JSON，如果有的话），逐字段确认数据后，按照「解盘框架」生成中文叙事解读。
 
 ```
 Read: {SKILL_DIR}/qmen_event_analysis.json
 ```
+
+**强制约束：生成解读前，必须先读取 `qmen_event_analysis.json` 并逐字段确认所有数据。禁止凭记忆或推测解读，所有分析内容必须来自 JSON 中的实际字段值。**
 
 解读输出使用中文，语气自然流畅，避免机械罗列。具体框架见下方「解盘框架」章节。
 

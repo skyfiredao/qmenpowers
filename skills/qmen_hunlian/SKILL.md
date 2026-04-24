@@ -98,11 +98,13 @@ bin/qimen_hunlian.sh
 
 ### Step 5: 解读
 
-**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_hunlian.json`，根据用户诉求选择对应解读模块。
+**必须先完成 Step 3 和 Step 4 的脚本执行**，然后用 Read 工具读取 `./qmen_hunlian.json`，逐字段确认数据后，根据用户诉求选择对应解读模块。
 
 ```
 Read: {SKILL_DIR}/qmen_hunlian.json
 ```
+
+**强制约束：生成解读前，必须先读取 `qmen_hunlian.json` 并逐字段确认所有数据。禁止凭记忆或推测解读，所有分析内容必须来自 JSON 中的实际字段值。**
 
 AI 解读时直接基于 JSON 数据进行整合分析，不需要额外推算。
 
