@@ -510,11 +510,11 @@ Common:
 
 **`qmen_event`** drives event plate reading (问事局): ritual blessing → generate plate → run analysis → narrative reading → follow-up. Maps free-text questions to 9 standard question types. Used exclusively for event plates; birth plate analysis uses the huaqizhen skill family (caiguan, hunlian, xingge, huaqizhen).
 
-**`qmen_caiguan`** (财官诊断) drives wealth/career diagnosis: ritual blessing → generate birth plate → generate event plate → run caiguan analysis → diagnose seven hazards for wealth and career → "step on one, lift the other" advice → closing ritual reminder. Birth year stem is auto-read from `qmen_birth.json`.
+**`qmen_caiguan`** (财官诊断) drives wealth/career diagnosis: ritual blessing → generate birth plate → run caiguan analysis → diagnose seven hazards for wealth and career → "step on one, lift the other" advice → closing ritual reminder. Birth year stem is auto-read from `qmen_birth.json`. Uses birth plate only.
 
-**`qmen_huaqizhen`** (化气阵布阵) drives array placement: ritual blessing → generate birth plate → generate event plate → run caiguan analysis → generate buzhen → miexiang + physical object recommendations → closing ritual reminder.
+**`qmen_huaqizhen`** (化气阵布阵) drives array placement: ritual blessing → generate birth plate (event plate optional, only when targeting a specific event) → run caiguan analysis → generate buzhen → miexiang + physical object recommendations → closing ritual reminder.
 
-**`qmen_hunlian`** (婚恋分析) drives marriage/romance interpretation: ritual blessing → generate birth plate → generate event plate → run hunlian analysis → interpret across 5 modules (tuodan, sishou, cui_taohua, zhan_taohua, qingqu) plus 4 common modules → closing ritual reminder.
+**`qmen_hunlian`** (婚恋分析) drives marriage/romance interpretation: ritual blessing → generate birth plate → run hunlian analysis → interpret across 5 modules (tuodan, sishou, cui_taohua, zhan_taohua, qingqu) plus 4 common modules → closing ritual reminder. Uses birth plate only.
 
 **`qmen_xingge`** (性格分析) drives personality interpretation: generate birth plate → run personality analysis → AI synthesizes inner (day stem) and outer (hour stem) personality profiles from the combined stem/star/gate/deity traits at each palace.
 
