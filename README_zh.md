@@ -42,6 +42,8 @@
 ```
 skill_qmenpowers/
 ├── skills/
+│   ├── qmen_dunjia/
+│   │   └── SKILL.md                # 统一入口：问事/生日分流 + 入局仪式 + 排盘 + 路由到 sub-skill
 │   ├── qmen_event/
 │   │   └── SKILL.md                # 问事局解盘技能
 │   ├── qmen_caiguan/
@@ -503,6 +505,8 @@ bin/qimen_wanwu.sh --gate=开门
 
 `skills/` 目录下的 `SKILL.md` 文件定义了 OpenCode AI 技能，用于驱动对话式解盘。
 
+**`qmen_dunjia`** 是统一入口路由技能。当用户说"奇门遁甲"但未明确分析方向时，由本技能负责：(1) 强制分流问事时间 vs 生日时间；(2) 完成入局祝福仪式；(3) 调用 `qimen.sh` 排出对应盘面 JSON；(4) 路由到正确的 sub-skill。Sub-skill 检测到 JSON 已存在会跳过自身的排盘步骤。Router 本身不做任何分析。
+
 **`qmen_event`** 驱动问事局解盘：入局祝福 → 起局 → 运行分析 → 叙述式解读 → 追问。将用户的自由文本问题映射到 9 种标准问题类型。仅用于问事局；生日局分析使用化气阵技能家族（caiguan、hunlian、xingge、huaqizhen）。
 
 **`qmen_caiguan`**（财官诊断）驱动财富事业诊断：入局祝福 → 生成命盘 → 生成事件盘 → 运行财官分析 → 诊断财富和事业七要害 → "踩一捧一"建议 → 封局提醒。出生年天干自动从 `qmen_birth.json` 读取。
@@ -611,7 +615,7 @@ bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 bash install.sh
 ```
 
-这会为每个 `qmen_*` 子技能在 `~/.config/opencode/skills/` 下创建独立的符号链接（如 `qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`）。重启 OpenCode 即可加载这些技能。
+这会为每个 `qmen_*` 子技能在 `~/.config/opencode/skills/` 下创建独立的符号链接（如 `qmen_dunjia`、`qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`）。重启 OpenCode 即可加载这些技能。
 
 ## 环境要求
 

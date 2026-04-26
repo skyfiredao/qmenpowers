@@ -43,6 +43,8 @@ The engine is split into library files, CLI entry points, and a data directory.
 ```
 skill_qmenpowers/
 ├── skills/
+│   ├── qmen_dunjia/
+│   │   └── SKILL.md                # Router skill: time-type triage + plate setting + sub-skill dispatch
 │   ├── qmen_event/
 │   │   └── SKILL.md                # AI interpretation skill
 │   ├── qmen_caiguan/
@@ -504,6 +506,8 @@ Common:
 
 `SKILL.md` files in the `skills/` directory define OpenCode AI skills for conversational interpretation.
 
+**`qmen_dunjia`** is the unified router skill. When the user says "Qi Men Dun Jia" without a clear analysis direction, this skill takes over to (1) force a triage between event time vs. birth time, (2) perform the entry blessing ritual, (3) call `qimen.sh` to generate the appropriate plate JSON, and (4) hand off to the right sub-skill. Sub-skills detect the existing plate JSON and skip their own plate-setting step. The router never performs analysis itself.
+
 **`qmen_event`** drives event plate reading (问事局): ritual blessing → generate plate → run analysis → narrative reading → follow-up. Maps free-text questions to 9 standard question types. Used exclusively for event plates; birth plate analysis uses the huaqizhen skill family (caiguan, hunlian, xingge, huaqizhen).
 
 **`qmen_caiguan`** (财官诊断) drives wealth/career diagnosis: ritual blessing → generate birth plate → generate event plate → run caiguan analysis → diagnose seven hazards for wealth and career → "step on one, lift the other" advice → closing ritual reminder. Birth year stem is auto-read from `qmen_birth.json`.
@@ -612,7 +616,7 @@ Run `install.sh` to symlink the project into your OpenCode skills directory and 
 bash install.sh
 ```
 
-This creates a symlink for each `qmen_*` sub-skill in `~/.config/opencode/skills/` (e.g. `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`). Restart OpenCode to load the skills.
+This creates a symlink for each `qmen_*` sub-skill in `~/.config/opencode/skills/` (e.g. `qmen_dunjia`, `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`, `qmen_wanwu`). Restart OpenCode to load the skills.
 
 ## Requirements
 
