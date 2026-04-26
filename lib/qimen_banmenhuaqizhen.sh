@@ -640,10 +640,6 @@ bz_generate_miexiang() {
         local _saved_ifs="$IFS"
         IFS=' '
         for _sp in $safe_candidates; do
-            local _sp_liuhai="${_BZ_PAL_LIUHAI[$_sp]:-}"
-            if [[ -n "$_sp_liuhai" ]]; then
-                continue
-            fi
             if [[ -n "$tg" ]]; then
                 dl_get_v "jinbi_${tg}" 2>/dev/null || true
                 local _sp_jinbi="$_DL_RET"
