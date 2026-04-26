@@ -191,11 +191,13 @@ Read: {SKILL_DIR}/qmen_wanwu.json
 
 ## 工作目录
 
-**所有 Bash 命令必须使用 `workdir` 参数**，指向技能目录：
+**所有 Bash 命令必须使用 `workdir` 参数**，指向项目根目录。
 
+**获取 `{SKILL_DIR}`**：本技能目录下 `bin` 是指向项目 `bin/` 的相对软链接。通过以下方式解析项目根目录：
+```bash
+cd -P ~/.config/opencode/skills/qmen_wanwu/bin && cd .. && pwd
 ```
-workdir: /Users/dzf8tt/tmp/gmtools_infinite_pilot_aia/skill_qmenpowers
-```
+将输出赋值给 `{SKILL_DIR}`，后续所有命令使用 `workdir: {SKILL_DIR}`。
 
 技能目录下的相关文件：
 ```

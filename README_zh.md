@@ -386,14 +386,12 @@ Options:
 # 默认用法（命盘分析）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh
 # 默认读取 ./qmen_birth.json
 
-# 使用事件盘
+# 使用事件盘（可选，仅当针对具体事件做化气时）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh --input=./qmen_event.json
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 ```
 
@@ -511,7 +509,7 @@ bin/qimen_wanwu.sh --gate=开门
 
 **`qmen_caiguan`**（财官诊断）驱动财富事业诊断：入局祝福 → 生成命盘 → 运行财官分析 → 诊断财富和事业七要害 → "踩一捧一"建议 → 封局提醒。出生年天干自动从 `qmen_birth.json` 读取。仅使用命盘。
 
-**`qmen_huaqizhen`**（化气阵布阵）驱动布阵：入局祝福 → 生成命盘（事件盘可选，仅当针对具体事件化气时）→ 运行财官分析 → 生成布阵方案 → 灭象+实物摆放推荐 → 封局提醒。
+**`qmen_huaqizhen`**（化气阵布阵）驱动布阵：入局祝福 → 生成命盘（事件盘可选，仅当针对具体事件化气时）→ 生成布阵方案 → 灭象+实物摆放推荐 → 封局提醒。
 
 **`qmen_hunlian`**（婚恋分析）驱动婚恋解读：入局祝福 → 生成命盘 → 运行婚恋分析 → 按 5 个模块（脱单、死守、催桃花、斩桃花、情趣）加 4 个通用模块解读 → 封局提醒。仅使用命盘。
 
@@ -557,13 +555,11 @@ bin/qimen_caiguan.sh
 
 # 布阵
 bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh
 
 # 布阵（使用事件盘）
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # 布阵（含家人保护）

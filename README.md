@@ -387,14 +387,12 @@ The buzhen script `qimen_huaqizhen.sh` defaults to birth plate (`./qmen_birth.js
 # Default usage (birth plate analysis)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh
 # Reads ./qmen_birth.json by default
 
-# With event plate
+# With event plate (optional, only when targeting a specific event)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 ```
 
@@ -512,7 +510,7 @@ Common:
 
 **`qmen_caiguan`** (财官诊断) drives wealth/career diagnosis: ritual blessing → generate birth plate → run caiguan analysis → diagnose seven hazards for wealth and career → "step on one, lift the other" advice → closing ritual reminder. Birth year stem is auto-read from `qmen_birth.json`. Uses birth plate only.
 
-**`qmen_huaqizhen`** (化气阵布阵) drives array placement: ritual blessing → generate birth plate (event plate optional, only when targeting a specific event) → run caiguan analysis → generate buzhen → miexiang + physical object recommendations → closing ritual reminder.
+**`qmen_huaqizhen`** (化气阵布阵) drives array placement: ritual blessing → generate birth plate (event plate optional, only when targeting a specific event) → generate buzhen → miexiang + physical object recommendations → closing ritual reminder.
 
 **`qmen_hunlian`** (婚恋分析) drives marriage/romance interpretation: ritual blessing → generate birth plate → run hunlian analysis → interpret across 5 modules (tuodan, sishou, cui_taohua, zhan_taohua, qingqu) plus 4 common modules → closing ritual reminder. Uses birth plate only.
 
@@ -558,13 +556,11 @@ bin/qimen_caiguan.sh
 
 # Buzhen (array placement)
 bin/qimen.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh
 
 # Buzhen with event plate
 bin/qimen.sh --type=birth "1973-04-24 19:30"
 bin/qimen.sh "2026-04-18 10:00"
-bin/qimen_caiguan.sh
 bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # Buzhen with family protection
