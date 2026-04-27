@@ -55,8 +55,10 @@ skill_qmenpowers/
 │   │   └── SKILL.md                # Hunlian (marriage/romance) analysis skill
 │   ├── qmen_wanwu/
 │   │   └── SKILL.md                # Wanwu imagery portrait skill
-│   └── qmen_xingge/
-│       └── SKILL.md                # Personality analysis skill
+│   ├── qmen_xingge/
+│   │   └── SKILL.md                # Personality analysis skill
+│   └── qmen_yaoce/
+│       └── SKILL.md                # Yaogce (cross-plate remote sensing) analysis skill
 ├── bin/
 │   ├── qimen.sh                    # Plate setting CLI
 │   ├── qimen_event.sh              # Event analysis CLI
@@ -64,7 +66,8 @@ skill_qmenpowers/
 │   ├── qimen_huaqizhen.sh          # Huaqizhen (array placement) CLI
 │   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis CLI
 │   ├── qimen_wanwu.sh              # Wanwu imagery extraction CLI
-│   └── qimen_xingge.sh             # Personality analysis CLI
+│   ├── qimen_xingge.sh             # Personality analysis CLI
+│   └── qimen_yaoce.sh             # Yaogce (cross-plate analysis) CLI
 ├── install.sh                      # Installation script
 ├── lib/
 │   ├── data_loader.sh              # Generic data file loader
@@ -75,7 +78,8 @@ skill_qmenpowers/
 │   ├── qimen_banmenhuaqizhen.sh    # Core huaqizhen library
 │   ├── qimen_caiguan.sh            # Caiguan analysis library
 │   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis library
-│   └── qimen_xingge.sh             # Personality analysis library
+│   ├── qimen_xingge.sh             # Personality analysis library
+│   └── qimen_yaoce.sh             # Yaogce (cross-plate analysis) library
 └── data/
     ├── tiangan_dizhi.dat           # Engine: stems & branches
     ├── jieqi_table.dat             # Engine: solar term timestamps
@@ -128,6 +132,8 @@ skill_qmenpowers/
 
 **`lib/qimen_xingge.sh`** provides the personality analysis pipeline: birth day stem (inner personality) and hour stem (outer personality) palace location, personality correspondence extraction from huaqizhen-specific wanwu data (stem, star, gate, deity personality traits per palace), wuxing color mapping, and structured text/JSON output.
 
+**`lib/qimen_yaoce.sh`** provides the yaoce (remote sensing) cross-plate analysis library: uses `qj_parse_plate_json` to parse both birth and event plate JSONs, extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate (heaven plate priority, earth plate fallback), collects palace environment info (stem/star/gate/deity/state/markers), detects six-harm (六害) per palace, extracts wanwu correspondences, and outputs structured text/JSON with per-stem analysis results. Supports optional yixiang (意象) concept stems passed via CLI. Self-contained helper functions (`_yc_` prefix) for stem wuxing, star jixi, and gate jixi lookups — no dependency on qimen_caiguan.sh.
+
 **`bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
 
 **`bin/qimen_huaqizhen.sh`** is the huaqizhen buzhen CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, takes optional family stems and yixiang concept stems, and outputs a structured buzhen JSON with miexiang list and per-palace placement plans.
@@ -137,6 +143,8 @@ skill_qmenpowers/
 **`bin/qimen_xingge.sh`** is the personality analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
 
 **`bin/qimen_wanwu.sh`** is the wanwu imagery extraction CLI. It supports two modes: palace mode (`--palace=N`) extracts all wanwu correspondences for a given palace from a plate JSON, and manual mode (`--stem/--star/--gate/--deity/--state`) accepts any combination of symbols directly. Each symbol is optional; at least one is required. Outputs structured text and JSON with full wanwu correspondences per symbol.
+
+**`bin/qimen_yaoce.sh`** is the yaoce (remote sensing) cross-plate analysis CLI. It reads both the birth plate (`./qmen_birth.json`) and event plate (`./qmen_event.json`), extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate, detects six-harm and collects wanwu correspondences per palace, and outputs structured cross-plate analysis JSON to `./qmen_yaoce.json`. Supports `--yixiang=CONCEPT` to add an optional yixiang concept stem (e.g. `--yixiang=财富` maps to 戊; direct stem characters like `--yixiang=甲` are also accepted).
 
 ## Data Files
 
@@ -502,6 +510,45 @@ Common:
   -h, --help              Show this help
 ```
 
+## Yaogce Script (遥测分析)
+
+The yaoce script `qimen_yaoce.sh` performs cross-plate remote sensing analysis. It reads both the birth plate (`./qmen_birth.json`) and the event plate (`./qmen_event.json`), extracts five stem types from the birth plate — day stem (日干), hour stem (时干), birth year stem (生年干), zhifu palace heaven stem (值符宫干), and zhishi palace heaven stem (值使宫干) — then locates each on the event plate (heaven plate priority, earth plate fallback). For each stem's landing palace, it collects the full palace environment (heaven/earth stems, star, gate, deity, state, markers), detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void), and extracts wanwu correspondences. An optional yixiang (意象) concept stem can be added via `--yixiang`, either as a concept name (e.g. `财富` → maps to 戊) or as a direct stem character (e.g. `甲`). Outputs structured text and JSON for AI-driven natural array diagnosis, harm assessment, and re-layout planning.
+
+### Pipeline
+
+```bash
+# Step 1: Generate birth plate
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+# Creates ./qmen_birth.json
+
+# Step 2: Generate event plate
+bin/qimen.sh "2026-04-18 10:00"
+# Creates ./qmen_event.json
+
+# Step 3: Run yaoce (cross-plate) analysis
+bin/qimen_yaoce.sh
+# Reads ./qmen_birth.json + ./qmen_event.json, writes ./qmen_yaoce.json
+
+# Step 3b: With yixiang concept stem (optional, after interactive inquiry)
+bin/qimen_yaoce.sh --yixiang=财富
+# Adds yixiang stem (戊) to the analysis
+```
+
+### CLI Reference
+
+```
+Usage: qimen_yaoce.sh [OPTIONS]
+
+Options:
+  --event=PATH            Event plate JSON (default: ./qmen_event.json)
+  --yixiang=CONCEPT       Yixiang concept or stem (e.g. 财富, 暴力, or direct stem 甲)
+  --wanwu                 Show wanwu (万物类象) in text output (JSON always includes wanwu)
+  -h, --help              Show this help
+
+Requires: ./qmen_birth.json (for day stem, hour stem, birth year stem, zhifu/zhishi stems)
+         ./qmen_event.json (event plate to analyze stems against)
+```
+
 `SKILL.md` files in the `skills/` directory define OpenCode AI skills for conversational interpretation.
 
 **`qmen_dunjia`** is the unified router skill. When the user says "Qi Men Dun Jia" without a clear analysis direction, this skill takes over to (1) force a triage between event time vs. birth time, (2) perform the entry blessing ritual, (3) call `qimen.sh` to generate the appropriate plate JSON, and (4) hand off to the right sub-skill. Sub-skills detect the existing plate JSON and skip their own plate-setting step. The router never performs analysis itself.
@@ -517,6 +564,8 @@ Common:
 **`qmen_xingge`** (性格分析) drives personality interpretation: generate birth plate → run personality analysis → AI synthesizes inner (day stem) and outer (hour stem) personality profiles from the combined stem/star/gate/deity traits at each palace.
 
 **`qmen_wanwu`** (万物类象画像) generates creative imagery portraits from Qi Men symbol combinations. Three modes: scene (environment/atmosphere), object (shape/color/material/function), and person (appearance/temperament/behavior). Symbols are flexibly mapped to dimensions (each symbol used once), with twelve growth stages as lowest-priority modifier. Supports iterative refinement (style, domain, era adjustments) within wanwu data bounds.
+
+**`qmen_yaoce`** (遥测分析) drives cross-plate remote sensing analysis in an 8-step flow: collects birth time and event time → ritual reminder → generates both plates → **diagnoses natural array** (AI reads event plate: six-harm distribution, array pattern, overall assessment) → **locates native** (runs yaoce script: places 5 protected stem types on event plate — day stem, hour stem, birth year stem, zhifu palace stem, zhishi palace stem; detects six-harm, extracts wanwu) → **assesses harm** (AI interprets each stem's palace via 6-module framework: day+hour contrast, birth year root, zhifu/zhishi authority, scene reconstruction, yixiang concept, re-layout plan) → interactive inquiry to refine yixiang concept stem (optional re-run with `--yixiang`) → **re-layout** (step 1: miexiang urgent removal; step 2: guides user to `qmen_huaqizhen` for full array placement).
 
 ## Usage
 
@@ -583,6 +632,14 @@ bin/qimen_wanwu.sh --palace=3
 
 # Wanwu (imagery extraction, manual mode)
 bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
+
+# Yaogce (cross-plate analysis: birth + event)
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen.sh "2026-04-18 10:00"
+bin/qimen_yaoce.sh
+
+# Yaogce with yixiang concept stem (optional, after interactive inquiry)
+bin/qimen_yaoce.sh --yixiang=财富
 ```
 
 Full CLI reference:
@@ -612,7 +669,7 @@ Run `install.sh` to symlink the project into your OpenCode skills directory and 
 bash install.sh
 ```
 
-This creates a symlink for each `qmen_*` sub-skill in `~/.config/opencode/skills/` (e.g. `qmen_dunjia`, `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`, `qmen_wanwu`). Restart OpenCode to load the skills.
+This creates a symlink for each `qmen_*` sub-skill in the OpenCode skills directory (e.g. `qmen_dunjia`, `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`, `qmen_wanwu`, `qmen_yaoce`). Each skill sub-directory also contains relative symlinks (`bin`, `data`, `lib`) pointing back to the project root, so AI agents can resolve the project root at runtime without hardcoded paths. Restart OpenCode to load the skills.
 
 ## Requirements
 

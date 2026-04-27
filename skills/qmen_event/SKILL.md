@@ -414,9 +414,9 @@ bin/qimen_event.sh --input=./qmen_birth.json --question=事业 --verbose
 
 **所有 Bash 命令必须使用 `workdir` 参数**，指向项目根目录。
 
-**获取 `{SKILL_DIR}`**：本技能目录下 `bin` 是指向项目 `bin/` 的相对软链接。通过以下方式解析项目根目录：
+**获取 `{SKILL_DIR}`**：本 SKILL.md 所在目录下 `bin` 是指向项目 `bin/` 的相对软链接。通过以下方式解析项目根目录：
 ```bash
-cd -P ~/.config/opencode/skills/qmen_event/bin && cd .. && pwd
+cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 ```
 将输出赋值给 `{SKILL_DIR}`，后续所有命令使用 `workdir: {SKILL_DIR}`。
 

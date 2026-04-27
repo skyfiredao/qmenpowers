@@ -54,8 +54,10 @@ skill_qmenpowers/
 │   │   └── SKILL.md                # 婚恋分析技能
 │   ├── qmen_wanwu/
 │   │   └── SKILL.md                # 万物类象画像技能
-│   └── qmen_xingge/
-│       └── SKILL.md                # 性格分析技能
+│   ├── qmen_xingge/
+│   │   └── SKILL.md                # 性格分析技能
+│   └── qmen_yaoce/
+│       └── SKILL.md                # 遥测分析技能（跨盘关联分析）
 ├── bin/
 │   ├── qimen.sh                    # 起局 CLI
 │   ├── qimen_event.sh              # 问事局分析 CLI
@@ -63,7 +65,8 @@ skill_qmenpowers/
 │   ├── qimen_huaqizhen.sh          # 化气阵布阵 CLI
 │   ├── qimen_hunlian.sh            # 婚恋分析 CLI
 │   ├── qimen_wanwu.sh              # 万物类象提取 CLI
-│   └── qimen_xingge.sh             # 性格分析 CLI
+│   ├── qimen_xingge.sh             # 性格分析 CLI
+│   └── qimen_yaoce.sh             # 遥测分析 CLI（跨盘关联分析）
 ├── install.sh                      # 安装脚本
 ├── lib/
 │   ├── data_loader.sh              # 通用数据文件加载器
@@ -74,7 +77,8 @@ skill_qmenpowers/
 │   ├── qimen_banmenhuaqizhen.sh    # 化气阵核心库
 │   ├── qimen_caiguan.sh            # 财官分析库
 │   ├── qimen_hunlian.sh            # 婚恋分析库
-│   └── qimen_xingge.sh             # 性格分析库
+│   ├── qimen_xingge.sh             # 性格分析库
+│   └── qimen_yaoce.sh             # 遥测分析库（跨盘关联分析）
 └── data/
     ├── tiangan_dizhi.dat           # 引擎：天干地支
     ├── jieqi_table.dat             # 引擎：节气时间表
@@ -127,6 +131,8 @@ skill_qmenpowers/
 
 **`lib/qimen_xingge.sh`** 提供性格分析流水线：出生日干（内在性格）和时干（外在性格）宫位定位、从化气阵专用万物类象数据中提取性格对应（每宫天干、星、门、神的性格特征）、五行颜色映射，以及结构化文本/JSON 输出。
 
+**`lib/qimen_yaoce.sh`** 提供遥测（跨盘关联）分析库：使用 `qj_parse_plate_json` 分别解析命盘和问事盘 JSON，从命盘中提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事盘上（天盘优先、地盘兜底），收集落宫环境信息（天干/星/门/神/状态/格局标记），检测逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡），提取万物类象，输出结构化文本/JSON。支持通过 CLI 传入可选的意象概念天干。辅助函数采用 `_yc_` 前缀自包含实现，不依赖 qimen_caiguan.sh。
+
 **`bin/qimen_caiguan.sh`** 是财官诊断 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生年天干，输出结构化财官分析 JSON，包含财富和事业要害诊断。
 
 **`bin/qimen_huaqizhen.sh`** 是化气阵布阵 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生年天干，接收可选的家人天干和意象概念天干，输出结构化布阵 JSON，包含灭象清单和逐宫摆放处方。
@@ -136,6 +142,8 @@ skill_qmenpowers/
 **`bin/qimen_xingge.sh`** 是性格分析 CLI。只读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
 
 **`bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
+
+**`bin/qimen_yaoce.sh`** 是遥测分析 CLI。读取命盘（`./qmen_birth.json`）和问事盘（`./qmen_event.json`），从命盘提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事盘上，检测六害并收集万物类象，输出结构化跨盘分析 JSON 到 `./qmen_yaoce.json`。支持 `--yixiang=概念` 参数追加意象概念天干（如 `--yixiang=财富` 映射为戊；也可直接传天干字符如 `--yixiang=甲`）。
 
 ## 数据文件
 
@@ -501,6 +509,45 @@ bin/qimen_wanwu.sh --gate=开门
   -h, --help              显示帮助
 ```
 
+## 遥测分析脚本
+
+遥测分析脚本 `qimen_yaoce.sh` 执行跨盘关联分析。它同时读取命盘（`./qmen_birth.json`）和问事盘（`./qmen_event.json`），从命盘中提取五种天干——日干、时干、生年天干、值符宫天盘干、值使宫天盘干，将各天干定位到问事盘上（天盘优先、地盘兜底）。对每个天干的落宫，收集完整宫位环境（天干/地干/星/门/神/状态/格局标记），检测六害（六害：刑、墓、庚、白虎、门迫、空亡），提取万物类象。可通过 `--yixiang` 追加意象概念天干，支持概念名（如 `财富` → 映射为戊）或直接天干字符（如 `甲`）。输出结构化文本和 JSON，供 AI 进行天然阵诊断、受害评估和重新布局规划。
+
+### 流水线
+
+```bash
+# 第一步：生成命盘
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+# 生成 ./qmen_birth.json
+
+# 第二步：生成问事盘
+bin/qimen.sh "2026-04-18 10:00"
+# 生成 ./qmen_event.json
+
+# 第三步：运行遥测（跨盘）分析
+bin/qimen_yaoce.sh
+# 读取 ./qmen_birth.json + ./qmen_event.json，写入 ./qmen_yaoce.json
+
+# 第三步b：追加意象概念天干（可选，交互后二次调用）
+bin/qimen_yaoce.sh --yixiang=财富
+# 追加意象干（戊）到分析中
+```
+
+### CLI 参考
+
+```
+Usage: qimen_yaoce.sh [OPTIONS]
+
+Options:
+  --event=PATH            问事局 JSON 路径（默认：./qmen_event.json）
+  --yixiang=CONCEPT       意象概念或天干（如：财富、暴力，或直接天干 甲）
+  --wanwu                 文本输出中显示万物类象（JSON 始终包含万物类象）
+  -h, --help              显示帮助
+
+依赖：./qmen_birth.json（用于读取日干、时干、生年天干、值符/值使宫干）
+     ./qmen_event.json（用于定位天干的问事盘）
+```
+
 `skills/` 目录下的 `SKILL.md` 文件定义了 OpenCode AI 技能，用于驱动对话式解盘。
 
 **`qmen_dunjia`** 是统一入口路由技能。当用户说"奇门遁甲"但未明确分析方向时，由本技能负责：(1) 强制分流问事时间 vs 生日时间；(2) 完成入局祝福仪式；(3) 调用 `qimen.sh` 排出对应盘面 JSON；(4) 路由到正确的 sub-skill。Sub-skill 检测到 JSON 已存在会跳过自身的排盘步骤。Router 本身不做任何分析。
@@ -516,6 +563,8 @@ bin/qimen_wanwu.sh --gate=开门
 **`qmen_xingge`**（性格分析）驱动性格解读：生成命盘 → 运行性格分析 → AI 综合日干（内在性格）和时干（外在性格）所在宫位的天干/星/门/神性格特征，给出完整性格画像。
 
 **`qmen_wanwu`**（万物类象画像）基于奇门符号组合生成创意画像描述。三种模式：场景（环境/氛围）、物品（形状/颜色/材质/功能）、人物（外貌/气质/行为）。符号灵活分配到不同维度（每个符号只用一次），十二长生优先级最低。支持迭代修改（风格、领域、时代调整），始终在万物类象数据范围内。
+
+**`qmen_yaoce`**（遥测分析）驱动跨盘关联分析，采用 8 步流程：收集出生时间和问事时间 → 封局提醒 → 分别起局 → **诊断天然阵**（AI 读问事局：六害分布/阵局形态/整体概括）→ **定位命主**（运行遥测脚本：将命主 5 种保护天干定位到问事盘——日干、时干、生年干、值符宫干、值使宫干；检测六害，提取万物类象）→ **评估受害**（AI 按 6 模块框架解读各天干落宫：日干+时干内外对比、生年干根基、符使干话语权+用武之地、场景复现、意象干、重新布局方案）→ 交互询问（推导意象概念干，可选二次调用 `--yixiang`）→ **重新布局**（第一步：灭象紧急处理；第二步：引导用户使用 `qmen_huaqizhen` 完整布阵）。
 
 ## 用法
 
@@ -582,6 +631,14 @@ bin/qimen_wanwu.sh --palace=3
 
 # 万物类象提取（手工模式）
 bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
+
+# 遥测分析（跨盘关联：命盘 + 问事盘）
+bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen.sh "2026-04-18 10:00"
+bin/qimen_yaoce.sh
+
+# 遥测分析：追加意象概念天干（可选，交互后二次调用）
+bin/qimen_yaoce.sh --yixiang=财富
 ```
 
 完整命令行参考：
@@ -611,7 +668,7 @@ bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 bash install.sh
 ```
 
-这会为每个 `qmen_*` 子技能在 `~/.config/opencode/skills/` 下创建独立的符号链接（如 `qmen_dunjia`、`qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`）。重启 OpenCode 即可加载这些技能。
+这会为每个 `qmen_*` 子技能在 OpenCode 技能目录下创建独立的符号链接（如 `qmen_dunjia`、`qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`、`qmen_yaoce`）。每个技能子目录还包含指向项目根目录的相对软链接（`bin`、`data`、`lib`），AI 代理可在运行时据此解析项目根目录，无需硬编码路径。重启 OpenCode 即可加载这些技能。
 
 ## 环境要求
 
