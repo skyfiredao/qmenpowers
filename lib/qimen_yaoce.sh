@@ -170,28 +170,30 @@ yc_analyze_stem_on_event() {
 }
 
 yc_output_text() {
-    printf "遥测分析\n"
+    printf "遥测分析\n\n"
+    printf "[出生局]\n"
     printf "出生时间: %s\n" "$_YC_BIRTH_DATETIME"
-    printf "问事时间: %s\n" "$_YC_EVENT_DATETIME"
-    printf "四柱(出生): %s\n" "$_YC_BIRTH_SIZHU"
-    printf "四柱(问事): %s\n" "$_YC_EVENT_SIZHU"
+    printf "四柱: %s\n" "$_YC_BIRTH_SIZHU"
     printf "命主日干: %s\n" "$_YC_BIRTH_DAY_STEM"
     printf "命主时干: %s\n" "$_YC_BIRTH_HOUR_STEM"
     printf "生年天干: %s\n" "$_YC_BIRTH_YEAR_STEM"
     printf "值符宫干: %s\n" "${_YC_ZHIFU_STEM:-(无)}"
     printf "值使宫干: %s\n\n" "${_YC_ZHISHI_STEM:-(无)}"
+    printf "[问事局]\n"
+    printf "问事时间: %s\n" "$_YC_EVENT_DATETIME"
+    printf "四柱: %s\n\n" "$_YC_EVENT_SIZHU"
 
     local line IFS='|'
     for line in "${_YC_RESULTS_TEXT[@]}"; do
         read -r stem role tp dp ap pn pwx pdir tg dg star gate deity state markers lh lhc <<< "$line"
-        printf '%s\n' "--- ${role}「${stem}」在问事盘 ---"
+        printf '%s\n' "--- ${role} [${stem}] 在问事盘 ---"
         if [[ $tp -gt 0 ]]; then
-            printf "天盘宫位: %d宫(%s,%s,%s)\n" "$tp" "$pn" "$pdir" "$pwx"
+            printf "天盘宫位: %s,%s,%s\n" "$pn" "$pdir" "$pwx"
         else
             printf "天盘宫位: 不在盘上\n"
         fi
         if [[ $dp -gt 0 ]]; then
-            printf "地盘宫位: %d宫\n" "$dp"
+            printf "地盘宫位: %s\n" "$pn"
         else
             printf "地盘宫位: 不在盘上\n"
         fi
@@ -217,9 +219,9 @@ yc_output_text() {
             printf "  门: %s\n" "$gate_disp"
             printf "  神: %s\n" "$deity"
             printf "  状态: %s\n" "$state"
-            printf "  格局: %s\n" "${markers:-(none)}"
-            printf "  六害: %s\n" "$lh"
-            printf "  六害数: %d\n" "$lhc"
+            if [[ -n "$lh" ]]; then
+                printf "  六害: %s\n" "$lh"
+            fi
             
             if [[ "${_SHOW_WANWU:-}" == "true" ]]; then
                 printf "  万物类象:\n"

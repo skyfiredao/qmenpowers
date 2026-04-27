@@ -117,12 +117,16 @@ hq_find_stem_palace_tian() {
             return 0
         fi
     done
-    local tqs="" tqp=""
-    dl_get_v "plate_tianqin_stem" 2>/dev/null || true; tqs="$_DL_RET"
+    # Fallback: check tianqin stem at host palace (center palace lodging)
+    local tqp=""
     dl_get_v "plate_tianqin_host_palace" 2>/dev/null || true; tqp="$_DL_RET"
-    if [[ "$tqs" == "$target_stem" && -n "$tqp" && "$tqp" != "0" ]]; then
-        _HQ_FOUND_PALACE=$tqp
-        return 0
+    if [[ -n "$tqp" && "$tqp" != "0" ]]; then
+        local tqs=""
+        dl_get_v "palace_${tqp}_tianqin_stem" 2>/dev/null || true; tqs="$_DL_RET"
+        if [[ "$tqs" == "$target_stem" ]]; then
+            _HQ_FOUND_PALACE=$tqp
+            return 0
+        fi
     fi
     return 0
 }
