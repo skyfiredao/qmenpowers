@@ -574,7 +574,7 @@ _xg_format_action() {
                 desc="${desc%%\"*}"
                 result="${result}
       天干 ${stem} — ${position} ${color} ${material} ${desc}"
-                tmp="${tmp#*\"jinbi\"}"
+                tmp="${tmp#*\"jinji\"}"
             done
             tmp="$raw_line"
             local dz_section="${tmp#*\"dizhi\":}"
@@ -639,7 +639,7 @@ _xg_format_action() {
                 desc="${desc%%\"*}"
                 result="${result}
       天干 ${stem} — ${position} ${color} ${material} ${desc}"
-                tmp="${tmp#*\"jinbi\"}"
+                tmp="${tmp#*\"jinji\"}"
             done
             ;;
         填空亡)

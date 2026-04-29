@@ -645,12 +645,12 @@ bz_generate_miexiang() {
         IFS=' '
         for _sp in $safe_candidates; do
             if [[ -n "$tg" ]]; then
-                dl_get_v "jinbi_${tg}" 2>/dev/null || true
-                local _sp_jinbi="$_DL_RET"
-                local _sp_jinbi_list="${_sp_jinbi//;/ }"
-                _sp_jinbi_list="${_sp_jinbi_list//,/ }"
+                dl_get_v "jinji_${tg}" 2>/dev/null || true
+                local _sp_jinji="$_DL_RET"
+                local _sp_jinji_list="${_sp_jinji//;/ }"
+                _sp_jinji_list="${_sp_jinji_list//,/ }"
                 local _sp_blocked=0 _sp_jp
-                for _sp_jp in $_sp_jinbi_list; do
+                for _sp_jp in $_sp_jinji_list; do
                     if [[ "$_sp_jp" == "$_sp" ]]; then
                         _sp_blocked=1
                         break
@@ -712,9 +712,9 @@ _BZ_BUZHEN_JSON=""
 _BZ_BUZHEN_TEXT_BLOCK=""
 _BZ_JINBI_TEXT_BLOCK=""
 
-_bz_check_jinbi() {
+_bz_check_jinji() {
     local stem="$1" palace="$2"
-    dl_get_v "jinbi_${stem}" 2>/dev/null || true
+    dl_get_v "jinji_${stem}" 2>/dev/null || true
     [[ -z "$_DL_RET" ]] && return 1
     _bz_in_list "$palace" "$_DL_RET"
 }
@@ -891,7 +891,7 @@ bz_generate_prescription() {
 
         local actions="" a_first=1
         local conflicts="" c_first=1
-        local _bz_pal_text="" _bz_pal_jinbi=""
+        local _bz_pal_text="" _bz_pal_jinji=""
         local _bz_placed_items=()
 
         local has_jixing=0 has_rumu=0 has_menpo=0 has_geng=0 has_baihu=0 has_kong=0
@@ -919,21 +919,21 @@ bz_generate_prescription() {
                 xj="$(_bz_get_xiang_tg_json "$tg_item")"
                 _bz_je_v "$tg_item"; local j_ti="$_JE"
 
-                local jinbi_flag="false"
-                if _bz_check_jinbi "$tg_item" "$p"; then jinbi_flag="true"; fi
+                local jinji_flag="false"
+                if _bz_check_jinji "$tg_item" "$p"; then jinji_flag="true"; fi
 
                 (( tg_f )) || tg_json="${tg_json},"
                 tg_f=0
-                tg_json="${tg_json} { \"stem\": \"${j_ti}\", \"position\": \"高处\", \"xiang\": ${xj}, \"jinbi\": ${jinbi_flag} }"
+                tg_json="${tg_json} { \"stem\": \"${j_ti}\", \"position\": \"高处\", \"xiang\": ${xj}, \"jinji\": ${jinji_flag} }"
 
-                if [[ "$jinbi_flag" == "true" ]]; then
+                if [[ "$jinji_flag" == "true" ]]; then
                     (( c_first )) || conflicts="${conflicts},"
                     c_first=0
                     conflicts="${conflicts} \"${j_ti}不可放${p}宫\""
                     local _jb_name _jb_dir
                     dl_get_v "palace_${p}_name" 2>/dev/null || true; _jb_name="$_DL_RET"
                     dl_get_v "palace_${p}_direction" 2>/dev/null || true; _jb_dir="$_DL_RET"
-                    _bz_pal_jinbi="${_bz_pal_jinbi}  ${tg_item}不可放${_jb_name}(${_jb_dir})
+                    _bz_pal_jinji="${_bz_pal_jinji}  ${tg_item}不可放${_jb_name}(${_jb_dir})
 "
                 fi
             done
@@ -1078,18 +1078,18 @@ bz_generate_prescription() {
 
         if (( has_geng || has_baihu )); then
             eval "local yg_stem=\"\${yazhi_geng_baihu:-乙}\""
-            eval "local yg_jinbi_p=\"\${yazhi_geng_baihu_jinbi:-6}\""
+            eval "local yg_jinji_p=\"\${yazhi_geng_baihu_jinji:-6}\""
 
-            local jinbi_flag="false"
-            if [[ "$p" == "$yg_jinbi_p" ]]; then
-                jinbi_flag="true"
+            local jinji_flag="false"
+            if [[ "$p" == "$yg_jinji_p" ]]; then
+                jinji_flag="true"
                 (( c_first )) || conflicts="${conflicts},"
                 c_first=0
                 conflicts="${conflicts} \"${yg_stem}不可放${p}宫(入墓)\""
                 local _jb_name2 _jb_dir2
                 dl_get_v "palace_${p}_name" 2>/dev/null || true; _jb_name2="$_DL_RET"
                 dl_get_v "palace_${p}_direction" 2>/dev/null || true; _jb_dir2="$_DL_RET"
-                _bz_pal_jinbi="${_bz_pal_jinbi}  ${yg_stem}不可放${_jb_name2}(${_jb_dir2})[入墓]
+                _bz_pal_jinji="${_bz_pal_jinji}  ${yg_stem}不可放${_jb_name2}(${_jb_dir2})[入墓]
 "
             fi
 
@@ -1105,7 +1105,7 @@ bz_generate_prescription() {
             (( a_first )) || actions="${actions},"
             a_first=0
             actions="${actions}
-          { \"type\": \"压庚白虎\", \"reason\": \"${j_rs}\", \"tiangan\": [{ \"stem\": \"${j_yg}\", \"position\": \"高处\", \"xiang\": ${xj}, \"jinbi\": ${jinbi_flag} }], \"dizhi\": [], \"move_away\": \"\" }"
+          { \"type\": \"压庚白虎\", \"reason\": \"${j_rs}\", \"tiangan\": [{ \"stem\": \"${j_yg}\", \"position\": \"高处\", \"xiang\": ${xj}, \"jinji\": ${jinji_flag} }], \"dizhi\": [], \"move_away\": \"\" }"
 
             local _xt; _xt="$(_bz_get_xiang_tg_text "$yg_stem")"
             _bz_pal_text="${_bz_pal_text}    压${reason_str}(${reason_str}凶煞 → ${yg_stem}合庚，以柔克刚):
@@ -1191,7 +1191,7 @@ bz_generate_prescription() {
         p_first=0
         palace_items="${palace_items}
     { \"palace\": ${p}, \"name\": \"${j_pn}\", \"direction\": \"${j_pd}\", \"liuhai\": \"${j_lh}\", \"actions\": [${actions}
-      ], \"jinbi_conflicts\": [${conflicts} ] }"
+      ], \"jinji_conflicts\": [${conflicts} ] }"
 
         local liuhai_fmt
         liuhai_fmt="$(_bz_format_liuhai_brackets "$liuhai")"
@@ -1212,8 +1212,8 @@ ${_bz_pal_text}"
             _BZ_BUZHEN_TEXT_BLOCK="${_BZ_BUZHEN_TEXT_BLOCK}
 "
         fi
-        if [[ -n "$_bz_pal_jinbi" ]]; then
-            _BZ_JINBI_TEXT_BLOCK="${_BZ_JINBI_TEXT_BLOCK}${_bz_pal_jinbi}"
+        if [[ -n "$_bz_pal_jinji" ]]; then
+            _BZ_JINBI_TEXT_BLOCK="${_BZ_JINBI_TEXT_BLOCK}${_bz_pal_jinji}"
         fi
     done
 
