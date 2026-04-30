@@ -116,6 +116,28 @@ _yh_get_override() {
     echo "$_DL_RET"
 }
 
+# --- Helper: get hehua (天干化合) pair key for a given stem ---
+# Returns canonical pair key: 甲己/乙庚/丙辛/丁壬/戊癸
+_yh_hehua_pair_key() {
+    case "$1" in
+        甲|己) echo "甲己";; 乙|庚) echo "乙庚";; 丙|辛) echo "丙辛";;
+        丁|壬) echo "丁壬";; 戊|癸) echo "戊癸";; *) echo "";;
+    esac
+}
+
+# --- Helper: get hehua desc+objects for a stem pair ---
+# Sets _YH_HEHUA_DESC and _YH_HEHUA_OBJECTS
+_yh_hehua_lookup() {
+    local stem="$1"
+    _YH_HEHUA_DESC=""
+    _YH_HEHUA_OBJECTS=""
+    local pair
+    pair="$(_yh_hehua_pair_key "$stem")"
+    [[ -z "$pair" ]] && return
+    _yh_get "hehua_${pair}_desc" 2>/dev/null || true; _YH_HEHUA_DESC="$_DL_RET"
+    _yh_get "hehua_${pair}_objects" 2>/dev/null || true; _YH_HEHUA_OBJECTS="$_DL_RET"
+}
+
 # --- Phase 1: Scan plate for problems ---
 yh_scan_problems() {
     _YH_PROBLEMS=()
@@ -181,7 +203,7 @@ ${name}象: ${objects}"
 "
 
     _qj_je_v "$objects"; local j_obj="$_JE"
-    _YH_MX_JSON="{\"method\": \"灭象\", \"target\": \"移走${name}象\", \"action\": \"从${dir}移至正西或正北\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L221\"}"
+    _YH_MX_JSON="{\"method\": \"灭象\", \"target\": \"移走${name}象\", \"action\": \"从${dir}移至正西或正北\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L221\", \"dynamic\": null}"
 }
 
 # --- Phase 2: Generate化解 paths for a jixing problem ---
@@ -199,6 +221,13 @@ _yh_build_jixing_paths() {
     _yh_build_miexiang "$tg" "${mx_dir:-?}"
     paths_text="${_YH_MX_TEXT}"
     paths_json="${_YH_MX_JSON}"
+
+    # 贪合忘生: check if same palace also has rumu
+    local _palace_has_rumu="false"
+    local _p_entry
+    for _p_entry in "${_YH_PROBLEMS[@]}"; do
+        [[ "$_p_entry" == "${palace}|rumu|"* ]] && { _palace_has_rumu="true"; break; }
+    done
 
     while true; do
         _yh_get "jixing_${key}_path${path_idx}_method" 2>/dev/null || true; method="$_DL_RET"
@@ -251,6 +280,24 @@ _yh_build_jixing_paths() {
             [[ -n "$override_objects" ]] && objects="[优先]${override_objects}"
         fi
 
+        # Hehua lookup for 暗合 paths
+        local _hehua_desc="" _hehua_objects=""
+        if [[ "$method" == "暗合" && -n "$target" ]]; then
+            _yh_hehua_lookup "$target"
+            _hehua_desc="$_YH_HEHUA_DESC"
+            _hehua_objects="$_YH_HEHUA_OBJECTS"
+        fi
+
+        # Dynamic: 泄化=true, 合法(暗合/地支合)=false
+        local _dynamic="false"
+        [[ "$method" == "泄化" ]] && _dynamic="true"
+        [[ "$method" == "避让" ]] && _dynamic="null"
+
+        # 贪合忘生 warning on合法 paths when same palace has rumu
+        if [[ "$_palace_has_rumu" == "true" && ( "$method" == "暗合" || "$method" == "地支合" ) ]]; then
+            note="${note:+${note} }[注意]同宫有入墓，合法可能加重束缚，优先用泄化"
+        fi
+
         # Build text line
         local viable_mark=""
         [[ "$viable" == "false" ]] && viable_mark="[冲突]"
@@ -264,7 +311,6 @@ _yh_build_jixing_paths() {
         if [[ -n "$objects" ]]; then
             local _display_obj
             if [[ "$objects" == "[优先]"* ]]; then
-                # Override present: "推荐：xxx\n通用：yyy"
                 local _ov_part="${objects#\[优先\]}"
                 local _ov_rec="${_ov_part%%|*}"
                 local _ov_gen="${_ov_part#*|}"
@@ -282,6 +328,12 @@ ${_obj_label_b}象: ${_obj_rest}"
             paths_text="${paths_text}
 ${_display_obj}"
         fi
+        if [[ -n "$_hehua_desc" ]]; then
+            paths_text="${paths_text}
+化合: ${_hehua_desc}"
+            [[ -n "$_hehua_objects" ]] && paths_text="${paths_text}
+化合物: ${_hehua_objects}"
+        fi
         paths_text="${paths_text}
 "
 
@@ -295,6 +347,8 @@ ${_display_obj}"
         _qj_je_v "${note:-}"; local j_note="$_JE"
         _qj_je_v "${placement:-}"; local j_placement="$_JE"
         _qj_je_v "${problem_reason:-}"; local j_problem="$_JE"
+        _qj_je_v "$_hehua_desc"; local j_hehua_desc="$_JE"
+        _qj_je_v "$_hehua_objects"; local j_hehua_obj="$_JE"
 
         [[ -n "$paths_json" ]] && paths_json="${paths_json},"
         paths_json="${paths_json}
@@ -307,7 +361,10 @@ ${_display_obj}"
             \"source\": \"${j_source}\",
             \"note\": \"${j_note}\",
             \"placement\": \"${j_placement}\",
-            \"problem\": \"${j_problem}\"
+            \"problem\": \"${j_problem}\",
+            \"dynamic\": ${_dynamic},
+            \"hehua_desc\": \"${j_hehua_desc}\",
+            \"hehua_objects\": \"${j_hehua_obj}\"
           }"
 
         path_idx=$((path_idx + 1))
@@ -358,6 +415,17 @@ _yh_build_geng_paths() {
             [[ -n "$ov" ]] && objects="[优先]${ov}"
         fi
 
+        # Hehua for合法 (desc contains "暗合")
+        local _hehua_desc="" _hehua_objects=""
+        if [[ "$desc" == *"暗合"* && -n "$_geng_label" ]]; then
+            _yh_hehua_lookup "$_geng_label"
+            _hehua_desc="$_YH_HEHUA_DESC"
+            _hehua_objects="$_YH_HEHUA_OBJECTS"
+        fi
+
+        local _dynamic="false"
+        [[ "$name" == "泄化" ]] && _dynamic="true"
+
         paths_text="${paths_text}
 "
         paths_text="${paths_text}${name}（${desc}）: ${action:-}"
@@ -371,6 +439,12 @@ _yh_build_geng_paths() {
             paths_text="${paths_text}
 ${_display_obj}"
         fi
+        if [[ -n "$_hehua_desc" ]]; then
+            paths_text="${paths_text}
+化合: ${_hehua_desc}"
+            [[ -n "$_hehua_objects" ]] && paths_text="${paths_text}
+化合物: ${_hehua_objects}"
+        fi
         paths_text="${paths_text}
 "
 
@@ -380,6 +454,8 @@ ${_display_obj}"
         _qj_je_v "$objects"; local j_objects="$_JE"
         _qj_je_v "$source"; local j_source="$_JE"
         _qj_je_v "${placement:-}"; local j_placement="$_JE"
+        _qj_je_v "$_hehua_desc"; local j_hehua_desc="$_JE"
+        _qj_je_v "$_hehua_objects"; local j_hehua_obj="$_JE"
 
         [[ -n "$paths_json" ]] && paths_json="${paths_json},"
         paths_json="${paths_json}
@@ -390,7 +466,10 @@ ${_display_obj}"
             \"objects\": \"${j_objects}\",
             \"viable\": true,
             \"source\": \"${j_source}\",
-            \"placement\": \"${j_placement}\"
+            \"placement\": \"${j_placement}\",
+            \"dynamic\": ${_dynamic},
+            \"hehua_desc\": \"${j_hehua_desc}\",
+            \"hehua_objects\": \"${j_hehua_obj}\"
           }"
 
         i=$((i + 1))
@@ -478,9 +557,9 @@ _yh_build_rumu_paths() {
 
     paths_json="[
           ${_YH_MX_JSON},
-          {\"method\": \"冲墓\", \"target\": \"${j_cb}冲${j_mb}\", \"objects\": \"${j_co}\", \"viable\": true, \"source\": \"参考文档\"},
-          {\"method\": \"合出\", \"target\": \"${j_hb}合${j_mb}\", \"objects\": \"${j_ho}\", \"viable\": true, \"source\": \"参考文档\"},
-          {\"method\": \"避让\", \"target\": \"避开${j_dir}\", \"objects\": \"\", \"viable\": true, \"source\": \"（推导）\"}
+          {\"method\": \"冲墓\", \"target\": \"${j_cb}冲${j_mb}\", \"objects\": \"${j_co}\", \"viable\": true, \"source\": \"参考文档\", \"dynamic\": false},
+          {\"method\": \"合出\", \"target\": \"${j_hb}合${j_mb}\", \"objects\": \"${j_ho}\", \"viable\": true, \"source\": \"参考文档\", \"dynamic\": false},
+          {\"method\": \"避让\", \"target\": \"避开${j_dir}\", \"objects\": \"\", \"viable\": true, \"source\": \"（推导）\", \"dynamic\": null}
         ]"
 
     _YH_CUR_PATHS_TEXT="$paths_text"
@@ -492,7 +571,6 @@ _yh_build_menpo_paths() {
     local paths_json="" paths_text=""
 
     # bmhq L281: "布阵压制门迫用合"
-    # 门迫=门克宫，用天干合来压制克门的宫气
     _yh_get "palace_${palace}_tian_gan" 2>/dev/null || true; local tg="$_DL_RET"
 
     local anhe_target=""
@@ -501,10 +579,23 @@ _yh_build_menpo_paths() {
     local he_objects=""
     [[ -n "$anhe_target" ]] && he_objects="$(_yh_resolve_lookup "tiangan:${anhe_target}")"
 
+    local _hehua_desc="" _hehua_objects=""
+    if [[ -n "$anhe_target" ]]; then
+        _yh_hehua_lookup "$anhe_target"
+        _hehua_desc="$_YH_HEHUA_DESC"
+        _hehua_objects="$_YH_HEHUA_OBJECTS"
+    fi
+
     paths_text="用合: 补${anhe_target:-?}象合住${tg:-?}（天干合压制门迫）"
     if [[ -n "$he_objects" ]]; then
         paths_text="${paths_text}
 ${anhe_target}象: ${he_objects}"
+    fi
+    if [[ -n "$_hehua_desc" ]]; then
+        paths_text="${paths_text}
+化合: ${_hehua_desc}"
+        [[ -n "$_hehua_objects" ]] && paths_text="${paths_text}
+化合物: ${_hehua_objects}"
     fi
     paths_text="${paths_text}
 "
@@ -512,9 +603,11 @@ ${anhe_target}象: ${he_objects}"
     _qj_je_v "$he_objects"; local j_ho="$_JE"
     _qj_je_v "${anhe_target:-}"; local j_at="$_JE"
     _qj_je_v "${tg:-}"; local j_tg="$_JE"
+    _qj_je_v "$_hehua_desc"; local j_hehua_desc="$_JE"
+    _qj_je_v "$_hehua_objects"; local j_hehua_obj="$_JE"
 
     paths_json="[
-          {\"method\": \"用合\", \"target\": \"${j_at}合${j_tg}\", \"objects\": \"${j_ho}\", \"viable\": true, \"source\": \"bmhq L281\"}
+          {\"method\": \"用合\", \"target\": \"${j_at}合${j_tg}\", \"objects\": \"${j_ho}\", \"viable\": true, \"source\": \"bmhq L281\", \"dynamic\": false, \"hehua_desc\": \"${j_hehua_desc}\", \"hehua_objects\": \"${j_hehua_obj}\"}
         ]"
 
     _YH_CUR_PATHS_TEXT="$paths_text"
@@ -559,7 +652,7 @@ ${_display_obj}"
     _qj_je_v "$tg"; local j_tg="$_JE"
 
     paths_json="[
-          {\"method\": \"补象\", \"target\": \"补${j_tg}象\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L292+L296\"}
+          {\"method\": \"补象\", \"target\": \"补${j_tg}象\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L292+L296\", \"dynamic\": false}
         ]"
 
     _YH_CUR_PATHS_TEXT="$paths_text"
@@ -577,11 +670,21 @@ _yh_build_baihu_paths() {
     local viable="true"
     [[ "$palace" == "6" ]] && viable="false"
 
+    _yh_hehua_lookup "乙"
+    local _hehua_desc="$_YH_HEHUA_DESC"
+    local _hehua_objects="$_YH_HEHUA_OBJECTS"
+
     paths_text="用乙: 补乙象压制白虎"
     [[ "$viable" == "false" ]] && paths_text="用乙[冲突]: 西北乙入墓不能用"
     if [[ -n "$yi_objects" && "$viable" == "true" ]]; then
         paths_text="${paths_text}
 乙象: ${yi_objects}"
+    fi
+    if [[ -n "$_hehua_desc" && "$viable" == "true" ]]; then
+        paths_text="${paths_text}
+化合: ${_hehua_desc}"
+        [[ -n "$_hehua_objects" ]] && paths_text="${paths_text}
+化合物: ${_hehua_objects}"
     fi
     paths_text="${paths_text}
 "
@@ -607,10 +710,12 @@ ${xie_wx_cn}象: ${xie_objects}"
 
     _qj_je_v "$yi_objects"; local j_yo="$_JE"
     _qj_je_v "$xie_objects"; local j_xo="$_JE"
+    _qj_je_v "$_hehua_desc"; local j_hehua_desc="$_JE"
+    _qj_je_v "$_hehua_objects"; local j_hehua_obj="$_JE"
 
     paths_json="[
-          {\"method\": \"用乙\", \"target\": \"补乙象压制白虎\", \"objects\": \"${j_yo}\", \"viable\": ${viable}, \"source\": \"bmhq L291\"},
-          {\"method\": \"泄化\", \"target\": \"泄宫${p_wx:-}气\", \"objects\": \"${j_xo}\", \"viable\": true, \"source\": \"（推导）\"}
+          {\"method\": \"用乙\", \"target\": \"补乙象压制白虎\", \"objects\": \"${j_yo}\", \"viable\": ${viable}, \"source\": \"bmhq L291\", \"dynamic\": false, \"hehua_desc\": \"${j_hehua_desc}\", \"hehua_objects\": \"${j_hehua_obj}\"},
+          {\"method\": \"泄化\", \"target\": \"泄宫${p_wx:-}气\", \"objects\": \"${j_xo}\", \"viable\": true, \"source\": \"（推导）\", \"dynamic\": true, \"hehua_desc\": \"\", \"hehua_objects\": \"\"}
         ]"
 
     _YH_CUR_PATHS_TEXT="$paths_text"

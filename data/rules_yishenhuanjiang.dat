@@ -482,7 +482,16 @@ jinji_5_source=bmhq L212
 jinji_6=移动后不要再碰
 jinji_6_source=bmhq L212
 
-jinji_count=6
+jinji_count=9
+
+jinji_7=贪合忘生禁忌：入墓宫位慎用合法——合会进一步束缚能量加重入墓，优先用生和泄
+jinji_7_source=yishenhuanjiang-patch
+
+jinji_8=材质纯度禁忌：泄法用金必须真材实料（铜、钢、铝），电镀塑料无效
+jinji_8_source=yishenhuanjiang-patch
+
+jinji_9=动静结合禁忌：泄法物应能动（铃铛偶尔响），合法物应静（红卡安放不动）
+jinji_9_source=yishenhuanjiang-patch
 
 # ───────────────────────────────────────────────────────────────────
 # Section 10: 引动方式
@@ -624,3 +633,54 @@ fangwei_correction=磁偏角超过10°且涉及极窄缝隙（如精准对准申
 fangwei_summary_space=空间用罗盘定下物理上的方位
 fangwei_summary_time=时间用真太阳时定下执行时刻
 fangwei_source=参考文档 L948-1054
+
+# ───────────────────────────────────────────────────────────────────
+# Section 17: 天干化合应用描述（来源：yishenhuanjiang-patch）
+# 天盘天干为凶时，引入合化对象使其性格变温和
+# ───────────────────────────────────────────────────────────────────
+hehua_甲己_target=己
+hehua_甲己_remedy=甲
+hehua_甲己_element=土
+hehua_甲己_desc=利用甲木的贵气提升己土格调，或引甲子戊能量
+hehua_甲己_objects=绿色木质贵重物、文昌塔
+
+hehua_乙庚_target=庚
+hehua_乙庚_remedy=乙
+hehua_乙庚_element=金
+hehua_乙庚_desc=引入乙木柔性能量，花草、柔性艺术品，刚柔并济
+hehua_乙庚_objects=花草、藤编、柔性艺术品
+
+hehua_丙辛_target=辛
+hehua_丙辛_remedy=丙
+hehua_丙辛_element=水
+hehua_丙辛_desc=用丙火阳光明灯温暖辛金，化解辛金入墓或击刑的阴寒
+hehua_丙辛_objects=阳光、明灯、红色暖光源
+
+hehua_丁壬_target=壬
+hehua_丁壬_remedy=丁
+hehua_丁壬_element=木
+hehua_丁壬_desc=用丁火星光文化精美物牵引壬水，化解壬水漂荡不定
+hehua_丁壬_objects=文化精品、星形饰品、紫色精美物
+
+hehua_戊癸_target=癸
+hehua_戊癸_remedy=戊
+hehua_戊癸_element=火
+hehua_戊癸_desc=用戊土厚重之物承载癸水，化解癸水阴暗
+hehua_戊癸_objects=厚重陶石、黄色大地色物品
+
+# ───────────────────────────────────────────────────────────────────
+# Section 18: 合法/泄法动静规则（来源：yishenhuanjiang-patch）
+# ───────────────────────────────────────────────────────────────────
+dongjing_xie=dynamic
+dongjing_xie_desc=泄法物最好是动的（偶尔响一下、流动、发光变化）
+dongjing_he=static
+dongjing_he_desc=合法物最好是静的（安放不动，如红卡、陶器、画）
+dongjing_yindong_scope=引动（声引/光引/气引）针对泄法动物，合法静物放好即生效不需引动
+
+# ───────────────────────────────────────────────────────────────────
+# Section 19: 放置位置策略（来源：yishenhuanjiang-patch）
+# ───────────────────────────────────────────────────────────────────
+placement_priority=本宫优先，合宫可选
+placement_primary=化解物优先放在问题宫本宫方位
+placement_secondary=六合对宫为可选辅助位——在合宫引动能量可加强效果
+placement_example=坤宫(未)击刑，午未合：优先坤宫放午象，也可在离宫(午)引动辅助
