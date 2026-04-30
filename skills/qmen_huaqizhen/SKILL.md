@@ -102,10 +102,10 @@ AI: 化气阵布阵需要以下信息：
 ```bash
 # workdir: {SKILL_DIR}
 # 生日局（必须）
-bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 
 # 事件局（可选，仅用户明确要求时）
-# bin/qimen.sh --type=event "2024-03-15 14:30"
+# bin/qimen_qiju.sh --type=event "2024-03-15 14:30"
 ```
 
 **⚠️ 遵守核心契约：一字不漏原样输出。**
@@ -266,7 +266,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_huaqizhen.sh    # 化气阵布阵脚本
 ├── qmen_birth.json           # 命盘输出（运行后生成）
 ├── qmen_event.json           # 事件局输出（仅当针对具体事件化气时生成，可选）

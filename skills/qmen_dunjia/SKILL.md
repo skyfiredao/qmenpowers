@@ -19,7 +19,8 @@
 - 用户明确说"看财运和事业"、"七要害" → `qmen_caiguan`
 - 用户明确说"婚恋/桃花/脱单/配偶" → `qmen_hunlian`
 - 用户明确说"性格/人格分析" → `qmen_xingge`
-- 用户明确说"布阵/灭象/化解/风水摆件" → `qmen_huaqizhen`
+- 用户明确说"布阵/灭象/压制/风水摆件" → `qmen_huaqizhen`
+- 用户明确说"移神换将/移星换斗/化解/转化/合法/泄法" → `qmen_yishenhuanjiang`
 - 用户明确说"遥测/破阵/跨局分析" → `qmen_yaoce`
 - 用户给了奇门符号要"描述场景/物品/人物画像" → `qmen_wanwu`
 
@@ -140,19 +141,19 @@ AI: 你提供的时间是哪一种？
 ```bash
 # workdir: {SKILL_DIR}
 # 不传时间 = 当前时间，默认 event
-bin/qimen.sh
+bin/qimen_qiju.sh
 ```
 或指定时间（**必须加 `--type=event`**，否则指定时间默认为生日局）：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=event "2024-03-15 14:30"
+bin/qimen_qiju.sh --type=event "2024-03-15 14:30"
 ```
 输出文件：`./qmen_event.json`
 
 **生日局（指定时间默认即为生日局，无需 `--type`）：**
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh "1973-04-24 19:30"
+bin/qimen_qiju.sh "1973-04-24 19:30"
 ```
 输出文件：`./qmen_birth.json`
 
@@ -176,7 +177,8 @@ bin/qimen.sh "1973-04-24 19:30"
 | 财运 + 事业深度诊断（七要害） | `qmen_caiguan` |
 | 婚恋、脱单、桃花、配偶、出轨、孤辰寡宿 | `qmen_hunlian` |
 | 性格、人格、内在外在 | `qmen_xingge` |
-| 布阵、灭象、风水摆件、化解六害 | `qmen_huaqizhen` |
+| 布阵、灭象、风水摆件、压制六害 | `qmen_huaqizhen` |
+| 移神换将、移星换斗、化解、转化（合泄冲补） | `qmen_yishenhuanjiang` |
 | 出生局符号画像 | `qmen_wanwu` |
 
 #### 跨局（birth + event）路径
@@ -212,6 +214,7 @@ bin/qimen.sh "1973-04-24 19:30"
 | `qmen_hunlian` | 生日 | 出生时间 | 婚恋具体方向 |
 | `qmen_xingge` | 生日 | 出生时间 | — |
 | `qmen_huaqizhen` | 生日（也接受问事） | 出生时间 | family-stems / yixiang |
+| `qmen_yishenhuanjiang` | 生日 | 出生时间 | — |
 | `qmen_wanwu` | 任意局 或 直接给符号 | 至少一个奇门符号 或 宫位号 | — |
 | `qmen_yaoce` | 生日 + 问事（跨局） | 出生时间 + 问事时间 | yixiang |
 
@@ -220,7 +223,7 @@ bin/qimen.sh "1973-04-24 19:30"
 ## 约束
 
 1. **不做分析、诊断、判断、解读**——只路由
-2. **不读笔记、不调用 lib/ 下任何脚本**——只用 bin/qimen.sh
+2. **不读笔记、不调用 lib/ 下任何脚本**——只用 bin/qimen_qiju.sh
 3. **排局输出一字不漏原样展示**——遵守核心契约
 4. **每次都强制 Step 0 反问问事/生日**——即使用户已经给了时间也要确认
 5. **问事局/生日局不混用**——唯一例外是用户明确说"用问事局做化气阵"
@@ -242,7 +245,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本（本 skill 唯一调用的脚本）
+├── bin/qimen_qiju.sh              # 起局脚本（本 skill 唯一调用的脚本）
 ├── qmen_event.json           # 问事局输出（运行后生成）
 ├── qmen_birth.json           # 生日局输出（运行后生成）
 └── skills/                   # sub-skill 目录
@@ -251,6 +254,7 @@ skill_qmenpowers/
     ├── qmen_hunlian/
     ├── qmen_xingge/
     ├── qmen_huaqizhen/
+    ├── qmen_yishenhuanjiang/
     ├── qmen_wanwu/
     └── qmen_yaoce/
 ```

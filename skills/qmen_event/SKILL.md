@@ -99,10 +99,10 @@ AI: 请告诉我：
 ```bash
 # workdir: {SKILL_DIR}
 # 当前时间（用户说"现在"）
-bin/qimen.sh
+bin/qimen_qiju.sh
 
 # 指定时间
-bin/qimen.sh --type=event "2024-03-15 14:30"
+bin/qimen_qiju.sh --type=event "2024-03-15 14:30"
 ```
 
 **⚠️ 遵守核心契约：一字不漏原样输出。**
@@ -110,7 +110,7 @@ bin/qimen.sh --type=event "2024-03-15 14:30"
 **如果用户要求命盘参考**，额外排一张命盘（同样遵守核心契约：一字不漏原样输出）：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=birth "1990-05-20 08:00"
+bin/qimen_qiju.sh --type=birth "1990-05-20 08:00"
 ```
 
 ### Step 3: 分析
@@ -349,7 +349,7 @@ bin/qimen_event.sh --question=求财
 用户后续说"我1990年5月20日早上8点出生"：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=birth "1990-05-20 08:00"
+bin/qimen_qiju.sh --type=birth "1990-05-20 08:00"
 ```
 
 **⚠️ 遵守核心契约：一字不漏原样输出。**
@@ -378,7 +378,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的文件结构：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_event.sh        # 问事局分析脚本
 ├── qmen_event.json           # 问事局输出（运行后生成）
 ├── qmen_birth.json           # 命盘输出（运行后生成，可选）

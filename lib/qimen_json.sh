@@ -216,11 +216,11 @@ qj_parse_plate_json() {
                 qkey="palace_${current_palace}_${field}"
 
                 case "$field" in
-                    name|wuxing|direction|star|star_wuxing|gate|gate_wuxing|deity|tian_gan|tian_gan_wuxing|di_gan|di_gan_wuxing|state|tianqin_stem|tianqin_stem_wuxing)
+                    name|wuxing|direction|dizhi|star|star_wuxing|star_jixi|gate|gate_wuxing|gate_jixi|deity|tian_gan|tian_gan_wuxing|di_gan|di_gan_wuxing|state|tianqin_stem|tianqin_stem_wuxing|weishu)
                         val="$(_qj_json_line_str "$line")"
                         dl_set "$qkey" "$val"
                         ;;
-                    kong_wang|yi_ma|ji_xing|geng|rumu_gan|rumu_star|rumu_gate|men_po|star_fan_yin|gate_fan_yin|star_fu_yin|gate_fu_yin|gan_fan_yin|gan_fu_yin|tianqin)
+                    kong_wang|yi_ma|ji_xing|geng|rumu_gan|rumu_star|rumu_gate|men_po|star_fan_yin|gate_fan_yin|star_fu_yin|gate_fu_yin|gan_fan_yin|gan_fu_yin|tianqin|xiantian|houtian)
                         val="$(_qj_json_line_raw "$line")"
                         dl_set "$qkey" "$val"
                         ;;

@@ -26,7 +26,7 @@ JSON_OUTPUT_PATH=""
 # --- Help ---
 show_help() {
   cat <<'HELP'
-用法: qimen.sh [选项] [日期时间]
+用法: qimen_qiju.sh [选项] [日期时间]
 
 奇门遁甲起局
 时家奇门 · 置闰法

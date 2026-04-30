@@ -87,13 +87,13 @@ AI: 遥测分析需要以下信息：
 生日局：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=birth "1973-04-24 19:30"
+bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 ```
 
 问事局：
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=event "2026-04-18 10:00"
+bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 ```
 
 各自独立适用上方校验规则——通过校验的跳过，未通过的执行。
@@ -432,7 +432,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_yaoce.sh       # 遥测分析脚本
 ├── bin/qimen_huaqizhen.sh    # 化气阵布阵脚本（完整布阵时使用）
 ├── qmen_birth.json           # 命盘输出（运行后生成）

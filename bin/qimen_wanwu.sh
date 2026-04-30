@@ -97,7 +97,7 @@ if [[ "$MANUAL_MODE" -eq 0 ]]; then
   [[ -z "$INPUT_PATH" ]] && INPUT_PATH="./qmen_birth.json"
   if [[ ! -f "$INPUT_PATH" ]]; then
     echo "错误: 盘面文件不存在: $INPUT_PATH" >&2
-    echo "先生成盘面: qimen.sh --type=birth \"YYYY-MM-DD HH:MM\"" >&2
+    echo "先生成盘面: qimen_qiju.sh --type=birth \"YYYY-MM-DD HH:MM\"" >&2
     exit 1
   fi
 

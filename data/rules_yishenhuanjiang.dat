@@ -1,0 +1,626 @@
+# ═══════════════════════════════════════════════════════════════════
+# rules_yishenhuanjiang.dat — 移神换将化解规则
+# 来源标注：bmhq=笔记 参考文档=yishenhuanjiang.txt （推导）=通用原则推演
+# ═══════════════════════════════════════════════════════════════════
+
+# ───────────────────────────────────────────────────────────────────
+# Section 1: 三方法体系（来源：bmhq L211-214）
+# ───────────────────────────────────────────────────────────────────
+method_1_name=灭象
+method_1_desc=在一个方位除掉对应的形象，移走后不要再碰，三月起效
+method_1_scope=单方位
+method_1_risk=低
+method_1_source=bmhq L211-212
+
+method_2_name=布阵
+method_2_desc=在多方位放置对应的形象或行为，以天干为主，门星神也可以布，压制
+method_2_scope=多方位
+method_2_risk=中
+method_2_source=bmhq L213
+
+method_3_name=换局
+method_3_desc=整个局换成另一个更好的局，移星换斗寻时借运
+method_3_scope=全局
+method_3_risk=高
+method_3_source=bmhq L214
+
+# 压阵形象四载体（来源：bmhq L250）
+carrier_types=文字,物体,意识,行为
+carrier_source=bmhq L250
+
+# ───────────────────────────────────────────────────────────────────
+# Section 2: 化解四步骤
+# ───────────────────────────────────────────────────────────────────
+step_1_name=灭象
+step_1_desc=移除凶象物品或形象，只灭能灭的象，不能移动的不动
+step_1_source=bmhq L212
+
+step_2_name=移走
+step_2_desc=将凶象转移至不影响的位置或方位
+step_2_source=bmhq L212
+
+step_3_name=补象
+step_3_desc=放置吉象物品，缺什么补什么
+step_3_source=bmhq L292
+
+step_4_name=引动
+step_4_desc=通过行为激活化解物品的能量场
+step_4_source=参考文档
+
+# ───────────────────────────────────────────────────────────────────
+# Section 3: 五行泄化关系
+# ───────────────────────────────────────────────────────────────────
+xie_wood=火
+xie_fire=土
+xie_earth=金
+xie_metal=水
+xie_water=木
+
+sheng_wood=水
+sheng_fire=木
+sheng_earth=火
+sheng_metal=土
+sheng_water=金
+
+# 五行中文名 → wuxing lookup key
+wx_name_木=wood
+wx_name_火=fire
+wx_name_土=earth
+wx_name_金=metal
+wx_name_水=water
+wx_cn_wood=木
+wx_cn_fire=火
+wx_cn_earth=土
+wx_cn_metal=金
+wx_cn_water=水
+
+# 天干→五行映射
+tg_wx_甲=木
+tg_wx_乙=木
+tg_wx_丙=火
+tg_wx_丁=火
+tg_wx_戊=土
+tg_wx_己=土
+tg_wx_庚=金
+tg_wx_辛=金
+tg_wx_壬=水
+tg_wx_癸=水
+
+# ───────────────────────────────────────────────────────────────────
+# Section 4: 天干暗合表
+# ───────────────────────────────────────────────────────────────────
+anhe_甲=己
+anhe_己=甲
+anhe_乙=庚
+anhe_庚=乙
+anhe_丙=辛
+anhe_辛=丙
+anhe_丁=壬
+anhe_壬=丁
+anhe_戊=癸
+anhe_癸=戊
+
+# ───────────────────────────────────────────────────────────────────
+# Section 5: 地支六合表
+# ───────────────────────────────────────────────────────────────────
+liuhe_子=丑
+liuhe_丑=子
+liuhe_寅=亥
+liuhe_亥=寅
+liuhe_卯=戌
+liuhe_戌=卯
+liuhe_辰=酉
+liuhe_酉=辰
+liuhe_巳=申
+liuhe_申=巳
+liuhe_午=未
+liuhe_未=午
+
+# ───────────────────────────────────────────────────────────────────
+# Section 6: 地支三刑表
+# ───────────────────────────────────────────────────────────────────
+sanxing_group_1=寅巳申
+sanxing_group_2=丑戌未
+sanxing_group_3=子卯
+sanxing_self=午,酉,辰,亥
+
+# ───────────────────────────────────────────────────────────────────
+# Section 7: 六仪击刑化解路径（核心）
+# 结构：jixing_{仪}_path{N}_{field}
+# lookup 字段指示运行时从 wanwu 数据查询物象
+# ───────────────────────────────────────────────────────────────────
+
+# === 己→坤2宫（戌刑未）===
+jixing_ji_gong=2
+jixing_ji_xing=戌刑未
+jixing_ji_wuxing=土
+
+# 路径1：暗合（来源：参考文档）
+jixing_ji_path1_method=暗合
+jixing_ji_path1_target=甲
+jixing_ji_path1_problem=甲己合，但甲入坤宫为绝地且入墓，引入甲象反受刑伤
+jixing_ji_path1_viable=false
+jixing_ji_path1_source=参考文档
+
+# 路径2：地支合化（来源：参考文档）
+jixing_ji_path2_method=地支合
+jixing_ji_path2_target=卯合戌
+jixing_ji_path2_action=补卯象合住戌（己带戌(甲戌己)，卯戌合锁住刑源）
+jixing_ji_path2_lookup=dizhi:卯
+jixing_ji_path2_viable=true
+jixing_ji_path2_source=参考文档+推导
+jixing_ji_path3_method=地支合
+jixing_ji_path3_target=午合未
+jixing_ji_path3_action=补午象合住未（坤宫含未，午未合锁住被刑方）
+jixing_ji_path3_lookup=dizhi:午
+jixing_ji_path3_viable=true
+jixing_ji_path3_source=推导
+
+# 路径3：泄化（来源：参考文档）
+jixing_ji_path4_method=泄化
+jixing_ji_path4_target=土生金
+jixing_ji_path4_action=补金象泄土气
+jixing_ji_path4_lookup=wuxing:金
+jixing_ji_path4_viable=true
+jixing_ji_path4_source=参考文档
+
+# 路径4：避让（来源：参考文档）
+jixing_ji_path5_method=避让
+jixing_ji_path5_target=离开坤宫方位
+jixing_ji_path5_action=择时避开西南方位活动
+jixing_ji_path5_viable=true
+jixing_ji_path5_source=参考文档
+
+# === 庚→艮8宫（申刑寅）===
+jixing_geng_gong=8
+jixing_geng_xing=申刑寅
+jixing_geng_wuxing=金
+
+# 路径1：暗合（来源：bmhq L295 + 参考文档）
+jixing_geng_path1_method=暗合
+jixing_geng_path1_target=乙
+jixing_geng_path1_action=高处挂乙象
+jixing_geng_path1_lookup=tiangan:乙
+jixing_geng_path1_viable=true
+jixing_geng_path1_source=bmhq L295+参考文档
+jixing_geng_path1_placement=high
+
+# 路径2：地支合化（来源：bmhq L295 + 参考文档）
+jixing_geng_path2_method=地支合
+jixing_geng_path2_target_a=巳合申
+jixing_geng_path2_target_b=亥合寅
+jixing_geng_path2_action=低处摆巳象合住申,补亥象合住寅
+jixing_geng_path2_lookup_a=dizhi:巳
+jixing_geng_path2_lookup_b=dizhi:亥
+jixing_geng_path2_viable=true
+jixing_geng_path2_source=bmhq L295+参考文档
+jixing_geng_path2_placement_a=low
+
+# 路径3：泄化（推导：金生水）
+jixing_geng_path3_method=泄化
+jixing_geng_path3_target=金生水
+jixing_geng_path3_action=补水象泄金气
+jixing_geng_path3_lookup=wuxing:水
+jixing_geng_path3_viable=true
+jixing_geng_path3_source=（推导）
+
+# 路径4：避让（推导）
+jixing_geng_path4_method=避让
+jixing_geng_path4_target=离开艮宫方位
+jixing_geng_path4_action=择时避开东北方位活动
+jixing_geng_path4_viable=true
+jixing_geng_path4_source=（推导）
+
+# === 戊→震3宫（子刑卯）===
+jixing_wu_gong=3
+jixing_wu_xing=子刑卯
+jixing_wu_wuxing=土
+
+# 路径1：暗合（推导）
+jixing_wu_path1_method=暗合
+jixing_wu_path1_target=癸
+jixing_wu_path1_action=补癸象合住戊
+jixing_wu_path1_lookup=tiangan:癸
+jixing_wu_path1_viable=true
+jixing_wu_path1_note=（推导）需验证癸在震宫是否受制
+jixing_wu_path1_source=（推导）
+
+# 路径2：地支合化（推导）
+jixing_wu_path2_method=地支合
+jixing_wu_path2_target_a=丑合子
+jixing_wu_path2_target_b=戌合卯
+jixing_wu_path2_action=补丑象合住子,补戌象合住卯
+jixing_wu_path2_lookup_a=dizhi:丑
+jixing_wu_path2_lookup_b=dizhi:戌
+jixing_wu_path2_viable=true
+jixing_wu_path2_source=（推导）
+
+# 路径3：泄化（推导）
+jixing_wu_path3_method=泄化
+jixing_wu_path3_target=土生金
+jixing_wu_path3_action=补金象泄土气
+jixing_wu_path3_lookup=wuxing:金
+jixing_wu_path3_viable=true
+jixing_wu_path3_source=（推导）
+
+# 路径4：避让（推导）
+jixing_wu_path4_method=避让
+jixing_wu_path4_target=离开震宫方位
+jixing_wu_path4_action=择时避开正东方位活动
+jixing_wu_path4_viable=true
+jixing_wu_path4_source=（推导）
+
+# === 辛→离9宫（午自刑）===
+jixing_xin_gong=9
+jixing_xin_xing=午自刑
+jixing_xin_wuxing=金
+
+# 路径1：暗合（推导）
+jixing_xin_path1_method=暗合
+jixing_xin_path1_target=丙
+jixing_xin_path1_action=补丙象合住辛
+jixing_xin_path1_lookup=tiangan:丙
+jixing_xin_path1_viable=true
+jixing_xin_path1_note=（推导）辛丙暗合，丙在离宫为本气旺相
+jixing_xin_path1_source=（推导）
+
+# 路径2：地支合化（推导）
+jixing_xin_path2_method=地支合
+jixing_xin_path2_target_a=未合午
+jixing_xin_path2_action=补未象合住午
+jixing_xin_path2_lookup_a=dizhi:未
+jixing_xin_path2_viable=true
+jixing_xin_path2_source=（推导）
+
+# 路径3：泄化（推导）
+jixing_xin_path3_method=泄化
+jixing_xin_path3_target=金生水
+jixing_xin_path3_action=补水象泄金气
+jixing_xin_path3_lookup=wuxing:水
+jixing_xin_path3_viable=true
+jixing_xin_path3_source=（推导）
+
+# 路径4：避让（推导）
+jixing_xin_path4_method=避让
+jixing_xin_path4_target=离开离宫方位
+jixing_xin_path4_action=择时避开正南方位活动
+jixing_xin_path4_viable=true
+jixing_xin_path4_source=（推导）
+
+# === 壬→巽4宫（辰自刑）===
+jixing_ren_gong=4
+jixing_ren_xing=辰自刑
+jixing_ren_wuxing=水
+
+# 路径1：暗合（推导）
+jixing_ren_path1_method=暗合
+jixing_ren_path1_target=丁
+jixing_ren_path1_action=补丁象合住壬
+jixing_ren_path1_lookup=tiangan:丁
+jixing_ren_path1_viable=true
+jixing_ren_path1_note=（推导）壬丁暗合
+jixing_ren_path1_source=（推导）
+
+# 路径2：地支合化（推导）
+jixing_ren_path2_method=地支合
+jixing_ren_path2_target_a=酉合辰
+jixing_ren_path2_action=补酉象合住辰
+jixing_ren_path2_lookup_a=dizhi:酉
+jixing_ren_path2_viable=true
+jixing_ren_path2_source=（推导）
+
+# 路径3：泄化（推导）
+jixing_ren_path3_method=泄化
+jixing_ren_path3_target=水生木
+jixing_ren_path3_action=补木象泄水气
+jixing_ren_path3_lookup=wuxing:木
+jixing_ren_path3_viable=true
+jixing_ren_path3_source=（推导）
+
+# 路径4：避让（推导）
+jixing_ren_path4_method=避让
+jixing_ren_path4_target=离开巽宫方位
+jixing_ren_path4_action=择时避开东南方位活动
+jixing_ren_path4_viable=true
+jixing_ren_path4_source=（推导）
+
+# === 癸→巽4宫（寅刑巳）===
+# 注：引擎定义癸→巽4为"寅刑巳"，与壬共巽宫但刑不同
+jixing_gui_gong=4
+jixing_gui_xing=寅刑巳
+jixing_gui_wuxing=水
+
+# 路径1：暗合（推导 + bmhq L296 戊象例证）
+jixing_gui_path1_method=暗合
+jixing_gui_path1_target=戊
+jixing_gui_path1_action=补戊象合住癸
+jixing_gui_path1_lookup=tiangan:戊
+jixing_gui_path1_viable=true
+jixing_gui_path1_note=（推导）癸戊暗合
+jixing_gui_path1_source=（推导）+bmhq L296
+
+# 路径2：地支合化（推导）
+jixing_gui_path2_method=地支合
+jixing_gui_path2_target_a=亥合寅
+jixing_gui_path2_target_b=申合巳
+jixing_gui_path2_action=补亥象合住寅,补申象合住巳
+jixing_gui_path2_lookup_a=dizhi:亥
+jixing_gui_path2_lookup_b=dizhi:申
+jixing_gui_path2_viable=true
+jixing_gui_path2_source=（推导）
+
+# 路径3：泄化（推导）
+jixing_gui_path3_method=泄化
+jixing_gui_path3_target=水生木
+jixing_gui_path3_action=补木象泄水气
+jixing_gui_path3_lookup=wuxing:木
+jixing_gui_path3_viable=true
+jixing_gui_path3_source=（推导）
+
+# 路径4：避让（推导）
+jixing_gui_path4_method=避让
+jixing_gui_path4_target=离开巽宫方位
+jixing_gui_path4_action=择时避开东南方位活动
+jixing_gui_path4_viable=true
+jixing_gui_path4_source=（推导）
+
+# ───────────────────────────────────────────────────────────────────
+# Section 8: 非击刑化解
+# ───────────────────────────────────────────────────────────────────
+
+# --- 入墓化解 ---
+rumu_principle=让其不再入墓
+rumu_principle_source=bmhq L352
+
+rumu_method_1_name=冲墓
+rumu_method_1_desc=用对冲地支冲开墓库
+rumu_method_1_source=参考文档
+
+rumu_method_2_name=合出
+rumu_method_2_desc=用六合地支合出被墓藏之物
+rumu_method_2_source=参考文档
+
+rumu_method_3_name=避让
+rumu_method_3_desc=避开墓库方位活动
+rumu_method_3_source=（推导）
+
+# 入墓关系表
+mu_wood=未
+mu_fire=戌
+mu_metal=丑
+mu_water=辰
+mu_earth=辰
+
+# 地支六冲表（用于冲墓）
+liuchong_子=午
+liuchong_午=子
+liuchong_丑=未
+liuchong_未=丑
+liuchong_寅=申
+liuchong_申=寅
+liuchong_卯=酉
+liuchong_酉=卯
+liuchong_辰=戌
+liuchong_戌=辰
+liuchong_巳=亥
+liuchong_亥=巳
+
+# --- 门迫化解 ---
+menpo_principle=布阵压制门迫用合
+menpo_source=bmhq L281
+
+menpo_method_1_name=用合
+menpo_method_1_desc=用天干合压制门迫
+menpo_method_1_source=bmhq L281
+
+# --- 空亡化解 ---
+kongwang_principle=缺什么补什么
+kongwang_principle_source=bmhq L292
+
+kongwang_method_name=补象
+kongwang_method_desc=补空亡天干所代表的物象
+kongwang_method_source=bmhq L292+L296
+
+# --- 庚金化解 ---
+geng_principle=庚为阻碍凶金，需制化
+geng_principle_source=参考文档
+
+geng_method_1_name=乙合庚
+geng_method_1_desc=暗合制化
+geng_method_1_action=高处挂乙象
+geng_method_1_lookup=tiangan:乙
+geng_method_1_placement=high
+geng_method_1_source=bmhq L295
+
+geng_method_2_name=巳合申
+geng_method_2_desc=地支合（庚禄在申）
+geng_method_2_action=低处摆巳象
+geng_method_2_lookup=dizhi:巳
+geng_method_2_placement=low
+geng_method_2_source=bmhq L295
+
+geng_method_3_name=泄化
+geng_method_3_desc=金生水泄金气
+geng_method_3_action=补水象泄金气
+geng_method_3_lookup=wuxing:水
+geng_method_3_source=（推导）
+
+# --- 白虎化解 ---
+# bmhq L291: "布阵压制庚合白虎用乙，除了西北乙入墓不能用"
+baihu_principle=用乙压制白虎，除了西北乙入墓不能用
+baihu_principle_source=bmhq L291
+
+baihu_method_1_name=用乙
+baihu_method_1_desc=补乙象压制白虎
+baihu_method_1_lookup=tiangan:乙
+baihu_method_1_source=bmhq L291
+baihu_method_1_forbidden_palace=6
+
+baihu_method_2_name=泄化
+baihu_method_2_desc=泄白虎所在宫五行之气
+baihu_method_2_source=（推导）
+
+# ───────────────────────────────────────────────────────────────────
+# Section 9: 禁忌规则
+# ───────────────────────────────────────────────────────────────────
+# 参考文档L876-904原文四大禁忌 + bmhq L212两条
+jinji_1=填实禁忌：在宫位逢空亡且带击刑/凶格时，绝对禁止使用大质量、实心、沉重的物品进行硬填
+jinji_1_source=参考文档 L878-881
+
+jinji_2=冲突禁忌：化解物的地支象意绝对不能与该宫位地支相冲
+jinji_2_source=参考文档 L883-887
+
+jinji_3=贪多禁忌：一个宫位内放置过多属性混杂的化解物
+jinji_3_source=参考文档 L889-891
+
+jinji_4=时间错位禁忌：不校对真太阳时，或在日全食、月全食、雷电交加等极端天气下实施
+jinji_4_source=参考文档 L893-896
+
+jinji_5=只灭能灭的象，不能移动的不动
+jinji_5_source=bmhq L212
+
+jinji_6=移动后不要再碰
+jinji_6_source=bmhq L212
+
+jinji_count=6
+
+# ───────────────────────────────────────────────────────────────────
+# Section 10: 引动方式
+# ───────────────────────────────────────────────────────────────────
+# 参考文档L865-873原文：拆/移/补/引四步中的"引"
+yindong_1_name=声引
+yindong_1_desc=响铃、乐器
+yindong_1_source=参考文档 L869
+
+yindong_2_name=光引
+yindong_2_desc=亮灯、焚香、反光镜
+yindong_2_source=参考文档 L871
+
+yindong_3_name=气引
+yindong_3_desc=通风、开窗
+yindong_3_source=参考文档 L873
+
+yindong_4_name=择时
+yindong_4_desc=必须在真太阳时的对应时辰执行
+yindong_4_source=参考文档 L873
+
+yindong_count=4
+
+# ───────────────────────────────────────────────────────────────────
+# Section 11: 择时规则
+# ───────────────────────────────────────────────────────────────────
+zeshi_principle=选化解天干旺相之时辰操作
+zeshi_avoid=空亡时辰,击刑时辰,入墓时辰
+zeshi_source=参考文档
+
+# 天干旺相时辰
+zeshi_甲=寅,卯
+zeshi_乙=寅,卯
+zeshi_丙=巳,午
+zeshi_丁=巳,午
+zeshi_戊=辰,戌,丑,未
+zeshi_己=辰,戌,丑,未
+zeshi_庚=申,酉
+zeshi_辛=申,酉
+zeshi_壬=亥,子
+zeshi_癸=亥,子
+
+# ───────────────────────────────────────────────────────────────────
+# Section 12: 方位角度（手机罗盘非真北）
+# ───────────────────────────────────────────────────────────────────
+gong_1_name=坎
+gong_1_direction=正北
+gong_1_degree_start=337.5
+gong_1_degree_end=22.5
+
+gong_2_name=坤
+gong_2_direction=西南
+gong_2_degree_start=202.5
+gong_2_degree_end=247.5
+
+gong_3_name=震
+gong_3_direction=正东
+gong_3_degree_start=67.5
+gong_3_degree_end=112.5
+
+gong_4_name=巽
+gong_4_direction=东南
+gong_4_degree_start=112.5
+gong_4_degree_end=157.5
+
+gong_6_name=乾
+gong_6_direction=西北
+gong_6_degree_start=292.5
+gong_6_degree_end=337.5
+
+gong_7_name=兑
+gong_7_direction=正西
+gong_7_degree_start=247.5
+gong_7_degree_end=292.5
+
+gong_8_name=艮
+gong_8_direction=东北
+gong_8_degree_start=22.5
+gong_8_degree_end=67.5
+
+gong_9_name=离
+gong_9_direction=正南
+gong_9_degree_start=157.5
+gong_9_degree_end=202.5
+
+# 放置高低规则（来源：bmhq L295）
+placement_high_desc=合化天干之象挂高处
+placement_low_desc=合化地支之象摆低处
+placement_source=bmhq L295
+
+# ───────────────────────────────────────────────────────────────────
+# Section 13: 优先换象覆盖规则（有明确记载，优先于 wanwu 自动提取）
+# ───────────────────────────────────────────────────────────────────
+
+# 庚击刑具体物象（bmhq L295 明确记载）
+override_geng_high_example=柔软绿色植物,葫芦
+override_geng_low_example=红色烛火
+override_geng_source=bmhq L295
+
+# 戊空亡具体物象（bmhq L296 明确记载）
+override_wu_kongwang_example=存钱罐
+override_wu_kongwang_source=bmhq L296
+
+# 天柱星换象（参考文档明确记载）
+override_star_天柱=乐器,话筒,音响
+override_star_天柱_source=参考文档
+
+# 螣蛇换象（参考文档明确记载）
+override_deity_螣蛇=简洁丝带,红绳
+override_deity_螣蛇_source=参考文档
+
+# ───────────────────────────────────────────────────────────────────
+# Section 14: 九星/八神换象 lookup 类型（运行时从 wanwu 数据提取）
+# 天蓬无明确吉象，需标记推导
+# ───────────────────────────────────────────────────────────────────
+star_lookup_field=物品器具
+deity_lookup_field=器物物品
+star_tianpeng_note=（推导：天蓬无明确吉象数据，建议泄化为主）
+
+# ───────────────────────────────────────────────────────────────────
+# Section 15: 真太阳时（参考文档L529-579）
+# ───────────────────────────────────────────────────────────────────
+# 原则上必须使用当地的真太阳时
+zhenshi_principle=原则上必须使用当地的真太阳时
+zhenshi_reason=奇门起局与化解感应的是太阳光照的角度，必须计算当地的真太阳时
+zhenshi_formula=真太阳时 = 当地平太阳时 + 均时差（平太阳时由当地经度决定）
+zhenshi_execute=在真太阳时进入该时辰的区间内进行物象的摆放或移除
+zhenshi_source=参考文档 L529-575
+
+# ───────────────────────────────────────────────────────────────────
+# Section 16: 方位定向（参考文档L948-1054）
+# ───────────────────────────────────────────────────────────────────
+# 定方位用地磁北（罗盘北），定时间用真太阳时（地理北坐标系）
+fangwei_principle=定方位用罗盘北（地磁北），定时间用真太阳时
+fangwei_reason=气随磁走不随轴转，化解物存在于地球磁场中，需与磁场共振
+fangwei_tool=手机指南针需关闭"使用真北"选项，确保使用地磁北
+fangwei_caution=测量时远离手机壳磁吸和大型电器干扰
+fangwei_correction=磁偏角超过10°且涉及极窄缝隙（如精准对准申位）时需修正
+fangwei_summary_space=空间用罗盘定下物理上的方位
+fangwei_summary_time=时间用真太阳时定下执行时刻
+fangwei_source=参考文档 L948-1054

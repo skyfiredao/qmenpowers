@@ -34,7 +34,7 @@ show_help() {
   --wanwu                 文本输出中显示万物类象
   -h, --help              显示帮助
 
-依赖: ./qmen_birth.json（由 qimen.sh --type=birth "YYYY-MM-DD HH:MM" 生成）
+依赖: ./qmen_birth.json（由 qimen_qiju.sh --type=birth "YYYY-MM-DD HH:MM" 生成）
 HELP
 }
 
@@ -51,7 +51,7 @@ done
 
 if [[ ! -f "$BIRTH_JSON_PATH" ]]; then
   echo "Error: birth plate not found: $BIRTH_JSON_PATH" >&2
-  echo "Generate it first: qimen.sh --type=birth \"YYYY-MM-DD HH:MM\"" >&2
+  echo "Generate it first: qimen_qiju.sh --type=birth \"YYYY-MM-DD HH:MM\"" >&2
   exit 1
 fi
 

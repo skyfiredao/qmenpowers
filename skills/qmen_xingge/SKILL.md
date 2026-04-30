@@ -87,7 +87,7 @@ AI: 性格分析需要你的出生时间（完整的年月日时，例如：1955
 
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=birth "YYYY-MM-DD HH:MM"
+bin/qimen_qiju.sh --type=birth "YYYY-MM-DD HH:MM"
 ```
 
 **⚠️ 遵守核心契约：一字不漏原样输出。**
@@ -199,7 +199,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_xingge.sh       # 性格分析脚本
 ├── qmen_birth.json           # 命盘输出（运行后生成）
 ├── qmen_xingge.json          # 性格分析输出（运行后生成，AI必须读取此文件）

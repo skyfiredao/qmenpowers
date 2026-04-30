@@ -216,7 +216,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_wanwu.sh        # 万物类象提取脚本
 ├── qmen_birth.json           # 命盘输出（运行后生成，局面模式输入）
 ├── qmen_wanwu.json           # 万物类象输出（运行后生成，AI必须读取此文件）

@@ -96,7 +96,7 @@ AI: 婚恋分析需要以下信息：
 
 ```bash
 # workdir: {SKILL_DIR}
-bin/qimen.sh --type=birth "1994-05-21 02:30"
+bin/qimen_qiju.sh --type=birth "1994-05-21 02:30"
 ```
 
 **⚠️ 遵守核心契约：一字不漏原样输出。**
@@ -389,7 +389,7 @@ cd -P <本SKILL.md所在目录>/bin && cd .. && pwd
 技能目录下的相关文件：
 ```
 skill_qmenpowers/
-├── bin/qimen.sh              # 起局脚本
+├── bin/qimen_qiju.sh              # 起局脚本
 ├── bin/qimen_hunlian.sh      # 婚恋分析脚本
 ├── qmen_birth.json           # 命盘输出（运行后生成）
 ├── qmen_hunlian.json         # 婚恋分析输出（运行后生成）
