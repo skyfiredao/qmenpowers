@@ -30,6 +30,7 @@
 - 用户明确说"性格/人格分析" → `qmen_xingge`
 - 用户明确说"布阵/灭象/压制/风水摆件" → `qmen_huaqizhen`
 - 用户明确说"移神换将/移星换斗/化解/转化/合法/泄法" → `qmen_yishenhuanjiang`
+- 用户明确说"寻时借运/换局/幻化六十课/六十课" → `qmen_xunshijieyun`（60课起局选最优时柱，按新局万物类象重现有利时空布局）
 - 用户明确说"遥测/破阵/跨局分析" → `qmen_yaoce`
 - 用户给了奇门符号要"描述场景/物品/人物画像" → `qmen_wanwu`
 
@@ -199,6 +200,7 @@ bin/qimen_qiju.sh "1973-04-24 19:30"
 | 性格、人格、内在外在 | `qmen_xingge` |
 | 布阵、灭象、风水摆件、压制六害 | `qmen_huaqizhen` |
 | 移神换将、移星换斗、化解、转化（合泄冲补） | `qmen_yishenhuanjiang` |
+| 寻时借运、换局、幻化六十课（60课起局选最优时柱，按新局重现有利时空布局） | `qmen_xunshijieyun` |
 | 出生局符号画像 | `qmen_wanwu` |
 
 #### 跨局（birth + event）路径
@@ -235,6 +237,7 @@ bin/qimen_qiju.sh "1973-04-24 19:30"
 | `qmen_xingge` | 生日 | 出生时间 | — |
 | `qmen_huaqizhen` | 生日（也接受问事） | 出生时间 | family-stems / yixiang |
 | `qmen_yishenhuanjiang` | 生日 | 出生时间 | — |
+| `qmen_xunshijieyun` | 生日（也接受问事） | 出生时间 | yixiang |
 | `qmen_wanwu` | 任意局 或 直接给符号 | 至少一个奇门符号 或 宫位号 | — |
 | `qmen_yaoce` | 生日 + 问事（跨局） | 出生时间 + 问事时间 | yixiang |
 
@@ -275,6 +278,7 @@ skill_qmenpowers/
     ├── qmen_xingge/
     ├── qmen_huaqizhen/
     ├── qmen_yishenhuanjiang/
+    ├── qmen_xunshijieyun/
     ├── qmen_wanwu/
     └── qmen_yaoce/
 ```

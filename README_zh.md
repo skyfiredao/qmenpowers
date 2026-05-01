@@ -58,6 +58,8 @@ skill_qmenpowers/
 │   │   └── SKILL.md                    # 万物类象画像技能
 │   ├── qmen_xingge/
 │   │   └── SKILL.md                    # 性格分析技能
+│   ├── qmen_xunshijieyun/
+│   │   └── SKILL.md                    # 寻时借运技能
 │   └── qmen_yaoce/
 │       └── SKILL.md                    # 遥测/破阵分析技能（跨盘关联分析）
 ├── tools/
@@ -71,6 +73,7 @@ skill_qmenpowers/
 │   │   ├── qimen_hunlian.sh            # 婚恋分析 CLI
 │   │   ├── qimen_wanwu.sh              # 万物类象提取 CLI
 │   │   ├── qimen_xingge.sh             # 性格分析 CLI
+│   │   ├── qimen_xunshijieyun.sh       # 寻时借运 CLI
 │   │   └── qimen_yaoce.sh              # 遥测/破阵分析 CLI（跨盘关联分析）
 │   ├── lib/
 │   │   ├── data_loader.sh              # 通用数据文件加载器
@@ -153,6 +156,8 @@ skill_qmenpowers/
 **`tools/bin/qimen_hunlian.sh`** 是婚恋分析 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
 
 **`tools/bin/qimen_xingge.sh`** 是性格分析 CLI。只读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
+
+**`tools/bin/qimen_xunshijieyun.sh`** 是寻时借运 CLI 脚本。读取起局 JSON（默认 `./qmen_birth.json`），固定局数遍历60甲子时柱生成60个变盘，按保护天干的六害总数排名，输出可排序的 JSON 文件到 `./60ke/`。保护天干包括日干、时干、生年干、可选意象干、以及每课重新推导的值符/值使宫干。
 
 **`tools/bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
 
@@ -553,6 +558,39 @@ Options:
 依赖：./qmen_birth.json（用于读取出生日干和时干）
 ```
 
+## 寻时借运脚本
+
+寻时借运脚本 `qimen_xunshijieyun.sh` 读取起局 JSON，固定局数遍历60甲子时柱生成60个变盘。按保护天干的六害总数排名，输出可排序的 JSON 文件。`ls 60ke/` 中第一个文件即为最优课。
+
+### 流水线
+
+```bash
+# 默认用法（命盘）
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_xunshijieyun.sh
+# 在 ./60ke/ 下生成 60 个 JSON 文件
+
+# 追加意象概念保护
+tools/bin/qimen_xunshijieyun.sh --yixiang=财富
+
+# 自定义输入和输出
+tools/bin/qimen_xunshijieyun.sh --input=./qmen_event.json --output-dir=./results/
+```
+
+### CLI 参考
+
+```
+用法: qimen_xunshijieyun.sh [选项]
+
+选项:
+  --input=PATH            输入起局 JSON（默认：./qmen_birth.json）
+  --yixiang=X1,X2         保护的意象概念（财富,暴力,权威,突破,表现,情欲 或直接天干）
+  --output-dir=PATH       60 个 JSON 的输出目录（默认：./60ke/）
+  -h, --help              显示帮助
+
+依赖：./qmen_birth.json（由 qimen_qiju.sh --type=birth 生成）
+```
+
 ## 万物类象提取脚本
 
 万物类象提取脚本 `qimen_wanwu.sh` 提取指定符号组合的全部万物类象对应。支持两种模式：盘面模式从盘面 JSON 中读取指定宫位的符号，手工模式直接接受符号参数。每个参数可选，至少提供一个。输出结构化文本和 JSON。
@@ -649,6 +687,8 @@ Options:
 
 **`qmen_xingge`**（性格分析）驱动性格解读：生成命盘 → 运行性格分析 → AI 综合日干（内在性格）和时干（外在性格）所在宫位的天干/星/门/神性格特征，给出完整性格画像。
 
+**`qmen_xunshijieyun`**（寻时借运）驱动幻化六十课机制 -- 解局三法之"换局"，独立于灭象和布阵：生成60变盘 → 按保护天干六害排名 → 展示最优课 → 引导用户按各宫万物类象安排物理环境，重现有利时空布局。问事局场景下与用户交互确定意象干，命盘场景直接执行。处理多课并列最优时的选择。
+
 **`qmen_wanwu`**（万物类象画像）基于奇门符号组合生成创意画像描述。三种模式：场景（环境/氛围）、物品（形状/颜色/材质/功能）、人物（外貌/气质/行为）。符号灵活分配到不同维度（每个符号只用一次），十二长生优先级最低。支持迭代修改（风格、领域、时代调整），始终在万物类象数据范围内。
 
 **`qmen_yaoce`**（遥测/破阵）驱动跨盘破阵分析，采用 8 步流程。问事局被视为已形成的天然阵：时空自然形成的能量布局，正在影响命主。遥测诊断此阵，评估其对命主保护天干的伤害，继而制定对抗方案。流程：收集出生时间和问事时间 → 封局提醒 → 分别起局 → **诊断天然阵**（AI 读问事局：六害分布、阵局形态、整体概括）→ **定位命主**（运行遥测脚本：将命主 5 种保护天干定位到问事局，即日干、时干、生年干、值符宫干、值使宫干；检测六害，提取万物类象）→ **评估受害**（AI 按 6 模块框架解读各天干落宫：日干+时干内外对比、生年干根基、符使干话语权+用武之地、场景复现、意象干、重新布局方案）→ 交互询问（推导意象概念干，可选二次调用 `--yixiang`）→ **重新布局**（第一步：灭象紧急移除诊断中发现的有害符号；第二步：引导用户使用 `qmen_huaqizhen` 进行系统性化气阵对抗）。
@@ -730,6 +770,13 @@ tools/bin/qimen_yaoce.sh
 
 # 遥测分析：追加意象概念天干（可选，交互后二次调用）
 tools/bin/qimen_yaoce.sh --yixiang=财富
+
+# 寻时借运（幻化六十课排名）
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_xunshijieyun.sh
+
+# 寻时借运：追加意象概念保护
+tools/bin/qimen_xunshijieyun.sh --yixiang=财富
 ```
 
 完整命令行参考：
