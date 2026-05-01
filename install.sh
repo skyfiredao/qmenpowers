@@ -22,7 +22,7 @@ if [ "$count" -eq 0 ]; then
 fi
 
 cli_count=0
-for bin_file in "$SCRIPT_DIR"/bin/qimen*.sh; do
+for bin_file in "$SCRIPT_DIR"/tools/bin/qimen*.sh; do
     [ -f "$bin_file" ] || continue
     chmod +x "$bin_file"
     echo "CLI: $bin_file"

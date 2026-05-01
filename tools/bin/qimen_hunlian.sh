@@ -12,7 +12,6 @@ _resolve_link() {
   done
   echo "$f"
 }
-
 SCRIPT_DIR="$(cd "$(dirname "$(_resolve_link "${BASH_SOURCE[0]}")")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -21,9 +20,9 @@ _SHOW_WANWU=""
 
 show_help() {
   cat <<'HELP'
-用法: qimen_xingge.sh [选项]
+用法: qimen_hunlian.sh [选项]
 
-出生局性格分析 — 内在·外在性格取象
+婚恋分析 — 脱单 厮守 桃花 情趣
 
 选项:
   --wanwu                 文本输出中显示万物类象
@@ -49,16 +48,21 @@ fi
 
 source "$BASE_DIR/lib/data_loader.sh"
 
-# 先加载输入盘面 JSON（供默认键读取），再加载性格类象数据文件。
-dl_load_file "$BIRTH_JSON_PATH"
-dl_load_file "$BASE_DIR/data/wanwu_huaqizhen.dat"
+dl_load_file "$BASE_DIR/data/rules_hunlian.dat"
+dl_load_file "$BASE_DIR/data/meta_palace.dat"
+dl_load_file "$BASE_DIR/data/meta_huaqizhen.dat"
+dl_load_file "$BASE_DIR/data/nine_stars.dat"
+dl_load_file "$BASE_DIR/data/eight_gates.dat"
+dl_load_file "$BASE_DIR/data/wanwu_prefix_map.dat"
+dl_load_file "$BASE_DIR/data/wanwu_nine_stars.dat"
+dl_load_file "$BASE_DIR/data/wanwu_eight_gates.dat"
+dl_load_file "$BASE_DIR/data/wanwu_eight_deities.dat"
+dl_load_file "$BASE_DIR/data/wanwu_tiangan.dat"
+dl_load_file "$BASE_DIR/data/wanwu_dizhi.dat"
 
-source "$BASE_DIR/lib/qimen_xingge.sh"
+source "$BASE_DIR/lib/qimen_json.sh"
+source "$BASE_DIR/lib/qimen_banmenhuaqizhen.sh"
+source "$BASE_DIR/lib/qimen_hunlian.sh"
 
-HUAQIZHEN_PATH="./qmen_huaqizhen.json"
-if [[ ! -f "$HUAQIZHEN_PATH" ]]; then
-  "$BASE_DIR/bin/qimen_huaqizhen.sh" >/dev/null 2>&1 || true
-fi
-
-xg_run_analysis "$BIRTH_JSON_PATH" "./qmen_xingge.json" "$HUAQIZHEN_PATH"
-echo "性格分析已写入: ./qmen_xingge.json" >&2
+hl_run_analysis "$BIRTH_JSON_PATH" "$BIRTH_JSON_PATH" "./qmen_hunlian.json"
+echo "Hunlian analysis written to: ./qmen_hunlian.json" >&2

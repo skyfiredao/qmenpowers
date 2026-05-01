@@ -194,7 +194,30 @@ _yh_build_miexiang() {
     local objects=""
     objects="$(_yh_resolve_lookup "${lookup_type}:${name}")"
 
-    _YH_MX_TEXT="灭象: 把${name}象从${dir}移走，移至正西或正北"
+    # Validate target palaces (7=正西, 1=正北) for六害
+    local _safe7="true" _safe1="true" _p_entry
+    for _p_entry in "${_YH_PROBLEMS[@]}"; do
+        case "$_p_entry" in
+            7\|jixing\|*|7\|menpo\|*|7\|kongwang\|*) _safe7="false" ;;
+            1\|jixing\|*|1\|menpo\|*|1\|kongwang\|*) _safe1="false" ;;
+        esac
+    done
+
+    local _target_text="" _target_note=""
+    if [[ "$_safe7" == "true" && "$_safe1" == "true" ]]; then
+        _target_text="正西或正北"
+    elif [[ "$_safe7" == "true" ]]; then
+        _target_text="正西"
+        _target_note="（正北有六害，避开）"
+    elif [[ "$_safe1" == "true" ]]; then
+        _target_text="正北"
+        _target_note="（正西有六害，避开）"
+    else
+        _target_text="正西或正北"
+        _target_note="[注意]正西正北均有六害，需择较轻一方"
+    fi
+
+    _YH_MX_TEXT="灭象: 把${name}象从${dir}移走，移至${_target_text}${_target_note}"
     if [[ -n "$objects" ]]; then
         _YH_MX_TEXT="${_YH_MX_TEXT}
 ${name}象: ${objects}"
@@ -203,7 +226,8 @@ ${name}象: ${objects}"
 "
 
     _qj_je_v "$objects"; local j_obj="$_JE"
-    _YH_MX_JSON="{\"method\": \"灭象\", \"target\": \"移走${name}象\", \"action\": \"从${dir}移至正西或正北\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L221\", \"dynamic\": null}"
+    _qj_je_v "${_target_note}"; local j_note="$_JE"
+    _YH_MX_JSON="{\"method\": \"灭象\", \"target\": \"移走${name}象\", \"action\": \"从${dir}移至${_target_text}\", \"objects\": \"${j_obj}\", \"viable\": true, \"source\": \"bmhq L221\", \"dynamic\": null, \"note\": \"${j_note}\"}"
 }
 
 # --- Phase 2: Generate化解 paths for a jixing problem ---
@@ -297,6 +321,8 @@ _yh_build_jixing_paths() {
         if [[ "$_palace_has_rumu" == "true" && ( "$method" == "暗合" || "$method" == "地支合" ) ]]; then
             note="${note:+${note} }[注意]同宫有入墓，合法可能加重束缚，优先用泄化"
         fi
+
+
 
         # Build text line
         local viable_mark=""
@@ -910,6 +936,12 @@ yh_output_text() {
         ji=$((ji + 1))
     done
 
+    printf "\n[时间规则]\n"
+    _yh_get "timing_general" 2>/dev/null || true
+    [[ -n "$_DL_RET" ]] && printf '%s\n' "- ${_DL_RET}"
+    _yh_get "timing_keying" 2>/dev/null || true
+    [[ -n "$_DL_RET" ]] && printf '%s\n' "- ${_DL_RET}"
+
     # Print引动
     printf "\n[引动方式]\n"
     local yi=1 yd_name="" yd_desc=""
@@ -971,6 +1003,10 @@ yh_output_json() {
         yi=$((yi + 1))
     done
 
+    # Build timing object
+    _yh_get "timing_general" 2>/dev/null || true; _qj_je_v "$_DL_RET"; local j_tg="$_JE"
+    _yh_get "timing_keying" 2>/dev/null || true; _qj_je_v "$_DL_RET"; local j_tk="$_JE"
+
     cat > "$output_path" <<ENDJSON
 {
   "type": "yishenhuanjiang",
@@ -983,6 +1019,7 @@ yh_output_json() {
   "problems": [${problems_arr}
   ],
   "jinji": [${jinji_arr} ],
+  "timing": {"general": "${j_tg}", "keying": "${j_tk}"},
   "yindong": [${yindong_arr} ]
 }
 ENDJSON

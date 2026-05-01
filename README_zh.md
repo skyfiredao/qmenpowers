@@ -33,7 +33,7 @@
 
 **纯 Bash，无外部工具。** 整个引擎运行在 Bash 3.2+ 上，不调用 Python、bc、awk 或任何外部程序。所有运算使用 Bash 整数算术。历法计算（公历/儒略日转换、干支循环推算）全部以 shell 算术从头实现。macOS 自带的 Bash 3.2 即可运行。
 
-**脚本与数据完全分离。** 全部领域常量存放在 `data/*.dat` 文件中，采用 `key=value` 格式。脚本内不含任何硬编码的领域知识。理论上，替换数据文件就能建模不同的奇门变体，无需改动任何代码。
+**脚本与数据完全分离。** 全部领域常量存放在 `tools/data/*.dat` 文件中，采用 `key=value` 格式。脚本内不含任何硬编码的领域知识。理论上，替换数据文件就能建模不同的奇门变体，无需改动任何代码。
 
 ## 架构
 
@@ -43,121 +43,124 @@
 skill_qmenpowers/
 ├── skills/
 │   ├── qmen_dunjia/
-│   │   └── SKILL.md                # 统一入口：问事/生日分流 + 入局仪式 + 排盘 + 路由到 sub-skill
+│   │   └── SKILL.md                    # 统一入口：问事/生日分流 + 入局仪式 + 排盘 + 路由到 sub-skill
 │   ├── qmen_event/
-│   │   └── SKILL.md                # 问事局解盘技能
+│   │   └── SKILL.md                    # 问事局解盘技能
 │   ├── qmen_caiguan/
-│   │   └── SKILL.md                # 财官诊断技能
+│   │   └── SKILL.md                    # 财官诊断技能
 │   ├── qmen_huaqizhen/
-│   │   └── SKILL.md                # 化气阵布阵技能
+│   │   └── SKILL.md                    # 化气阵布阵技能
 │   ├── qmen_yishenhuanjiang/
-│   │   └── SKILL.md                # 移神换将化解技能
+│   │   └── SKILL.md                    # 移神换将化解技能
 │   ├── qmen_hunlian/
-│   │   └── SKILL.md                # 婚恋分析技能
+│   │   └── SKILL.md                    # 婚恋分析技能
 │   ├── qmen_wanwu/
-│   │   └── SKILL.md                # 万物类象画像技能
+│   │   └── SKILL.md                    # 万物类象画像技能
 │   ├── qmen_xingge/
-│   │   └── SKILL.md                # 性格分析技能
+│   │   └── SKILL.md                    # 性格分析技能
 │   └── qmen_yaoce/
-│       └── SKILL.md                # 遥测/破阵分析技能（跨盘关联分析）
-├── bin/
-│   ├── qimen_qiju.sh               # 起局 CLI
-│   ├── qimen_event.sh              # 问事局分析 CLI
-│   ├── qimen_caiguan.sh            # 财官分析 CLI
-│   ├── qimen_huaqizhen.sh          # 化气阵布阵 CLI
-│   ├── qimen_yishenhuanjiang.sh    # 移神换将化解 CLI
-│   ├── qimen_zhentaiyangshi.sh     # 真太阳时计算工具
-│   ├── qimen_hunlian.sh            # 婚恋分析 CLI
-│   ├── qimen_wanwu.sh              # 万物类象提取 CLI
-│   ├── qimen_xingge.sh             # 性格分析 CLI
-│   └── qimen_yaoce.sh              # 遥测/破阵分析 CLI（跨盘关联分析）
-├── install.sh                      # 安装脚本
-├── lib/
-│   ├── data_loader.sh              # 通用数据文件加载器
-│   ├── qimen_engine.sh             # 核心计算引擎
-│   ├── qimen_output.sh             # 输出格式化（文本 + JSON）
-│   ├── qimen_json.sh               # 共享 JSON 解析与工具库
-│   ├── qimen_event.sh              # 问事局分析库
-│   ├── qimen_banmenhuaqizhen.sh    # 化气阵核心库
-│   ├── qimen_yishenhuanjiang.sh    # 移神换将化解库
-│   ├── qimen_caiguan.sh            # 财官分析库
-│   ├── qimen_hunlian.sh            # 婚恋分析库
-│   ├── qimen_xingge.sh             # 性格分析库
-│   └── qimen_yaoce.sh              # 遥测/破阵分析库（跨盘关联分析）
-└── data/
-    ├── tiangan_dizhi.dat           # 引擎：天干地支
-    ├── jieqi_table.dat             # 引擎：节气时间表
-    ├── meta_jieqi.dat              # 引擎：节气元数据
-    ├── ju_map.dat                  # 引擎：局数映射
-    ├── nine_stars.dat              # 引擎：九星基础
-    ├── eight_gates.dat             # 引擎：八门基础
-    ├── eight_deities.dat           # 引擎：八神排列
-    ├── sanqi_liuyi.dat             # 引擎：三奇六仪
-    ├── luoshu.dat                  # 引擎：洛书遍历
-    ├── meta_palace.dat             # 引擎：宫位元数据
-    ├── twelve_states.dat           # 引擎：十二长生
-    ├── wanwu_bagua.dat             # 参考：八卦万物类象
-    ├── wanwu_tiangan.dat           # 参考：天干万物类象
-    ├── wanwu_dizhi.dat             # 参考：地支万物类象
-    ├── wanwu_wuxing.dat            # 参考：五行万物类象
-    ├── wanwu_nine_stars.dat        # 参考：九星万物类象
-    ├── wanwu_eight_gates.dat       # 参考：八门万物类象
-    ├── wanwu_eight_deities.dat     # 参考：八神万物类象
-    ├── wanwu_geju.dat              # 参考：格局定义与诊断表
-    ├── rules_yongshen.dat          # 分析：用神选取规则
-    ├── wanwu_prefix_map.dat        # 分析：符号名称到前缀映射
-    ├── meta_huaqizhen.dat          # 化气：天干关系、六害规则、七要害定义
-    ├── hangye_quxiang.dat          # 化气：行业取象映射
-    ├── rules_buzhen.dat            # 布阵：禁忌、压制、灭象规则
-    ├── rules_yishenhuanjiang.dat   # 移神换将：化解路径、五行映射、墓支、冲合对、禁忌、引动
-    ├── buzhen_xiangshu.dat         # 布阵：天干地支形象（颜色、材质、生肖）
-    ├── rules_hunlian.dat           # 婚恋：干合组合、沐浴位、孤辰寡宿分组、桃花神煞/三奇规则
-    └── wanwu_huaqizhen.dat         # 化气：性格分析类象对应表
+│       └── SKILL.md                    # 遥测/破阵分析技能（跨盘关联分析）
+├── tools/
+│   ├── bin/
+│   │   ├── qimen_qiju.sh               # 起局 CLI
+│   │   ├── qimen_event.sh              # 问事局分析 CLI
+│   │   ├── qimen_caiguan.sh            # 财官分析 CLI
+│   │   ├── qimen_huaqizhen.sh          # 化气阵布阵 CLI
+│   │   ├── qimen_yishenhuanjiang.sh    # 移神换将化解 CLI
+│   │   ├── qimen_zhentaiyangshi.sh     # 真太阳时计算工具
+│   │   ├── qimen_hunlian.sh            # 婚恋分析 CLI
+│   │   ├── qimen_wanwu.sh              # 万物类象提取 CLI
+│   │   ├── qimen_xingge.sh             # 性格分析 CLI
+│   │   └── qimen_yaoce.sh              # 遥测/破阵分析 CLI（跨盘关联分析）
+│   ├── lib/
+│   │   ├── data_loader.sh              # 通用数据文件加载器
+│   │   ├── qimen_engine.sh             # 核心计算引擎
+│   │   ├── qimen_output.sh             # 输出格式化（文本 + JSON）
+│   │   ├── qimen_json.sh               # 共享 JSON 解析与工具库
+│   │   ├── qimen_event.sh              # 问事局分析库
+│   │   ├── qimen_banmenhuaqizhen.sh    # 化气阵核心库
+│   │   ├── qimen_yishenhuanjiang.sh    # 移神换将化解库
+│   │   ├── qimen_caiguan.sh            # 财官分析库
+│   │   ├── qimen_hunlian.sh            # 婚恋分析库
+│   │   ├── qimen_xingge.sh             # 性格分析库
+│   │   └── qimen_yaoce.sh              # 遥测/破阵分析库（跨盘关联分析）
+│   └── data/
+│       ├── tiangan_dizhi.dat           # 引擎：天干地支
+│       ├── jieqi_table.dat             # 引擎：节气时间表
+│       ├── meta_jieqi.dat              # 引擎：节气元数据
+│       ├── ju_map.dat                  # 引擎：局数映射
+│       ├── nine_stars.dat              # 引擎：九星基础
+│       ├── eight_gates.dat             # 引擎：八门基础
+│       ├── eight_deities.dat           # 引擎：八神排列
+│       ├── sanqi_liuyi.dat             # 引擎：三奇六仪
+│       ├── luoshu.dat                  # 引擎：洛书遍历
+│       ├── meta_palace.dat             # 引擎：宫位元数据
+│       ├── twelve_states.dat           # 引擎：十二长生
+│       ├── wanwu_bagua.dat             # 参考：八卦万物类象
+│       ├── wanwu_tiangan.dat           # 参考：天干万物类象
+│       ├── wanwu_dizhi.dat             # 参考：地支万物类象
+│       ├── wanwu_wuxing.dat            # 参考：五行万物类象
+│       ├── wanwu_nine_stars.dat        # 参考：九星万物类象
+│       ├── wanwu_eight_gates.dat       # 参考：八门万物类象
+│       ├── wanwu_eight_deities.dat     # 参考：八神万物类象
+│       ├── wanwu_geju.dat              # 参考：格局定义与诊断表
+│       ├── rules_yongshen.dat          # 分析：用神选取规则
+│       ├── wanwu_prefix_map.dat        # 分析：符号名称到前缀映射
+│       ├── meta_huaqizhen.dat          # 化气：天干关系、六害规则、七要害定义
+│       ├── hangye_quxiang.dat          # 化气：行业取象映射
+│       ├── rules_buzhen.dat            # 布阵：禁忌、压制、灭象规则
+│       ├── rules_yishenhuanjiang.dat   # 移神换将：化解路径、五行映射、墓支、冲合对、禁忌、引动
+│       ├── buzhen_xiangshu.dat         # 布阵：天干地支形象（颜色、材质、生肖）
+│       ├── rules_hunlian.dat           # 婚恋：干合组合、沐浴位、孤辰寡宿分组、桃花神煞/三奇规则
+│       └── wanwu_huaqizhen.dat         # 化气：性格分析类象对应表
+├── install.sh                          # 安装脚本
+├── README.md
+└── README_zh.md
 ```
 
-**`lib/data_loader.sh`** 是通用的 key=value 文件解析器。它将 `.dat` 文件读入 shell 变量和数组。逗号分隔的值自动展开为索引数组。含有 CJK 字符的键通过内部键值存储（`dl_get`/`dl_set`）处理，兼容 Bash 3（旧版 Bash 不支持非 ASCII 键的关联数组）。
+**`tools/lib/data_loader.sh`** 是通用的 key=value 文件解析器。它将 `.dat` 文件读入 shell 变量和数组。逗号分隔的值自动展开为索引数组。含有 CJK 字符的键通过内部键值存储（`dl_get`/`dl_set`）处理，兼容 Bash 3（旧版 Bash 不支持非 ASCII 键的关联数组）。
 
-**`lib/qimen_engine.sh`** 包含全部计算逻辑：历法运算（公历/儒略日转换、干支推算）、节气查表、元/局判定（含置闰处理），以及完整的起局流水线（地盘布局、天盘转星、人盘转门、神盘布神、格局检测）。
+**`tools/lib/qimen_engine.sh`** 包含全部计算逻辑：历法运算（公历/儒略日转换、干支推算）、节气查表、元/局判定（含置闰处理），以及完整的起局流水线（地盘布局、天盘转星、人盘转门、神盘布神、格局检测）。
 
-**`lib/qimen_output.sh`** 读取引擎填充的全局数组，格式化后输出。支持两种模式：人类可读的文本模式（逐宫列表 + 头部信息）和结构化 JSON。
+**`tools/lib/qimen_output.sh`** 读取引擎填充的全局数组，格式化后输出。支持两种模式：人类可读的文本模式（逐宫列表 + 头部信息）和结构化 JSON。
 
-**`lib/qimen_json.sh`** 提供共享 JSON 解析与工具函数：盘面 JSON 解析、日干/时干宫位查找、天干提取、万物类象查表。被所有分析 CLI 脚本使用。
+**`tools/lib/qimen_json.sh`** 提供共享 JSON 解析与工具函数：盘面 JSON 解析、日干/时干宫位查找、天干提取、万物类象查表。被所有分析 CLI 脚本使用。
 
-**`lib/qimen_event.sh`** 提供问事局专用分析流水线：按问题类型选取用神、标记用神宫位、81 组天干克应查表、格局标记汇总、文本/JSON 输出格式化。仅被 `bin/qimen_event.sh` 使用。
+**`tools/lib/qimen_event.sh`** 提供问事局专用分析流水线：按问题类型选取用神、标记用神宫位、81 组天干克应查表、格局标记汇总、文本/JSON 输出格式化。仅被 `tools/bin/qimen_event.sh` 使用。
 
-**`bin/qimen_qiju.sh`** 是起局 CLI 封装。解析命令行参数，依次 source 库文件，调用引擎，再分发到对应的输出格式化函数。
+**`tools/bin/qimen_qiju.sh`** 是起局 CLI 封装。解析命令行参数，依次 source 库文件，调用引擎，再分发到对应的输出格式化函数。
 
-**`bin/qimen_event.sh`** 是问事局分析 CLI。读取 `qimen_qiju.sh` 生成的起局 JSON，执行分析流水线，输出结构化分析 JSON。仅用于问事局。
+**`tools/bin/qimen_event.sh`** 是问事局分析 CLI。读取 `qimen_qiju.sh` 生成的起局 JSON，执行分析流水线，输出结构化分析 JSON。仅用于问事局。
 
-**`lib/qimen_banmenhuaqizhen.sh`** 提供化气阵核心库：通用辅助函数、宫位查找、逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡）检测（含对宫影响：玄武/庚/白虎同时影响本宫和对宫）、月令五行生克关系计算（含中文含义标签：扩张/稳健/努力/损耗/大亏）、干财天干追踪（含天干五合回退及缺甲找值符宫干特殊规则）、符号定位工具、宫位摘要生成、月令关系，以及完整的布阵流水线：保护天干识别（日干/时干、生年干、家人干、意象干、值符/值使干）、八宫六害扫描、灭象清单生成（含安全方位推荐）、逐宫布阵方案（击刑用合、入墓用冲、门迫用合、庚/白虎用乙、空亡填象）、禁忌冲突检测、实物形象映射。
+**`tools/lib/qimen_banmenhuaqizhen.sh`** 提供化气阵核心库：通用辅助函数、宫位查找、逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡）检测（含对宫影响：玄武/庚/白虎同时影响本宫和对宫）、月令五行生克关系计算（含中文含义标签：扩张/稳健/努力/损耗/大亏）、干财天干追踪（含天干五合回退及缺甲找值符宫干特殊规则）、符号定位工具、宫位摘要生成、月令关系，以及完整的布阵流水线：保护天干识别（日干/时干、生年干、家人干、意象干、值符/值使干）、八宫六害扫描、灭象清单生成（含安全方位推荐）、逐宫布阵方案（击刑用合、入墓用冲、门迫用合、庚/白虎用乙、空亡填象）、禁忌冲突检测、实物形象映射。
 
-**`lib/qimen_yishenhuanjiang.sh`** 提供移神换将化解库：扫描全八宫六害问题（击刑、干墓、门迫、空亡、庚、白虎），按问题类型计算转化路径（灭象/暗合/地支合/泄化/冲墓/合出/补象/用乙），运行时从万物类象数据查找实物形象，输出结构化文本/JSON（含逐问题化解路径、禁忌警告、引动激活方式）。辅助函数采用 `_yh_` 前缀。
+**`tools/lib/qimen_yishenhuanjiang.sh`** 提供移神换将化解库：扫描全八宫六害问题（击刑、干墓、门迫、空亡、庚、白虎），按问题类型计算转化路径（灭象/暗合/地支合/泄化/冲墓/合出/补象/用乙），运行时从万物类象数据查找实物形象，输出结构化文本/JSON（含逐问题化解路径、禁忌警告、引动激活方式）。辅助函数采用 `_yh_` 前缀。
 
-**`lib/qimen_caiguan.sh`** 提供财官分析专用流水线：财富和事业两个维度的七要害分析（含月令中文含义标签）、干财分析（含缺甲找值符宫干特殊规则）、行业取象查找、符使分析、天干角色分析、JSON 输出格式化，以及财官流水线入口。
+**`tools/lib/qimen_caiguan.sh`** 提供财官分析专用流水线：财富和事业两个维度的七要害分析（含月令中文含义标签）、干财分析（含缺甲找值符宫干特殊规则）、行业取象查找、符使分析、天干角色分析、JSON 输出格式化，以及财官流水线入口。
 
-**`lib/qimen_hunlian.sh`** 提供婚恋分析流水线：出生日干宫位定位、干合（天干合化）配偶、六合、沐浴位、三奇近距检测、桃花多维度检测（玄武、太阴、壬/癸、三奇同宫）、伏吟/反吟宫位扫描、空亡对配偶位影响评估、艮/坤宫六害检查、孤辰寡宿计算（含解化方案），以及特殊位置追踪（天蓬、伤门、丁、癸）。
+**`tools/lib/qimen_hunlian.sh`** 提供婚恋分析流水线：出生日干宫位定位、干合（天干合化）配偶、六合、沐浴位、三奇近距检测、桃花多维度检测（玄武、太阴、壬/癸、三奇同宫）、伏吟/反吟宫位扫描、空亡对配偶位影响评估、艮/坤宫六害检查、孤辰寡宿计算（含解化方案），以及特殊位置追踪（天蓬、伤门、丁、癸）。
 
-**`lib/qimen_xingge.sh`** 提供性格分析流水线：出生日干（内在性格）和时干（外在性格）宫位定位、从化气阵专用万物类象数据中提取性格对应（每宫天干、星、门、神的性格特征）、五行颜色映射，以及结构化文本/JSON 输出。
+**`tools/lib/qimen_xingge.sh`** 提供性格分析流水线：出生日干（内在性格）和时干（外在性格）宫位定位、从化气阵专用万物类象数据中提取性格对应（每宫天干、星、门、神的性格特征）、五行颜色映射，以及结构化文本/JSON 输出。
 
-**`lib/qimen_yaoce.sh`** 提供遥测（跨盘关联）分析库：使用 `qj_parse_plate_json` 分别解析命盘和问事局 JSON，从命盘中提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事局上（天盘优先、地盘兜底），收集落宫环境信息（天干/星/门/神/状态/格局标记），检测逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡），提取万物类象，输出结构化文本/JSON。支持通过 CLI 传入可选的意象概念天干。辅助函数采用 `_yc_` 前缀自包含实现，不依赖 qimen_caiguan.sh。
+**`tools/lib/qimen_yaoce.sh`** 提供遥测（跨盘关联）分析库：使用 `qj_parse_plate_json` 分别解析命盘和问事局 JSON，从命盘中提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事局上（天盘优先、地盘兜底），收集落宫环境信息（天干/星/门/神/状态/格局标记），检测逐宫六害（六害：刑、墓、庚、白虎、门迫、空亡），提取万物类象，输出结构化文本/JSON。支持通过 CLI 传入可选的意象概念天干。辅助函数采用 `_yc_` 前缀自包含实现，不依赖 qimen_caiguan.sh。
 
-**`bin/qimen_caiguan.sh`** 是财官诊断 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生年天干，输出结构化财官分析 JSON，包含财富和事业要害诊断。
+**`tools/bin/qimen_caiguan.sh`** 是财官诊断 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生年天干，输出结构化财官分析 JSON，包含财富和事业要害诊断。
 
-**`bin/qimen_huaqizhen.sh`** 是化气阵布阵 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生年天干，接收可选的家人天干和意象概念天干，输出结构化布阵 JSON，包含灭象清单和逐宫摆放处方。
+**`tools/bin/qimen_huaqizhen.sh`** 是化气阵布阵 CLI。默认读取命盘（`./qmen_birth.json`），可通过 `--input` 指定事件盘。自动从 `./qmen_birth.json` 读取出生年天干，接收可选的家人天干和意象概念天干，输出结构化布阵 JSON，包含灭象清单和逐宫摆放处方。
 
-**`bin/qimen_yishenhuanjiang.sh`** 是移神换将化解 CLI。读取命盘（`./qmen_birth.json`），检测所有六害问题（击刑、干墓、门迫、空亡、庚、白虎），击刑/干墓/庚必须灭象先行。按宫分组输出化解路径及对应物象，附带禁忌警告和引动激活方式。写入 `./qmen_yishenhuanjiang.json`。
+**`tools/bin/qimen_yishenhuanjiang.sh`** 是移神换将化解 CLI。读取命盘（`./qmen_birth.json`），检测所有六害问题（击刑、干墓、门迫、空亡、庚、白虎），击刑/干墓/庚必须灭象先行。按宫分组输出化解路径及对应物象，附带禁忌警告和引动激活方式。写入 `./qmen_yishenhuanjiang.json`。
 
-**`bin/qimen_hunlian.sh`** 是婚恋分析 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
+**`tools/bin/qimen_hunlian.sh`** 是婚恋分析 CLI。只读取命盘（`./qmen_birth.json`）。自动从 `./qmen_birth.json` 读取出生日干，输出结构化婚恋分析 JSON，包含配偶检测、桃花指标、孤辰寡宿评估和宫位级感情诊断。
 
-**`bin/qimen_xingge.sh`** 是性格分析 CLI。只读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
+**`tools/bin/qimen_xingge.sh`** 是性格分析 CLI。只读取命盘（`./qmen_birth.json`）。读取出生日干和时干，在盘面上定位二者，提取每个天干所在宫位的星、门、神性格特征对应，输出结构化性格分析 JSON。
 
-**`bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
+**`tools/bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
 
-**`bin/qimen_yaoce.sh`** 是遥测分析 CLI。读取命盘（`./qmen_birth.json`）和问事局（`./qmen_event.json`），从命盘提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事局上，检测六害并收集万物类象，输出结构化跨盘分析 JSON 到 `./qmen_yaoce.json`。支持 `--yixiang=概念` 参数追加意象概念天干（如 `--yixiang=财富` 映射为戊；也可直接传天干字符如 `--yixiang=甲`）。
+**`tools/bin/qimen_yaoce.sh`** 是遥测分析 CLI。读取命盘（`./qmen_birth.json`）和问事局（`./qmen_event.json`），从命盘提取五种天干（日干、时干、生年天干、值符宫天盘干、值使宫天盘干），将各天干定位到问事局上，检测六害并收集万物类象，输出结构化跨盘分析 JSON 到 `./qmen_yaoce.json`。支持 `--yixiang=概念` 参数追加意象概念天干（如 `--yixiang=财富` 映射为戊；也可直接传天干字符如 `--yixiang=甲`）。
 
 ## 数据文件
 
-数据文件分为两类：**引擎数据**（11 个文件，起局计算直接使用）和**参考数据**（8 个 `wanwu_*` 文件，提供完整的万物类象对照表，供解盘参考）。均在 `data/` 目录下，`key=value` 格式，`#` 开头为注释。
+数据文件分为两类：**引擎数据**（11 个文件，起局计算直接使用）和**参考数据**（8 个 `wanwu_*` 文件，提供完整的万物类象对照表，供解盘参考）。均在 `tools/data/` 目录下，`key=value` 格式，`#` 开头为注释。
 
 ### 引擎数据
 
@@ -320,15 +323,15 @@ skill_qmenpowers/
 
 ```bash
 # 第一步：生成命盘
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
 
 # 第二步：生成事件盘
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 # 生成 ./qmen_event.json
 
 # 第三步：运行分析
-bin/qimen_event.sh --question=事业
+tools/bin/qimen_event.sh --question=事业
 # 读取 ./qmen_event.json，写入 ./qmen_event_analysis.json
 ```
 
@@ -376,9 +379,9 @@ Options:
 
 ```bash
 # 默认用法（命盘分析）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_caiguan.sh
+tools/bin/qimen_caiguan.sh
 # 默认读取 ./qmen_birth.json
 ```
 
@@ -402,15 +405,15 @@ Options:
 
 ```bash
 # 默认用法（命盘分析）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_huaqizhen.sh
+tools/bin/qimen_huaqizhen.sh
 # 默认读取 ./qmen_birth.json
 
 # 使用事件盘（可选，仅当针对具体事件做化气时）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_huaqizhen.sh --input=./qmen_event.json
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_huaqizhen.sh --input=./qmen_event.json
 ```
 
 ### CLI 参考
@@ -436,9 +439,9 @@ Options:
 
 ```bash
 # 默认用法（命盘分析）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_yishenhuanjiang.sh
+tools/bin/qimen_yishenhuanjiang.sh
 # 读取 ./qmen_birth.json，写入 ./qmen_yishenhuanjiang.json
 ```
 
@@ -466,16 +469,16 @@ Options:
 
 ```bash
 # 正向：北京（经度定位）— 钟表时间 → 真太阳时
-bin/qimen_zhentaiyangshi.sh --longitude=116.4 "2026-04-30 14:30"
+tools/bin/qimen_zhentaiyangshi.sh --longitude=116.4 "2026-04-30 14:30"
 
 # 正向：纽约（时区定位）
-bin/qimen_zhentaiyangshi.sh --timezone=-5 "2026-04-30 14:30"
+tools/bin/qimen_zhentaiyangshi.sh --timezone=-5 "2026-04-30 14:30"
 
 # 反向：申时在乌鲁木齐（经度定位）对应几点？
-bin/qimen_zhentaiyangshi.sh --shichen=申时 --longitude=87.6 "2026-04-30"
+tools/bin/qimen_zhentaiyangshi.sh --shichen=申时 --longitude=87.6 "2026-04-30"
 
 # 反向：子时在纽约（时区定位）对应几点？
-bin/qimen_zhentaiyangshi.sh --shichen=子 --timezone=-5 "2026-04-30"
+tools/bin/qimen_zhentaiyangshi.sh --shichen=子 --timezone=-5 "2026-04-30"
 ```
 
 ### CLI 参考
@@ -506,9 +509,9 @@ bin/qimen_zhentaiyangshi.sh --shichen=子 --timezone=-5 "2026-04-30"
 
 ```bash
 # 默认用法（命盘分析）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_hunlian.sh
+tools/bin/qimen_hunlian.sh
 # 默认读取 ./qmen_birth.json
 ```
 
@@ -532,9 +535,9 @@ Options:
 
 ```bash
 # 默认用法（命盘分析）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
-bin/qimen_xingge.sh
+tools/bin/qimen_xingge.sh
 # 默认读取 ./qmen_birth.json
 ```
 
@@ -558,14 +561,14 @@ Options:
 
 ```bash
 # 盘面模式：从命盘提取
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_wanwu.sh --palace=3
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_wanwu.sh --palace=3
 
 # 手工模式：直接指定符号（任意组合，至少一个）
-bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state=帝旺
+tools/bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state=帝旺
 
 # 手工模式：单个符号
-bin/qimen_wanwu.sh --gate=开门
+tools/bin/qimen_wanwu.sh --gate=开门
 ```
 
 ### CLI 参考
@@ -599,19 +602,19 @@ bin/qimen_wanwu.sh --gate=开门
 
 ```bash
 # 第一步：生成命盘
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # 生成 ./qmen_birth.json
 
 # 第二步：生成问事局
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 # 生成 ./qmen_event.json
 
 # 第三步：运行遥测（跨盘）分析
-bin/qimen_yaoce.sh
+tools/bin/qimen_yaoce.sh
 # 读取 ./qmen_birth.json + ./qmen_event.json，写入 ./qmen_yaoce.json
 
 # 第三步b：追加意象概念天干（可选，交互后二次调用）
-bin/qimen_yaoce.sh --yixiang=财富
+tools/bin/qimen_yaoce.sh --yixiang=财富
 # 追加意象干（戊）到分析中
 ```
 
@@ -654,79 +657,79 @@ Options:
 
 ```bash
 # 当前时间
-bin/qimen_qiju.sh
+tools/bin/qimen_qiju.sh
 
 # 指定时间（自动识别为命盘）
-bin/qimen_qiju.sh "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh "2026-04-18 10:00"
 
 # 命盘（显式指定）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 
 # 天禽寄坤二宫（传统做法，而非默认的随天芮）
-bin/qimen_qiju.sh --tianqin=jikun "2024-02-04 11:00"
+tools/bin/qimen_qiju.sh --tianqin=jikun "2024-02-04 11:00"
 
 # 天禽随值符走
-bin/qimen_qiju.sh --tianqin=follow-zhifu "2024-02-04 11:00"
+tools/bin/qimen_qiju.sh --tianqin=follow-zhifu "2024-02-04 11:00"
 
 # 自定义 JSON 输出路径
-bin/qimen_qiju.sh --output=/tmp/plate.json "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --output=/tmp/plate.json "2026-04-18 10:00"
 
 # 完整流水线：命盘 + 事件盘 + 分析
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_event.sh --question=事业
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_event.sh --question=事业
 
 # 自定义输入输出路径
-bin/qimen_event.sh --input=/tmp/plate.json --question=求财
+tools/bin/qimen_event.sh --input=/tmp/plate.json --question=求财
 
 # 详细模式分析（完整万物类象）
-bin/qimen_event.sh --question=婚姻感情 --verbose
+tools/bin/qimen_event.sh --question=婚姻感情 --verbose
 
 # 财官分析（自动从 qmen_birth.json 读取生年天干）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_caiguan.sh
 
 # 布阵
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_huaqizhen.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_huaqizhen.sh
 
 # 布阵（使用事件盘）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_huaqizhen.sh --input=./qmen_event.json
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # 布阵（含家人保护）
-bin/qimen_huaqizhen.sh --family-stems=甲,丙
+tools/bin/qimen_huaqizhen.sh --family-stems=甲,丙
 
 # 布阵（含意象概念保护）
-bin/qimen_huaqizhen.sh --yixiang=财富,权威
+tools/bin/qimen_huaqizhen.sh --yixiang=财富,权威
 
 # 移神换将化解
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_yishenhuanjiang.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_yishenhuanjiang.sh
 
 # 婚恋分析
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_hunlian.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_hunlian.sh
 
 # 性格分析
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_xingge.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_xingge.sh
 
 # 万物类象提取（盘面模式）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_wanwu.sh --palace=3
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_wanwu.sh --palace=3
 
 # 万物类象提取（手工模式）
-bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
+tools/bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 
 # 遥测分析（跨盘关联：命盘 + 问事局）
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_yaoce.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_yaoce.sh
 
 # 遥测分析：追加意象概念天干（可选，交互后二次调用）
-bin/qimen_yaoce.sh --yixiang=财富
+tools/bin/qimen_yaoce.sh --yixiang=财富
 ```
 
 完整命令行参考：
@@ -735,7 +738,7 @@ bin/qimen_yaoce.sh --yixiang=财富
 用法: qimen_qiju.sh [选项] [日期时间]
 
 奇门遁甲起局
-时家奇门 · 置闰法
+时家奇门 置闰法
 
 日期时间格式: "YYYY-MM-DD HH:MM"（默认：当前时间）
 
@@ -756,7 +759,7 @@ bin/qimen_yaoce.sh --yixiang=财富
 bash install.sh
 ```
 
-这会为每个 `qmen_*` 子技能在 OpenCode 技能目录下创建独立的符号链接（如 `qmen_dunjia`、`qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`、`qmen_yaoce`）。每个技能子目录还包含指向项目根目录的相对软链接（`bin`、`data`、`lib`），AI 代理可在运行时据此解析项目根目录，无需硬编码路径。重启 OpenCode 即可加载这些技能。
+这会为每个 `qmen_*` 子技能在 OpenCode 技能目录下创建独立的符号链接（如 `qmen_dunjia`、`qmen_event`、`qmen_caiguan`、`qmen_huaqizhen`、`qmen_hunlian`、`qmen_wanwu`、`qmen_xingge`、`qmen_yaoce`）。每个技能子目录还包含指向项目 `tools` 目录的相对软链接（`bin`、`data`、`lib`），AI 代理可在运行时据此解析项目根目录，无需硬编码路径。重启 OpenCode 即可加载这些技能。
 
 ## 环境要求
 

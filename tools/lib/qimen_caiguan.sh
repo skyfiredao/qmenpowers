@@ -130,7 +130,7 @@ _hq_print_palace_detail() {
     fi
 }
 
-# --- Build palace label: 八卦N宫(方位·五行) ---
+# --- Build palace label: 八卦N宫(方位 五行) ---
 _hq_palace_label() {
     local p="$1"
     if [[ $p -le 0 ]]; then

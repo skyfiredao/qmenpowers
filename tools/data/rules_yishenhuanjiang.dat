@@ -479,7 +479,7 @@ jinji_4_source=参考文档 L893-896
 jinji_5=只灭能灭的象，不能移动的不动
 jinji_5_source=bmhq L212
 
-jinji_6=移动后不要再碰
+jinji_6=移动后不要再碰，不要再拿回原位直到问题解决
 jinji_6_source=bmhq L212
 
 jinji_count=9
@@ -492,6 +492,17 @@ jinji_8_source=yishenhuanjiang-patch
 
 jinji_9=动静结合禁忌：泄法物应能动（铃铛偶尔响），合法物应静（红卡安放不动）
 jinji_9_source=yishenhuanjiang-patch
+
+# ───────────────────────────────────────────────────────────────────
+# Section 9b: 时间规则
+# ───────────────────────────────────────────────────────────────────
+timing_general=用则为信，三月起效，前提和环境发生重大变化时结束
+timing_general_source=bmhq L212
+# timing_hefa 仅适用于婚恋场景（丁壬合等），不用于一般化解
+# timing_hefa=合法需在各自方位放满9天（9天合象，代表天干本身），再将两物放到一起
+# timing_hefa_source=bmhq L413
+timing_keying=摆放后的3-7天内，留意克应信号
+timing_keying_source=参考文档 L799
 
 # ───────────────────────────────────────────────────────────────────
 # Section 10: 引动方式
@@ -580,6 +591,7 @@ gong_9_degree_end=202.5
 # 放置高低规则（来源：bmhq L295）
 placement_high_desc=合化天干之象挂高处
 placement_low_desc=合化地支之象摆低处
+placement_boundary=以人胸为界，天干位置在高处，地支位置在低处
 placement_source=bmhq L295
 
 # ───────────────────────────────────────────────────────────────────
@@ -684,3 +696,27 @@ placement_priority=本宫优先，合宫可选
 placement_primary=化解物优先放在问题宫本宫方位
 placement_secondary=六合对宫为可选辅助位——在合宫引动能量可加强效果
 placement_example=坤宫(未)击刑，午未合：优先坤宫放午象，也可在离宫(午)引动辅助
+
+# ───────────────────────────────────────────────────────────────────
+# Section 20: 灭象分类处置规则（来源：bmhq L228-231）
+# ───────────────────────────────────────────────────────────────────
+miexiang_jixing_disposal=可移动，可抛弃，可赠送。
+miexiang_jixing_disposal_source=bmhq L229
+
+miexiang_rumu_disposal=可移动，不可抛弃，不可赠送。机遇之象。
+miexiang_rumu_disposal_source=bmhq L230
+
+miexiang_geng_disposal=高风险和武力行业（庚本身的象），不能灭。可移动。
+miexiang_geng_disposal_source=bmhq L231
+
+# ───────────────────────────────────────────────────────────────────
+# Section 21: 灭象必须原则（来源：bmhq L221）
+# ───────────────────────────────────────────────────────────────────
+miexiang_mandatory_principle=天干的刑，墓，庚。明显直接的严重损害，最危险，必须灭象。
+miexiang_mandatory_principle_source=bmhq L221
+
+# ───────────────────────────────────────────────────────────────────
+# Section 22: 安全方位（来源：bmhq L247）
+# ───────────────────────────────────────────────────────────────────
+safe_direction_rule=正西和正北没有入墓和击刑，无禁忌，灭象可以直接用此方位。
+safe_direction_rule_source=bmhq L247

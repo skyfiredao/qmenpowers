@@ -34,7 +34,7 @@ In all modes, the hosting palace displays Tianqin with a `[寄]` (lodging) marke
 
 **Pure Bash, no external tools.** The entire engine runs in Bash 3.2+ with no calls to Python, bc, awk, or any other external program. All arithmetic uses Bash integer math. Calendar calculations (Gregorian to Julian Day Number, Ganzhi cycle indexing) are implemented from scratch in shell arithmetic. This makes the tool portable to any system with a POSIX-compatible Bash, including stock macOS.
 
-**Script and data fully separated.** Every domain constant lives in `data/*.dat` files, using a simple `key=value` format. The scripts contain zero hardcoded domain knowledge. You could, in theory, swap the data files to model a different Qi Men variant without touching a line of code.
+**Script and data fully separated.** Every domain constant lives in `tools/data/*.dat` files, using a simple `key=value` format. The scripts contain zero hardcoded domain knowledge. You could, in theory, swap the data files to model a different Qi Men variant without touching a line of code.
 
 ## Architecture
 
@@ -44,121 +44,124 @@ The engine is split into library files, CLI entry points, and a data directory.
 skill_qmenpowers/
 ├── skills/
 │   ├── qmen_dunjia/
-│   │   └── SKILL.md                # Router skill: time-type triage + plate setting + sub-skill dispatch
+│   │   └── SKILL.md                    # Router skill: time-type triage + plate setting + sub-skill dispatch
 │   ├── qmen_event/
-│   │   └── SKILL.md                # AI interpretation skill
+│   │   └── SKILL.md                    # AI interpretation skill
 │   ├── qmen_caiguan/
-│   │   └── SKILL.md                # Wealth & career diagnosis skill
+│   │   └── SKILL.md                    # Wealth & career diagnosis skill
 │   ├── qmen_huaqizhen/
-│   │   └── SKILL.md                # Huaqizhen array placement skill
+│   │   └── SKILL.md                    # Huaqizhen array placement skill
 │   ├── qmen_yishenhuanjiang/
-│   │   └── SKILL.md                # Yishenhuanjiang (transformation resolution) skill
+│   │   └── SKILL.md                    # Yishenhuanjiang (transformation resolution) skill
 │   ├── qmen_hunlian/
-│   │   └── SKILL.md                # Hunlian (marriage/romance) analysis skill
+│   │   └── SKILL.md                    # Hunlian (marriage/romance) analysis skill
 │   ├── qmen_wanwu/
-│   │   └── SKILL.md                # Wanwu imagery portrait skill
+│   │   └── SKILL.md                    # Wanwu imagery portrait skill
 │   ├── qmen_xingge/
-│   │   └── SKILL.md                # Personality analysis skill
+│   │   └── SKILL.md                    # Personality analysis skill
 │   └── qmen_yaoce/
-│       └── SKILL.md                # Yaoce (cross-plate array-breaking) analysis skill
-├── bin/
-│   ├── qimen_qiju.sh               # Plate setting CLI
-│   ├── qimen_event.sh              # Event analysis CLI
-│   ├── qimen_caiguan.sh            # Caiguan (wealth/career) diagnosis CLI
-│   ├── qimen_huaqizhen.sh          # Huaqizhen (array placement) CLI
-│   ├── qimen_yishenhuanjiang.sh    # Yishenhuanjiang (transformation resolution) CLI
-│   ├── qimen_zhentaiyangshi.sh     # True solar time calculator
-│   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis CLI
-│   ├── qimen_wanwu.sh              # Wanwu imagery extraction CLI
-│   ├── qimen_xingge.sh             # Personality analysis CLI
-│   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) CLI
-├── install.sh                      # Installation script
-├── lib/
-│   ├── data_loader.sh              # Generic data file loader
-│   ├── qimen_engine.sh             # Core computation engine
-│   ├── qimen_output.sh             # Output formatting (text + JSON)
-│   ├── qimen_json.sh               # Shared JSON parsing and utility library
-│   ├── qimen_event.sh              # Event analysis library
-│   ├── qimen_banmenhuaqizhen.sh    # Core huaqizhen library
-│   ├── qimen_yishenhuanjiang.sh    # Yishenhuanjiang (transformation resolution) library
-│   ├── qimen_caiguan.sh            # Caiguan analysis library
-│   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis library
-│   ├── qimen_xingge.sh             # Personality analysis library
-│   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) library
-└── data/
-    ├── tiangan_dizhi.dat           # Engine: stems & branches
-    ├── jieqi_table.dat             # Engine: solar term timestamps
-    ├── meta_jieqi.dat              # Engine: solar term metadata
-    ├── ju_map.dat                  # Engine: ju number mapping
-    ├── nine_stars.dat              # Engine: nine stars basics
-    ├── eight_gates.dat             # Engine: eight gates basics
-    ├── eight_deities.dat           # Engine: eight deities ordering
-    ├── sanqi_liuyi.dat             # Engine: three wonders & six yi
-    ├── luoshu.dat                  # Engine: luoshu traversal order
-    ├── meta_palace.dat             # Engine: palace metadata
-    ├── twelve_states.dat           # Engine: twelve growth stages
-    ├── wanwu_bagua.dat             # Reference: eight trigrams correspondences
-    ├── wanwu_tiangan.dat           # Reference: heavenly stems correspondences
-    ├── wanwu_dizhi.dat             # Reference: earthly branches correspondences
-    ├── wanwu_wuxing.dat            # Reference: five phases correspondences
-    ├── wanwu_nine_stars.dat        # Reference: nine stars correspondences
-    ├── wanwu_eight_gates.dat       # Reference: eight gates correspondences
-    ├── wanwu_eight_deities.dat     # Reference: eight deities correspondences
-    ├── wanwu_geju.dat              # Reference: pattern definitions & diagnostics
-    ├── rules_yongshen.dat          # Analysis: yongshen selection rules
-    ├── wanwu_prefix_map.dat        # Analysis: symbol-to-prefix mapping
-    ├── meta_huaqizhen.dat          # Huaqi: stem relationships, liuhai rules, yaohai definitions
-    ├── hangye_quxiang.dat          # Huaqi: industry-to-symbol mapping
-    ├── rules_buzhen.dat            # Buzhen: prohibition, suppression, miexiang rules
-    ├── rules_yishenhuanjiang.dat   # Yishenhuanjiang: transformation resolution rules, wuxing mappings, jinji, yindong
-    ├── buzhen_xiangshu.dat         # Buzhen: stem/branch imagery (colors, materials, animals)
-    ├── rules_hunlian.dat           # Hunlian: gan-he combinations, muyu positions, guchen/guasu groups, taohua deity/sanqi rules
-    └── wanwu_huaqizhen.dat         # Huaqi: personality analysis correspondences
+│       └── SKILL.md                    # Yaoce (cross-plate array-breaking) analysis skill
+├── tools/
+│   ├── bin/
+│   │   ├── qimen_qiju.sh               # Plate setting CLI
+│   │   ├── qimen_event.sh              # Event analysis CLI
+│   │   ├── qimen_caiguan.sh            # Caiguan (wealth/career) diagnosis CLI
+│   │   ├── qimen_huaqizhen.sh          # Huaqizhen (array placement) CLI
+│   │   ├── qimen_yishenhuanjiang.sh    # Yishenhuanjiang (transformation resolution) CLI
+│   │   ├── qimen_zhentaiyangshi.sh     # True solar time calculator
+│   │   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis CLI
+│   │   ├── qimen_wanwu.sh              # Wanwu imagery extraction CLI
+│   │   ├── qimen_xingge.sh             # Personality analysis CLI
+│   │   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) CLI
+│   ├── lib/
+│   │   ├── data_loader.sh              # Generic data file loader
+│   │   ├── qimen_engine.sh             # Core computation engine
+│   │   ├── qimen_output.sh             # Output formatting (text + JSON)
+│   │   ├── qimen_json.sh               # Shared JSON parsing and utility library
+│   │   ├── qimen_event.sh              # Event analysis library
+│   │   ├── qimen_banmenhuaqizhen.sh    # Core huaqizhen library
+│   │   ├── qimen_yishenhuanjiang.sh    # Yishenhuanjiang (transformation resolution) library
+│   │   ├── qimen_caiguan.sh            # Caiguan analysis library
+│   │   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis library
+│   │   ├── qimen_xingge.sh             # Personality analysis library
+│   │   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) library
+│   └── data/
+│       ├── tiangan_dizhi.dat           # Engine: stems & branches
+│       ├── jieqi_table.dat             # Engine: solar term timestamps
+│       ├── meta_jieqi.dat              # Engine: solar term metadata
+│       ├── ju_map.dat                  # Engine: ju number mapping
+│       ├── nine_stars.dat              # Engine: nine stars basics
+│       ├── eight_gates.dat             # Engine: eight gates basics
+│       ├── eight_deities.dat           # Engine: eight deities ordering
+│       ├── sanqi_liuyi.dat             # Engine: three wonders & six yi
+│       ├── luoshu.dat                  # Engine: luoshu traversal order
+│       ├── meta_palace.dat             # Engine: palace metadata
+│       ├── twelve_states.dat           # Engine: twelve growth stages
+│       ├── wanwu_bagua.dat             # Reference: eight trigrams correspondences
+│       ├── wanwu_tiangan.dat           # Reference: heavenly stems correspondences
+│       ├── wanwu_dizhi.dat             # Reference: earthly branches correspondences
+│       ├── wanwu_wuxing.dat            # Reference: five phases correspondences
+│       ├── wanwu_nine_stars.dat        # Reference: nine stars correspondences
+│       ├── wanwu_eight_gates.dat       # Reference: eight gates correspondences
+│       ├── wanwu_eight_deities.dat     # Reference: eight deities correspondences
+│       ├── wanwu_geju.dat              # Reference: pattern definitions & diagnostics
+│       ├── rules_yongshen.dat          # Analysis: yongshen selection rules
+│       ├── wanwu_prefix_map.dat        # Analysis: symbol-to-prefix mapping
+│       ├── meta_huaqizhen.dat          # Huaqi: stem relationships, liuhai rules, yaohai definitions
+│       ├── hangye_quxiang.dat          # Huaqi: industry-to-symbol mapping
+│       ├── rules_buzhen.dat            # Buzhen: prohibition, suppression, miexiang rules
+│       ├── rules_yishenhuanjiang.dat   # Yishenhuanjiang: transformation resolution rules, wuxing mappings, jinji, yindong
+│       ├── buzhen_xiangshu.dat         # Buzhen: stem/branch imagery (colors, materials, animals)
+│       ├── rules_hunlian.dat           # Hunlian: gan-he combinations, muyu positions, guchen/guasu groups, taohua deity/sanqi rules
+│       └── wanwu_huaqizhen.dat         # Huaqi: personality analysis correspondences
+├── install.sh                          # Installation script
+├── README.md
+└── README_zh.md
 ```
 
-**`lib/data_loader.sh`** is a generic key=value file parser. It reads `.dat` files into shell variables and arrays. Comma-separated values become indexed arrays. Keys with CJK characters are stored via an internal key-value store (`dl_get`/`dl_set`) for Bash 3 compatibility, since older Bash lacks associative arrays with non-ASCII keys.
+**`tools/lib/data_loader.sh`** is a generic key=value file parser. It reads `.dat` files into shell variables and arrays. Comma-separated values become indexed arrays. Keys with CJK characters are stored via an internal key-value store (`dl_get`/`dl_set`) for Bash 3 compatibility, since older Bash lacks associative arrays with non-ASCII keys.
 
-**`lib/qimen_engine.sh`** contains all computation logic: calendar math (Gregorian/JDN conversion, Ganzhi cycle calculation), solar term lookup, Yuan/Ju determination with intercalary handling, and the full plate-laying pipeline (earth plate, heaven plate rotation, gate rotation, deity placement, pattern detection).
+**`tools/lib/qimen_engine.sh`** contains all computation logic: calendar math (Gregorian/JDN conversion, Ganzhi cycle calculation), solar term lookup, Yuan/Ju determination with intercalary handling, and the full plate-laying pipeline (earth plate, heaven plate rotation, gate rotation, deity placement, pattern detection).
 
-**`lib/qimen_output.sh`** reads the global arrays populated by the engine and formats them for display. It supports two modes: human-readable text (palace-by-palace listing with a header block) and structured JSON.
+**`tools/lib/qimen_output.sh`** reads the global arrays populated by the engine and formats them for display. It supports two modes: human-readable text (palace-by-palace listing with a header block) and structured JSON.
 
-**`lib/qimen_json.sh`** provides shared JSON parsing and utility functions: plate JSON parsing into the dl key-value store, day/hour stem palace location, stem extraction, and wanwu correspondence lookup. Used by all analysis CLI scripts.
+**`tools/lib/qimen_json.sh`** provides shared JSON parsing and utility functions: plate JSON parsing into the dl key-value store, day/hour stem palace location, stem extraction, and wanwu correspondence lookup. Used by all analysis CLI scripts.
 
-**`lib/qimen_event.sh`** provides the event-specific analysis pipeline: yongshen (use god) selection by question type, yongshen palace marking, 81-combination lookups, pattern marker collection, and structured text/JSON output formatting. Used exclusively by `bin/qimen_event.sh`.
+**`tools/lib/qimen_event.sh`** provides the event-specific analysis pipeline: yongshen (use god) selection by question type, yongshen palace marking, 81-combination lookups, pattern marker collection, and structured text/JSON output formatting. Used exclusively by `tools/bin/qimen_event.sh`.
 
-**`bin/qimen_qiju.sh`** is the plate-setting CLI wrapper. It parses options, sources the library files, calls the engine, and dispatches to the appropriate output formatter.
+**`tools/bin/qimen_qiju.sh`** is the plate-setting CLI wrapper. It parses options, sources the library files, calls the engine, and dispatches to the appropriate output formatter.
 
-**`bin/qimen_event.sh`** is the event analysis CLI. It reads a plate JSON produced by `qimen_qiju.sh`, runs the analysis pipeline, and outputs a structured analysis JSON. Used exclusively for event plates (问事局).
+**`tools/bin/qimen_event.sh`** is the event analysis CLI. It reads a plate JSON produced by `qimen_qiju.sh`, runs the analysis pipeline, and outputs a structured analysis JSON. Used exclusively for event plates (问事局).
 
-**`lib/qimen_banmenhuaqizhen.sh`** provides the core huaqizhen library: common helpers, palace finders, six-harm (六害) detection per palace with opposite-palace influence (玄武/庚/白虎 affect both host and opposite palace), monthly decree (月令) wuxing relationship computation with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), controlled-wealth (干财) stem tracing with five-combination (天干五合) fallback and special missing-甲-find-zhifu rule (缺甲找值符), symbol location utilities, palace summary generation, yuegling relations, and the full buzhen (布阵) pipeline: protected stem identification (day/hour, birth year, family, yixiang concept stems, zhifu/zhishi), eight-palace six-harm scanning, miexiang (灭象) list generation with safe relocation targets, buzhen plan per palace (suppress jixing via combination, suppress rumu via clash, suppress menpo via combination, suppress geng/baihu via yi-stem, fill kongwang), jinji (禁忌) conflict detection, and physical object imagery mapping.
+**`tools/lib/qimen_banmenhuaqizhen.sh`** provides the core huaqizhen library: common helpers, palace finders, six-harm (六害) detection per palace with opposite-palace influence (玄武/庚/白虎 affect both host and opposite palace), monthly decree (月令) wuxing relationship computation with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), controlled-wealth (干财) stem tracing with five-combination (天干五合) fallback and special missing-甲-find-zhifu rule (缺甲找值符), symbol location utilities, palace summary generation, yuegling relations, and the full buzhen (布阵) pipeline: protected stem identification (day/hour, birth year, family, yixiang concept stems, zhifu/zhishi), eight-palace six-harm scanning, miexiang (灭象) list generation with safe relocation targets, buzhen plan per palace (suppress jixing via combination, suppress rumu via clash, suppress menpo via combination, suppress geng/baihu via yi-stem, fill kongwang), jinji (禁忌) conflict detection, and physical object imagery mapping.
 
-**`lib/qimen_yishenhuanjiang.sh`** provides the yishenhuanjiang (移神换将) transformation resolution library: detects six-harm problems across all palaces (jixing, rumu, menpo, kongwang, geng, baihu), computes transformation paths per problem type (灭象/暗合/地支合/泄化/冲墓/合出/补象/用乙), resolves physical object imagery via runtime wanwu data lookup, and outputs structured text/JSON with per-problem resolution paths, jinji (禁忌) warnings, and yindong (引动) activation methods. Uses `_yh_` prefix for all helper functions.
+**`tools/lib/qimen_yishenhuanjiang.sh`** provides the yishenhuanjiang (移神换将) transformation resolution library: detects six-harm problems across all palaces (jixing, rumu, menpo, kongwang, geng, baihu), computes transformation paths per problem type (灭象/暗合/地支合/泄化/冲墓/合出/补象/用乙), resolves physical object imagery via runtime wanwu data lookup, and outputs structured text/JSON with per-problem resolution paths, jinji (禁忌) warnings, and yindong (引动) activation methods. Uses `_yh_` prefix for all helper functions.
 
-**`lib/qimen_caiguan.sh`** provides the caiguan-specific analysis pipeline: seven-hazard (七要害) yaohai analysis for both wealth and career dimensions with monthly decree Chinese meaning labels, gan_cai analysis with special missing-甲-find-zhifu rule (缺甲找值符宫干 instead of 己), industry symbol (hangye) lookup, fushi analysis, tiangan roles analysis, JSON output formatting, and the caiguan pipeline entry point.
+**`tools/lib/qimen_caiguan.sh`** provides the caiguan-specific analysis pipeline: seven-hazard (七要害) yaohai analysis for both wealth and career dimensions with monthly decree Chinese meaning labels, gan_cai analysis with special missing-甲-find-zhifu rule (缺甲找值符宫干 instead of 己), industry symbol (hangye) lookup, fushi analysis, tiangan roles analysis, JSON output formatting, and the caiguan pipeline entry point.
 
-**`lib/qimen_hunlian.sh`** provides the hunlian (marriage/romance) analysis pipeline: birth day stem palace location, gan-he (stem combination) partner, liuhe (six harmony), muyu (bathing position), sanqi (three wonders) proximity checks, taohua (peach blossom) detection across multiple indicators (xuanwu, taiyin, ren/gui, sanqi co-location), fuyin/fanyin palace scanning, kongwang impact on partner positions, gen/kun palace six-harm inspection, guchen/guasu (lonely star) computation with jiehua remedies, and special position tracking (tianpeng, shangmen, ding, gui).
+**`tools/lib/qimen_hunlian.sh`** provides the hunlian (marriage/romance) analysis pipeline: birth day stem palace location, gan-he (stem combination) partner, liuhe (six harmony), muyu (bathing position), sanqi (three wonders) proximity checks, taohua (peach blossom) detection across multiple indicators (xuanwu, taiyin, ren/gui, sanqi co-location), fuyin/fanyin palace scanning, kongwang impact on partner positions, gen/kun palace six-harm inspection, guchen/guasu (lonely star) computation with jiehua remedies, and special position tracking (tianpeng, shangmen, ding, gui).
 
-**`lib/qimen_xingge.sh`** provides the personality analysis pipeline: birth day stem (inner personality) and hour stem (outer personality) palace location, personality correspondence extraction from huaqizhen-specific wanwu data (stem, star, gate, deity personality traits per palace), wuxing color mapping, and structured text/JSON output.
+**`tools/lib/qimen_xingge.sh`** provides the personality analysis pipeline: birth day stem (inner personality) and hour stem (outer personality) palace location, personality correspondence extraction from huaqizhen-specific wanwu data (stem, star, gate, deity personality traits per palace), wuxing color mapping, and structured text/JSON output.
 
-**`lib/qimen_yaoce.sh`** provides the yaoce (remote sensing) cross-plate analysis library: uses `qj_parse_plate_json` to parse both birth and event plate JSONs, extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate (heaven plate priority, earth plate fallback), collects palace environment info (stem/star/gate/deity/state/markers), detects six-harm (六害) per palace, extracts wanwu correspondences, and outputs structured text/JSON with per-stem analysis results. Supports optional yixiang (意象) concept stems passed via CLI. Self-contained helper functions (`_yc_` prefix) for stem wuxing, star jixi, and gate jixi lookups with no dependency on qimen_caiguan.sh.
+**`tools/lib/qimen_yaoce.sh`** provides the yaoce (remote sensing) cross-plate analysis library: uses `qj_parse_plate_json` to parse both birth and event plate JSONs, extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate (heaven plate priority, earth plate fallback), collects palace environment info (stem/star/gate/deity/state/markers), detects six-harm (六害) per palace, extracts wanwu correspondences, and outputs structured text/JSON with per-stem analysis results. Supports optional yixiang (意象) concept stems passed via CLI. Self-contained helper functions (`_yc_` prefix) for stem wuxing, star jixi, and gate jixi lookups with no dependency on qimen_caiguan.sh.
 
-**`bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
+**`tools/bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
 
-**`bin/qimen_huaqizhen.sh`** is the huaqizhen buzhen CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, takes optional family stems and yixiang concept stems, and outputs a structured buzhen JSON with miexiang list and per-palace placement plans.
+**`tools/bin/qimen_huaqizhen.sh`** is the huaqizhen buzhen CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, takes optional family stems and yixiang concept stems, and outputs a structured buzhen JSON with miexiang list and per-palace placement plans.
 
-**`bin/qimen_yishenhuanjiang.sh`** is the yishenhuanjiang (transformation resolution) CLI. It reads the birth plate (`./qmen_birth.json`) and outputs transformation resolution paths for all detected six-harm problems (击刑, 干墓, 门迫, 空亡, 庚, 白虎). For 击刑/干墓/庚, miexiang (灭象) is always the first path. Each problem includes multiple resolution methods with physical object imagery mapped from wanwu data. Problems in the same palace are grouped under a single palace header. Output includes jinji warnings and yindong activation methods. Writes to `./qmen_yishenhuanjiang.json`.
+**`tools/bin/qimen_yishenhuanjiang.sh`** is the yishenhuanjiang (transformation resolution) CLI. It reads the birth plate (`./qmen_birth.json`) and outputs transformation resolution paths for all detected six-harm problems (击刑, 干墓, 门迫, 空亡, 庚, 白虎). For 击刑/干墓/庚, miexiang (灭象) is always the first path. Each problem includes multiple resolution methods with physical object imagery mapped from wanwu data. Problems in the same palace are grouped under a single palace header. Output includes jinji warnings and yindong activation methods. Writes to `./qmen_yishenhuanjiang.json`.
 
-**`bin/qimen_hunlian.sh`** is the hunlian (marriage/romance) analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth day stem, then outputs a structured hunlian analysis JSON with partner detection, taohua indicators, guchen/guasu assessment, and palace-level relationship diagnostics.
+**`tools/bin/qimen_hunlian.sh`** is the hunlian (marriage/romance) analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth day stem, then outputs a structured hunlian analysis JSON with partner detection, taohua indicators, guchen/guasu assessment, and palace-level relationship diagnostics.
 
-**`bin/qimen_xingge.sh`** is the personality analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
+**`tools/bin/qimen_xingge.sh`** is the personality analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
 
-**`bin/qimen_wanwu.sh`** is the wanwu imagery extraction CLI. It supports two modes: palace mode (`--palace=N`) extracts all wanwu correspondences for a given palace from a plate JSON, and manual mode (`--stem/--star/--gate/--deity/--state`) accepts any combination of symbols directly. Each symbol is optional; at least one is required. Outputs structured text and JSON with full wanwu correspondences per symbol.
+**`tools/bin/qimen_wanwu.sh`** is the wanwu imagery extraction CLI. It supports two modes: palace mode (`--palace=N`) extracts all wanwu correspondences for a given palace from a plate JSON, and manual mode (`--stem/--star/--gate/--deity/--state`) accepts any combination of symbols directly. Each symbol is optional; at least one is required. Outputs structured text and JSON with full wanwu correspondences per symbol.
 
-**`bin/qimen_yaoce.sh`** is the yaoce (remote sensing) cross-plate analysis CLI. It reads both the birth plate (`./qmen_birth.json`) and event plate (`./qmen_event.json`), extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate, detects six-harm and collects wanwu correspondences per palace, and outputs structured cross-plate analysis JSON to `./qmen_yaoce.json`. Supports `--yixiang=CONCEPT` to add an optional yixiang concept stem (e.g. `--yixiang=财富` maps to 戊; direct stem characters like `--yixiang=甲` are also accepted).
+**`tools/bin/qimen_yaoce.sh`** is the yaoce (remote sensing) cross-plate analysis CLI. It reads both the birth plate (`./qmen_birth.json`) and event plate (`./qmen_event.json`), extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate, detects six-harm and collects wanwu correspondences per palace, and outputs structured cross-plate analysis JSON to `./qmen_yaoce.json`. Supports `--yixiang=CONCEPT` to add an optional yixiang concept stem (e.g. `--yixiang=财富` maps to 戊; direct stem characters like `--yixiang=甲` are also accepted).
 
 ## Data Files
 
-Data files fall into two categories: **engine data** (11 files consumed by the computation pipeline) and **reference data** (8 `wanwu_*` files providing comprehensive correspondence tables for interpretation). All live under `data/`, use `key=value` format with `#` comments.
+Data files fall into two categories: **engine data** (11 files consumed by the computation pipeline) and **reference data** (8 `wanwu_*` files providing comprehensive correspondence tables for interpretation). All live under `tools/data/`, use `key=value` format with `#` comments.
 
 ### Engine Data
 
@@ -323,15 +326,15 @@ The event analysis script `qimen_event.sh` reads a plate JSON (produced by `qime
 
 ```bash
 # Step 1: Generate birth plate
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
 
 # Step 2: Generate event plate
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 # Creates ./qmen_event.json
 
 # Step 3: Run analysis
-bin/qimen_event.sh --question=事业
+tools/bin/qimen_event.sh --question=事业
 # Reads ./qmen_event.json, writes ./qmen_event_analysis.json
 ```
 
@@ -379,9 +382,9 @@ The huaqi script `qimen_caiguan.sh` reads the birth plate (`./qmen_birth.json`) 
 
 ```bash
 # Default usage (birth plate analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_caiguan.sh
+tools/bin/qimen_caiguan.sh
 # Reads ./qmen_birth.json by default
 ```
 
@@ -405,15 +408,15 @@ The buzhen script `qimen_huaqizhen.sh` defaults to birth plate (`./qmen_birth.js
 
 ```bash
 # Default usage (birth plate analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_huaqizhen.sh
+tools/bin/qimen_huaqizhen.sh
 # Reads ./qmen_birth.json by default
 
 # With event plate (optional, only when targeting a specific event)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_huaqizhen.sh --input=./qmen_event.json
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_huaqizhen.sh --input=./qmen_event.json
 ```
 
 ### CLI Reference
@@ -439,9 +442,9 @@ The yishenhuanjiang script `qimen_yishenhuanjiang.sh` reads the birth plate (`./
 
 ```bash
 # Default usage (birth plate analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_yishenhuanjiang.sh
+tools/bin/qimen_yishenhuanjiang.sh
 # Reads ./qmen_birth.json, writes ./qmen_yishenhuanjiang.json
 ```
 
@@ -469,16 +472,16 @@ The `qimen_zhentaiyangshi.sh` utility converts between standard clock time and t
 
 ```bash
 # Forward: Beijing (116.4°E, longitude positioning) — clock time → true solar time
-bin/qimen_zhentaiyangshi.sh --longitude=116.4 "2026-04-30 14:30"
+tools/bin/qimen_zhentaiyangshi.sh --longitude=116.4 "2026-04-30 14:30"
 
 # Forward: New York (UTC-5, timezone positioning)
-bin/qimen_zhentaiyangshi.sh --timezone=-5 "2026-04-30 14:30"
+tools/bin/qimen_zhentaiyangshi.sh --timezone=-5 "2026-04-30 14:30"
 
 # Reverse: what clock time is 申时 in Urumqi (longitude positioning)?
-bin/qimen_zhentaiyangshi.sh --shichen=申时 --longitude=87.6 "2026-04-30"
+tools/bin/qimen_zhentaiyangshi.sh --shichen=申时 --longitude=87.6 "2026-04-30"
 
 # Reverse: what clock time is 子时 in New York (timezone positioning)?
-bin/qimen_zhentaiyangshi.sh --shichen=子 --timezone=-5 "2026-04-30"
+tools/bin/qimen_zhentaiyangshi.sh --shichen=子 --timezone=-5 "2026-04-30"
 ```
 
 ### CLI Reference
@@ -509,9 +512,9 @@ The hunlian script `qimen_hunlian.sh` reads the birth plate (`./qmen_birth.json`
 
 ```bash
 # Default usage (birth plate analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_hunlian.sh
+tools/bin/qimen_hunlian.sh
 # Reads ./qmen_birth.json by default
 ```
 
@@ -535,9 +538,9 @@ The xingge script `qimen_xingge.sh` defaults to birth plate (`./qmen_birth.json`
 
 ```bash
 # Default usage (birth plate analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
-bin/qimen_xingge.sh
+tools/bin/qimen_xingge.sh
 # Reads ./qmen_birth.json by default
 ```
 
@@ -561,14 +564,14 @@ The wanwu script `qimen_wanwu.sh` extracts full wanwu (万物类象) corresponde
 
 ```bash
 # Palace mode: extract from birth plate
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_wanwu.sh --palace=3
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_wanwu.sh --palace=3
 
 # Manual mode: specify symbols directly (any combination, at least one)
-bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state=帝旺
+tools/bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门 --deity=九天 --state=帝旺
 
 # Manual mode: single symbol
-bin/qimen_wanwu.sh --gate=开门
+tools/bin/qimen_wanwu.sh --gate=开门
 ```
 
 ### CLI Reference
@@ -602,19 +605,19 @@ It reads both the birth plate (`./qmen_birth.json`) and the event plate (`./qmen
 
 ```bash
 # Step 1: Generate birth plate
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 # Creates ./qmen_birth.json
 
 # Step 2: Generate event plate
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 # Creates ./qmen_event.json
 
 # Step 3: Run yaoce (cross-plate) analysis
-bin/qimen_yaoce.sh
+tools/bin/qimen_yaoce.sh
 # Reads ./qmen_birth.json + ./qmen_event.json, writes ./qmen_yaoce.json
 
 # Step 3b: With yixiang concept stem (optional, after interactive inquiry)
-bin/qimen_yaoce.sh --yixiang=财富
+tools/bin/qimen_yaoce.sh --yixiang=财富
 # Adds yixiang stem (戊) to the analysis
 ```
 
@@ -657,79 +660,79 @@ Requires: ./qmen_birth.json (for day stem, hour stem, birth year stem, zhifu/zhi
 
 ```bash
 # Current time
-bin/qimen_qiju.sh
+tools/bin/qimen_qiju.sh
 
 # Specific datetime (auto-detected as birth plate)
-bin/qimen_qiju.sh "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh "2026-04-18 10:00"
 
 # Birth plate (explicit)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
 
 # Tianqin lodges in Kun 2-palace (traditional, instead of default follow-tiannei)
-bin/qimen_qiju.sh --tianqin=jikun "2024-02-04 11:00"
+tools/bin/qimen_qiju.sh --tianqin=jikun "2024-02-04 11:00"
 
 # Tianqin follows Zhifu star
-bin/qimen_qiju.sh --tianqin=follow-zhifu "2024-02-04 11:00"
+tools/bin/qimen_qiju.sh --tianqin=follow-zhifu "2024-02-04 11:00"
 
 # Custom JSON output path
-bin/qimen_qiju.sh --output=/tmp/plate.json "2026-04-18 10:00"
+tools/bin/qimen_qiju.sh --output=/tmp/plate.json "2026-04-18 10:00"
 
 # Full pipeline: birth plate + event plate + analysis
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_event.sh --question=事业
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_event.sh --question=事业
 
 # Run analysis with custom paths
-bin/qimen_event.sh --input=/tmp/plate.json --question=求财
+tools/bin/qimen_event.sh --input=/tmp/plate.json --question=求财
 
 # Verbose analysis (all wanwu fields)
-bin/qimen_event.sh --question=婚姻感情 --verbose
+tools/bin/qimen_event.sh --question=婚姻感情 --verbose
 
 # Caiguan (auto-reads birth year from qmen_birth.json)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_caiguan.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_caiguan.sh
 
 # Buzhen (array placement)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_huaqizhen.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_huaqizhen.sh
 
 # Buzhen with event plate
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_huaqizhen.sh --input=./qmen_event.json
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_huaqizhen.sh --input=./qmen_event.json
 
 # Buzhen with family protection
-bin/qimen_huaqizhen.sh --family-stems=甲,丙
+tools/bin/qimen_huaqizhen.sh --family-stems=甲,丙
 
 # Buzhen with yixiang concept protection
-bin/qimen_huaqizhen.sh --yixiang=财富,权威
+tools/bin/qimen_huaqizhen.sh --yixiang=财富,权威
 
 # Yishenhuanjiang (transformation resolution)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_yishenhuanjiang.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_yishenhuanjiang.sh
 
 # Hunlian (marriage/romance analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_hunlian.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_hunlian.sh
 
 # Xingge (personality analysis)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_xingge.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_xingge.sh
 
 # Wanwu (imagery extraction, palace mode)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_wanwu.sh --palace=3
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_wanwu.sh --palace=3
 
 # Wanwu (imagery extraction, manual mode)
-bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
+tools/bin/qimen_wanwu.sh --stem=丙 --star=天冲 --gate=伤门
 
 # Yaogce (cross-plate analysis: birth + event)
-bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
-bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-bin/qimen_yaoce.sh
+tools/bin/qimen_qiju.sh --type=birth "1973-04-24 19:30"
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_yaoce.sh
 
 # Yaogce with yixiang concept stem (optional, after interactive inquiry)
-bin/qimen_yaoce.sh --yixiang=财富
+tools/bin/qimen_yaoce.sh --yixiang=财富
 ```
 
 Full CLI reference:
@@ -738,7 +741,7 @@ Full CLI reference:
 Usage: qimen_qiju.sh [OPTIONS] [DATETIME]
 
 奇门遁甲起局 (Qi Men Dun Jia Plate Setting)
-时家奇门 · 置闰法
+时家奇门 置闰法
 
 DATETIME format: "YYYY-MM-DD HH:MM" (default: current time)
 
@@ -759,7 +762,7 @@ Run `install.sh` to symlink the project into your OpenCode skills directory and 
 bash install.sh
 ```
 
-This creates a symlink for each `qmen_*` sub-skill in the OpenCode skills directory (e.g. `qmen_dunjia`, `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`, `qmen_wanwu`, `qmen_yaoce`). Each skill sub-directory also contains relative symlinks (`bin`, `data`, `lib`) pointing back to the project root, so AI agents can resolve the project root at runtime without hardcoded paths. Restart OpenCode to load the skills.
+This creates a symlink for each `qmen_*` sub-skill in the OpenCode skills directory (e.g. `qmen_dunjia`, `qmen_event`, `qmen_caiguan`, `qmen_huaqizhen`, `qmen_hunlian`, `qmen_xingge`, `qmen_wanwu`, `qmen_yaoce`). Each skill sub-directory also contains relative symlinks (`bin`, `data`, `lib`) pointing to the project's tools directory, so AI agents can resolve the project root at runtime without hardcoded paths. Restart OpenCode to load the skills.
 
 ## Requirements
 

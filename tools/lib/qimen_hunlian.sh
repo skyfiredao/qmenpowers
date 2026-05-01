@@ -675,11 +675,45 @@ hl_output_text() {
     fi
     _hl_print_palace_wanwu "$_HL_LIUHE_PALACE"
 
+    # --- 脱单方案 ---
+    printf '\n脱单方案:\n'
+    printf '  方法: 把日干(%s)和干合(%s)放到一起\n' "$_HL_RIGAN_STEM" "$_HL_GANHE_STEM"
+    printf '  避开击刑，若能放入六合(%s)宫方位更佳，尽量避开沐浴位\n' "$(_hl_palace_label "$lp")"
+    printf '  禁忌方位: 击刑（脾气暴躁），入墓（抑郁症）\n'
+    local _rp_jx="" _rp_rm="" _gp_jx="" _gp_rm=""
+    dl_get_v "palace_${rp}_ji_xing" 2>/dev/null || true; _rp_jx="$_DL_RET"
+    dl_get_v "palace_${rp}_rumu_gan" 2>/dev/null || true; _rp_rm="$_DL_RET"
+    dl_get_v "palace_${gp}_ji_xing" 2>/dev/null || true; _gp_jx="$_DL_RET"
+    dl_get_v "palace_${gp}_rumu_gan" 2>/dev/null || true; _gp_rm="$_DL_RET"
+    local _rp_unsafe="" _gp_unsafe=""
+    [[ "$_rp_jx" == "true" ]] && _rp_unsafe="${_rp_unsafe}击刑,"
+    [[ -n "$_rp_rm" && "$_rp_rm" != "false" ]] && _rp_unsafe="${_rp_unsafe}入墓,"
+    [[ "$_gp_jx" == "true" ]] && _gp_unsafe="${_gp_unsafe}击刑,"
+    [[ -n "$_gp_rm" && "$_gp_rm" != "false" ]] && _gp_unsafe="${_gp_unsafe}入墓,"
+    _rp_unsafe="${_rp_unsafe%,}"
+    _gp_unsafe="${_gp_unsafe%,}"
+    if [[ -n "$_rp_unsafe" ]]; then
+        printf '  [注意]日干宫(%s)有%s——%s的象不可放入此方位\n' "$(_hl_palace_label "$rp")" "$_rp_unsafe" "$_HL_GANHE_STEM"
+    fi
+    if [[ -n "$_gp_unsafe" ]]; then
+        printf '  [注意]干合宫(%s)有%s——%s的象不可放入此方位\n' "$(_hl_palace_label "$gp")" "$_gp_unsafe" "$_HL_RIGAN_STEM"
+    fi
+    if [[ -z "$_rp_unsafe" && -z "$_gp_unsafe" ]]; then
+        printf '  可把%s的象放入%s，或%s的象放入%s\n' "$_HL_GANHE_STEM" "$(_hl_palace_label "$rp")" "$_HL_RIGAN_STEM" "$(_hl_palace_label "$gp")"
+    elif [[ -z "$_rp_unsafe" ]]; then
+        printf '  可把%s的象放入%s\n' "$_HL_GANHE_STEM" "$(_hl_palace_label "$rp")"
+    elif [[ -z "$_gp_unsafe" ]]; then
+        printf '  可把%s的象放入%s\n' "$_HL_RIGAN_STEM" "$(_hl_palace_label "$gp")"
+    fi
+    printf '  9天合象: 两物各自方位放满9天（代表天干本身），再将两物放到一起\n'
+    printf '  简化版: 只取天干本身的象\n'
+
     # --- 沐浴位(桃花位) ---
     dl_get_v "muyu_${_HL_RIGAN_STEM}"; local muyu_raw="$_DL_RET"
     local muyu_dz="${muyu_raw%%,*}" muyu_p="${muyu_raw##*,}"
     printf '\n沐浴位(桃花位) — %s %s\n' "$muyu_dz" "$(_hl_palace_label "${muyu_p:-0}")"
     printf '  赤裸袒露,鱼水之欢,一夜情,淫荡,放纵,泄密\n'
+    printf '  禁忌: 避免骗色话术操纵，不要随便泄露生辰八字，不要被坏人安排在沐浴位，会失身泄密\n'
 
     # --- 三奇 ---
     printf '\n三奇:\n'
@@ -700,6 +734,14 @@ hl_output_text() {
     if (( _sq_has_tongong )); then
         printf '  日干和干合遇到三奇,沐浴在同宫,即为桃花\n'
     fi
+    printf '  三奇含义: 艳遇,奇遇,一见钟情,乱道心,挑逗,性冲动,梦中情人,帅哥美女,海王,渣男渣女\n'
+
+    printf '\n催桃花:\n'
+    printf '  桃花为放纵,刺激,爽,鱼水之欢,赤裸的男女关系\n'
+    printf '  方法: 把对应异性（三奇）的天干放入本人日干所在宫(%s)方位\n' "$(_hl_palace_label "$rp")"
+    printf '  乙(温柔,如沐春风,男闺蜜): 小花小草\n'
+    printf '  丙(热辣,骚女,猛男): 漂亮吊灯\n'
+    printf '  丁(妖艳,玉女,女装大佬,妖人,阴柔男性): 点蜡烛\n'
 
     # --- 桃花检测 ---
     local _taohua_found=0
@@ -785,7 +827,7 @@ hl_output_text() {
     if (( _fy_has )); then
         printf '\n伏吟反吟:\n'
         if [[ "$_HL_IS_FUYIN_JU" == "true" ]]; then
-            printf '  伏吟局 — 执着,难受,孤独,大器晚成,心思专一,做事认真,不懂变通,感情严肃沉重,单纯单向\n'
+            printf '  伏吟局 — 执着,难受,孤独,难有挚友,大器晚成,心思专一,做事认真,不懂变通,感情严肃沉重,单纯单向\n'
         fi
         if [[ "$_HL_IS_FANYIN_JU" == "true" ]]; then
             printf '  反吟局 — 折腾不断,很难长久,短期恋情,事多无暇,不稳定,朝三暮四,换来换去\n'
@@ -801,7 +843,7 @@ hl_output_text() {
         printf '\n空亡影响:\n'
         [[ "$_HL_RIGAN_KW" == "true" ]] && printf '  日干空亡 — 自己不现实，错失姻缘\n'
         [[ "$_HL_GANHE_KW" == "true" ]] && printf '  干合空亡 — 意中人一直不出现\n'
-        [[ "$_HL_LIUHE_KW" == "true" ]] && printf '  六合空亡 — 互相有意愿，但没有交往的机会\n'
+        [[ "$_HL_LIUHE_KW" == "true" ]] && printf '  六合空亡 — 互相有意愿，也有意中人，但没有交往的机会\n'
         # kongwang remedy
         local _kw_dz1="" _kw_dz2=""
         dl_get_v "plate_kong_wang_0_branch" 2>/dev/null || true; _kw_dz1="$_DL_RET"
@@ -824,7 +866,7 @@ hl_output_text() {
     # --- 艮坤刑迫 ---
     printf '\n艮坤刑迫:\n'
     printf '  艮宫(东北)和坤宫(西南)属土(调和)，出问题则家庭出问题\n'
-    printf '  有击刑和门迫: 非常伤害感情。遇庚+白虎更甚: 受情伤，感情复杂\n'
+    printf '  有击刑和门迫: 非常伤害感情。遇庚+白虎更甚: 受情伤，情感关系复杂，多段不寻常的感情，自己或家庭父母，变故极多，伤害极大\n'
 
     printf '\n  艮8宫(东北,土):\n'
     _hl_print_palace_detail 8 "    "
@@ -842,6 +884,22 @@ hl_output_text() {
         printf '    六害: 无\n'
     fi
     printf '  用化气阵化解\n'
+    local _gk_geng_baihu=""
+    if [[ "$_HL_GEN8_HAS_GENG" == "true" || "$_HL_GEN8_HAS_BAIHU" == "true" ]]; then
+        local _g8_tags=""
+        [[ "$_HL_GEN8_HAS_GENG" == "true" ]] && _g8_tags="庚"
+        [[ "$_HL_GEN8_HAS_BAIHU" == "true" ]] && _g8_tags="${_g8_tags:+${_g8_tags}+}白虎"
+        _gk_geng_baihu="${_gk_geng_baihu}艮8宫有${_g8_tags}; "
+    fi
+    if [[ "$_HL_KUN2_HAS_GENG" == "true" || "$_HL_KUN2_HAS_BAIHU" == "true" ]]; then
+        local _k2_tags=""
+        [[ "$_HL_KUN2_HAS_GENG" == "true" ]] && _k2_tags="庚"
+        [[ "$_HL_KUN2_HAS_BAIHU" == "true" ]] && _k2_tags="${_k2_tags:+${_k2_tags}+}白虎"
+        _gk_geng_baihu="${_gk_geng_baihu}坤2宫有${_k2_tags}; "
+    fi
+    if [[ -n "$_gk_geng_baihu" ]]; then
+        printf '  [警告] %s— 情感伤害加重\n' "$_gk_geng_baihu"
+    fi
 
     # --- 孤辰寡宿 ---
     printf '\n孤辰寡宿:\n'
@@ -859,7 +917,7 @@ hl_output_text() {
     printf '\n增加情趣:\n'
     printf '  丁(男): 器官,大小,耐久力\n'
     printf '  癸(女): 器官,大小,耐受力\n'
-    printf '  催情: 男催癸,女催丁\n'
+    printf '  催情催对方: 男催癸,女催丁\n'
     printf '  生助丁癸,或将其放入日干宫\n'
     printf '  在丁宫放木火,生助丁\n'
     printf '  在癸宫放金水,生助癸\n'
@@ -868,7 +926,7 @@ hl_output_text() {
     if (( _HL_SHANGMEN_PALACE > 0 )); then
         printf '\n  伤门(刺激) — %s\n' "$(_hl_palace_label "$_HL_SHANGMEN_PALACE")"
         printf '    姿势,花样,挑逗,不满足\n'
-        printf '    短期将天干和干合放入伤门所在宫方位,适用特殊性癖,切记只能短期\n'
+        printf '    短期将天干和干合放入伤门所在宫方位,适用特殊性癖,如角色扮演,SM,切记只能短期\n'
         if (( _HL_SHANGMEN_PALACE != 5 )); then
             _hl_print_palace_detail "$_HL_SHANGMEN_PALACE" "    "
         fi
@@ -876,7 +934,7 @@ hl_output_text() {
 
     if (( _HL_TIANPENG_PALACE > 0 )); then
         printf '\n  天蓬(性魅力) — %s\n' "$(_hl_palace_label "$_HL_TIANPENG_PALACE")"
-        printf '    极致的性魅力,致命吸引力\n'
+        printf '    性吸引力,极致的性魅力,致命吸引力\n'
         printf '    多穿毛绒绒,女性爱毛绒,男友魅力爆棚\n'
         printf '    养猫狗也是创造情趣,情感补偿,养大狗,情趣猛\n'
         printf '    将蓝黑色带毛的东西放到日干宫\n'
@@ -1160,6 +1218,25 @@ hl_output_json() {
     printf '  "liuhe": {\n' >&3
     _hl_output_loc_json "$_HL_LIUHE_PALACE" 3 "    "
     _hl_emit_palace_wanwu_json 3 "$_HL_LIUHE_PALACE"
+    printf '  },\n' >&3
+
+    local _j_rp_jx="" _j_rp_rm="" _j_gp_jx="" _j_gp_rm=""
+    dl_get_v "palace_${_HL_RIGAN_PALACE}_ji_xing" 2>/dev/null || true; _j_rp_jx="$_DL_RET"
+    dl_get_v "palace_${_HL_RIGAN_PALACE}_rumu_gan" 2>/dev/null || true; _j_rp_rm="$_DL_RET"
+    dl_get_v "palace_${_HL_GANHE_PALACE}_ji_xing" 2>/dev/null || true; _j_gp_jx="$_DL_RET"
+    dl_get_v "palace_${_HL_GANHE_PALACE}_rumu_gan" 2>/dev/null || true; _j_gp_rm="$_DL_RET"
+    local _j_rp_has_jx="false" _j_rp_has_rm="false" _j_gp_has_jx="false" _j_gp_has_rm="false"
+    [[ "$_j_rp_jx" == "true" ]] && _j_rp_has_jx="true"
+    [[ -n "$_j_rp_rm" && "$_j_rp_rm" != "false" ]] && _j_rp_has_rm="true"
+    [[ "$_j_gp_jx" == "true" ]] && _j_gp_has_jx="true"
+    [[ -n "$_j_gp_rm" && "$_j_gp_rm" != "false" ]] && _j_gp_has_rm="true"
+    printf '  "tuodan": {\n' >&3
+    printf '    "ri_gan_palace_jixing": %s,\n' "$_j_rp_has_jx" >&3
+    printf '    "ri_gan_palace_rumu": %s,\n' "$_j_rp_has_rm" >&3
+    printf '    "ganhe_palace_jixing": %s,\n' "$_j_gp_has_jx" >&3
+    printf '    "ganhe_palace_rumu": %s,\n' "$_j_gp_has_rm" >&3
+    printf '    "liuhe_palace": %s,\n' "${_HL_LIUHE_PALACE:-0}" >&3
+    printf '    "timing": "9天合象"\n' >&3
     printf '  },\n' >&3
 
     printf '  "muyu": {\n' >&3
