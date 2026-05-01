@@ -61,6 +61,8 @@ skill_qmenpowers/
 │   │   └── SKILL.md                    # Personality analysis skill
 │   ├── qmen_xunshijieyun/
 │   │   └── SKILL.md                    # Xunshijieyun (寻时借运) skill
+│   ├── qmen_zhanduan/
+│   │   └── SKILL.md                    # Zhanduan (古籍占断) divination judgment skill
 │   └── qmen_yaoce/
 │       └── SKILL.md                    # Yaoce (cross-plate array-breaking) analysis skill
 ├── tools/
@@ -75,6 +77,7 @@ skill_qmenpowers/
 │   │   ├── qimen_wanwu.sh              # Wanwu imagery extraction CLI
 │   │   ├── qimen_xingge.sh             # Personality analysis CLI
 │   │   ├── qimen_xunshijieyun.sh       # Xunshijieyun (寻时借运) CLI
+│   │   ├── qimen_zhanduan.sh           # Zhanduan (古籍占断) divination CLI
 │   │   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) CLI
 │   ├── lib/
 │   │   ├── data_loader.sh              # Generic data file loader
@@ -87,6 +90,7 @@ skill_qmenpowers/
 │   │   ├── qimen_caiguan.sh            # Caiguan analysis library
 │   │   ├── qimen_hunlian.sh            # Hunlian (marriage/romance) analysis library
 │   │   ├── qimen_xingge.sh             # Personality analysis library
+│   │   ├── qimen_zhanduan.sh           # Zhanduan (古籍占断) DSL evaluator library
 │   │   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) library
 │   └── data/
 │       ├── tiangan_dizhi.dat           # Engine: stems & branches
@@ -116,6 +120,7 @@ skill_qmenpowers/
 │       ├── rules_yishenhuanjiang.dat   # Yishenhuanjiang: transformation resolution rules, wuxing mappings, jinji, yindong
 │       ├── buzhen_xiangshu.dat         # Buzhen: stem/branch imagery (colors, materials, animals)
 │       ├── rules_hunlian.dat           # Hunlian: gan-he combinations, muyu positions, guchen/guasu groups, taohua deity/sanqi rules
+│       ├── rules_zhanduan.dat          # Zhanduan: ancient divination judgment rules (DSL format)
 │       └── wanwu_huaqizhen.dat         # Huaqi: personality analysis correspondences
 ├── install.sh                          # Installation script
 ├── README.md
@@ -148,6 +153,8 @@ skill_qmenpowers/
 
 **`tools/lib/qimen_yaoce.sh`** provides the yaoce (remote sensing) cross-plate analysis library: uses `qj_parse_plate_json` to parse both birth and event plate JSONs, extracts five stem types from the birth plate (day stem, hour stem, birth year stem, zhifu palace heaven stem, zhishi palace heaven stem), locates each on the event plate (heaven plate priority, earth plate fallback), collects palace environment info (stem/star/gate/deity/state/markers), detects six-harm (六害) per palace, extracts wanwu correspondences, and outputs structured text/JSON with per-stem analysis results. Supports optional yixiang (意象) concept stems passed via CLI. Self-contained helper functions (`_yc_` prefix) for stem wuxing, star jixi, and gate jixi lookups with no dependency on qimen_caiguan.sh.
 
+**`tools/lib/qimen_zhanduan.sh`** provides the ancient divination judgment (占断) DSL evaluator library. It reads `rules_zhanduan.dat` containing per-topic role definitions and judgment rules in a custom DSL. The evaluator parses condition expressions (wuxing relationships: `>` sheng, `<` ke, `=` equal, `!` overcome-by, `^` counter-ke; state queries (`?` prefix = unary "is role in this state?", applied to a single role): `?旺` `?囚` `?奇` `?吉门` `?凶门` `?吉格` `?凶格` `?空` `?墓` `?返` `?伏` `?内` `?外`; special: `庚格:年/月/日/时`), resolves role stems to palace positions on the event plate, evaluates all rules collecting matched conclusions, and outputs structured text/JSON. All-match semantics (not first-match). Uses `_zd_` prefix for all helper functions.
+
 **`tools/bin/qimen_caiguan.sh`** is the caiguan diagnosis CLI. It reads the birth plate (`./qmen_birth.json`) only. It auto-reads `./qmen_birth.json` for birth year stem, then outputs a structured caiguan analysis JSON with wealth and career hazard diagnostics.
 
 **`tools/bin/qimen_huaqizhen.sh`** is the huaqizhen buzhen CLI. It defaults to birth plate (`./qmen_birth.json`); use `--input` to specify an event plate for event-based analysis. It auto-reads `./qmen_birth.json` for birth year stem, takes optional family stems and yixiang concept stems, and outputs a structured buzhen JSON with miexiang list and per-palace placement plans.
@@ -159,6 +166,8 @@ skill_qmenpowers/
 **`tools/bin/qimen_xingge.sh`** is the personality analysis CLI. It reads the birth plate (`./qmen_birth.json`) only. It reads the birth day stem and hour stem, locates them on the plate, extracts personality trait correspondences from the star, gate, and deity at each stem's palace, and outputs structured personality analysis JSON.
 
 **`tools/bin/qimen_xunshijieyun.sh`** is the xunshijieyun (寻时借运) CLI. It reads a plate JSON (default `./qmen_birth.json`), generates 60 variant plates by cycling the time pillar through all 60 甲子 while keeping the 局数 fixed, ranks them by total 六害 count on protected stems, and outputs sortable JSON files to `./60ke/`. Protected stems include day stem, hour stem, birth year stem, optional yixiang concept stems, and per-course zhifu/zhishi palace stems.
+
+**`tools/bin/qimen_zhanduan.sh`** is the zhanduan (古籍占断) divination CLI. It reads an event plate JSON (`./qmen_event.json`), applies judgment rules from `rules_zhanduan.dat` for a user-specified topic, and outputs structured text/JSON with all matched conclusions. Supports `--list` to enumerate available topics, `--list-cat=X` to filter by category, and `--topic=X` to execute judgment. Writes to `./qmen_zhanduan.json`.
 
 **`tools/bin/qimen_wanwu.sh`** is the wanwu imagery extraction CLI. It supports two modes: palace mode (`--palace=N`) extracts all wanwu correspondences for a given palace from a plate JSON, and manual mode (`--stem/--star/--gate/--deity/--state`) accepts any combination of symbols directly. Each symbol is optional; at least one is required. Outputs structured text and JSON with full wanwu correspondences per symbol.
 
@@ -206,6 +215,7 @@ Comprehensive correspondence tables for Qi Men interpretation. These files are n
 | `rules_yongshen.dat` | Yongshen (use god) selection rules: 9 question types, each with prioritized star/gate/deity/stem selections |
 | `wanwu_prefix_map.dat` | Symbol name to wanwu file prefix mapping: maps Chinese names to data file key prefixes |
 | `rules_yishenhuanjiang.dat` | Yishenhuanjiang: per-problem-type resolution paths, wuxing sheng/xie/ke mappings, mu (tomb) branches, chong/he pairs, jinji prohibitions, yindong activation methods, override examples |
+| `rules_zhanduan.dat` | Zhanduan (古籍占断): per-topic divination rules in custom DSL format; role definitions (stem assignments), condition expressions (wuxing relationships + state queries), conclusions as original ancient text |
 
 ### Huaqi Data
 
@@ -594,6 +604,39 @@ Options:
 Requires: ./qmen_birth.json (generated by qimen_qiju.sh --type=birth)
 ```
 
+## Zhanduan Script (古籍占断)
+
+The zhanduan script `qimen_zhanduan.sh` applies mechanical divination judgment rules from "Qi Men Zhi Gui" (《奇门旨归》) volumes 6-13 to an event plate. It reads `rules_zhanduan.dat` which encodes ancient text judgment criteria in a custom DSL, resolves role stems (日干, 时干, 年干, 用神, custom named roles) to their palace positions on the plate, evaluates wuxing relationship and state conditions between roles, and collects all matched conclusions. The output is the final answer — no AI interpretation, summary, or advice is added.
+
+### Pipeline
+
+```bash
+# Generate event plate
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+
+# Run divination judgment
+tools/bin/qimen_zhanduan.sh --topic=占婚姻
+
+# List all available topics
+tools/bin/qimen_zhanduan.sh --list
+```
+
+### CLI Reference
+
+```
+Usage: qimen_zhanduan.sh [OPTIONS]
+
+Options:
+  --input=PATH        Input event plate JSON (default: ./qmen_event.json)
+  --topic=TOPIC       Divination topic (e.g. 占婚姻, 占官司, 占行人归期)
+  --list              List all available topics with categories
+  --list-cat=CAT      List topics in a specific category
+  --output=PATH       Output JSON path (default: ./qmen_zhanduan.json)
+  -h, --help          Show this help
+
+Requires: ./qmen_event.json (generated by qimen_qiju.sh --type=event)
+```
+
 ## Wanwu Script (万物类象提取)
 
 The wanwu script `qimen_wanwu.sh` extracts full wanwu (万物类象) correspondences for a set of Qi Men symbols. Two input modes: palace mode reads symbols from a plate JSON, manual mode accepts symbols directly. At least one symbol is required in manual mode. Outputs structured text and JSON with all correspondence fields per symbol.
@@ -692,6 +735,8 @@ Requires: ./qmen_birth.json (for day stem, hour stem, birth year stem, zhifu/zhi
 
 **`qmen_xunshijieyun`** (寻时借运) drives the 幻化六十课 mechanism — the third resolution method (换局) independent of miexiang and buzhen: generates 60 variant plates → ranks by liuhai on protected stems → presents optimal course(s) → guides user to recreate the favorable time-space layout by arranging physical objects per palace's wanwu correspondences. For event plates, interacts with user to determine yixiang concept stem. For birth plates, runs directly. Handles tie-breaking when multiple courses share the lowest liuhai count.
 
+**`qmen_zhanduan`** (古籍占断) executes mechanical divination judgments based entirely on ancient text rules from "Qi Men Zhi Gui" (《奇门旨归》volumes 6-13). The script evaluates DSL-encoded rules against the event plate: resolves role stems (日干/时干/年干/用神/custom) to palace positions, evaluates wuxing relationships and state conditions between roles, collects all matched conclusions, and presents them verbatim. AI does not interpret, summarize, or add advice — the script output IS the final answer.
+
 **`qmen_wanwu`** (万物类象画像) generates creative imagery portraits from Qi Men symbol combinations. Three modes: scene (environment/atmosphere), object (shape/color/material/function), and person (appearance/temperament/behavior). Symbols are flexibly mapped to dimensions (each symbol used once), with twelve growth stages as lowest-priority modifier. Supports iterative refinement (style, domain, era adjustments) within wanwu data bounds.
 
 **`qmen_yaoce`** (遥测 / 破阵) drives cross-plate array-breaking analysis in an 8-step flow. The event plate is treated as a natural array (天然阵) that has already formed and is affecting the subject; yaoce diagnoses this array, measures its harm on the subject's protected stems, then plans counter-measures. Flow: collects birth time and event time → ritual reminder → generates both plates → **diagnoses natural array** (AI reads event plate: six-harm distribution, array pattern, overall assessment) → **locates native** (runs yaoce script: places 5 protected stem types on event plate, namely day stem, hour stem, birth year stem, zhifu palace stem, zhishi palace stem; detects six-harm, extracts wanwu) → **assesses harm** (AI interprets each stem's palace via 6-module framework: day+hour contrast, birth year root, zhifu/zhishi authority, scene reconstruction, yixiang concept, re-layout plan) → interactive inquiry to refine yixiang concept stem (optional re-run with `--yixiang`) → **re-layout** (step 1: miexiang urgent removal of harmful symbols identified during diagnosis; step 2: guides user to `qmen_huaqizhen` for systematic counter-array placement).
@@ -780,6 +825,16 @@ tools/bin/qimen_xunshijieyun.sh
 
 # Xunshijieyun with yixiang concept protection
 tools/bin/qimen_xunshijieyun.sh --yixiang=财富
+
+# Zhanduan (ancient text divination judgment)
+tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
+tools/bin/qimen_zhanduan.sh --topic=占婚姻
+
+# Zhanduan: list all available topics
+tools/bin/qimen_zhanduan.sh --list
+
+# Zhanduan: list topics in a category
+tools/bin/qimen_zhanduan.sh --list-cat=社交
 ```
 
 Full CLI reference:

@@ -1,0 +1,781 @@
+# Copyright (C) 2025 — Licensed under GPL-3.0
+# See https://www.gnu.org/licenses/gpl-3.0.html
+
+# ============================================================
+# 奇门遁甲占断规则 (Qi Men Dun Jia Divination Rules)
+# 来源: 《奇门旨归》朱浩文星源述
+# 格式: key=value (UTF-8)
+# ============================================================
+
+# ============================================================
+# 第一部分: 主题索引
+# ============================================================
+topic_count=51
+topic_list=投军,攻城,胜败,文武升迁,降职调动,求官,见贵人,求人办事,访人,人来访,请客,求人推荐,求职,任职,退役,迁移,行人安否,行人归期,求财,贸易,合伙求财,开店,交易,买货,借贷,放债,讨债,考试,病吉凶,请医,产育,用药,失物,走失,捕盗,逃亡,寻人,远方消息,信息虚实,诉讼,官司,囚禁,婚姻,怀孕,房产,家宅,坟墓,出行,求学,天气,农事
+# ============================================================
+# 第二部分: 各主题定义 (角色 + 判断规则)
+# ============================================================
+
+# --- 投军 (卷六) ---
+# 以天冲为武士,值符为主帅
+投军_label=投军
+投军_source=卷六
+投军_role_wushi=star:天冲
+投军_role_zhushuai=ref:值符
+投军_judge_01=zhushuai>wushi=>值符生天冲,主帅欣赏,一见即投合
+投军_judge_02=wushi>zhushuai=>天冲生值符,武士有益于帅,去即为都长后必大用
+投军_judge_03=zhushuai=wushi=>比和,主客相安,可投
+投军_judge_04=zhushuai!wushi=>值符克天冲,主帅不收,定不录用
+投军_judge_05=wushi!zhushuai=>天冲克值符,犯上之嫌,不宜投
+投军_judge_06=wushi?伏=>天冲伏吟,空回无功
+投军_judge_07=wushi?返=>天冲返吟,反覆不定
+
+# --- 攻城 (卷六) ---
+# 以六庚为攻者,天禽为守者
+攻城_label=攻城
+攻城_source=卷六
+攻城_role_gongzhe=stem:庚
+攻城_role_shouzhe=star:天禽
+攻城_judge_01=gongzhe?旺+gongzhe?吉门=>庚乘旺相得吉门,攻城必破
+攻城_judge_02=shouzhe?旺+shouzhe?吉门=>天禽旺相得吉门,城守坚固不可破
+攻城_judge_03=gongzhe!shouzhe=>攻者克守者,城可破
+攻城_judge_04=shouzhe!gongzhe=>守者克攻者,攻城不利
+攻城_judge_05=gongzhe?空=>攻者空亡,攻势虚张
+攻城_judge_06=shouzhe?空=>守者空亡,城防空虚可破
+
+# --- 胜败 (卷六) ---
+# 以值符为主(我方),六庚为客(敌方)
+# 景惊二门为战阵要门
+胜败_label=胜败
+胜败_source=卷六
+胜败_role_zhuren=ref:值符
+胜败_role_keren=stem:庚
+胜败_judge_01=zhuren!keren=>值符克庚,主胜
+胜败_judge_02=keren!zhuren=>庚克值符,客胜
+胜败_judge_03=zhuren?旺+keren?囚=>主旺客囚,主必大胜
+胜败_judge_04=keren?旺+zhuren?囚=>客旺主囚,客必大胜
+胜败_judge_05=zhuren=keren=>比和,两相恐惧不战而退
+胜败_judge_06=zhuren@keren=>庚加值符,主客同宫,不分胜负
+胜败_judge_07=zhuren>keren=>主生客,主损财讲和
+胜败_judge_08=keren>zhuren=>客生主,客损财讲和
+
+# --- 文武升迁 (卷六) ---
+# 开门为文官,杜门为武官
+# 乘一奇旺相生年命日干者升
+文武升迁_label=文武升迁
+文武升迁_source=卷六
+文武升迁_role_wenguan=gate:开门
+文武升迁_role_wuguan=gate:杜门
+文武升迁_role_rigan=ref:日干
+文武升迁_judge_01=wenguan?奇+wenguan?旺+wenguan>rigan=>开门乘奇旺相生日干,文官必升
+文武升迁_judge_02=wuguan?奇+wuguan?旺+wuguan>rigan=>杜门乘奇旺相生日干,武官必升
+文武升迁_judge_03=wenguan?奇+wenguan>rigan=>开门得奇生日干,文官升但不速
+文武升迁_judge_04=wuguan?奇+wuguan>rigan=>杜门得奇生日干,武官升但不速
+文武升迁_judge_05=wenguan!rigan=>开门克日干,文官不升反有损
+文武升迁_judge_06=wuguan!rigan=>杜门克日干,武官不升反有损
+
+# --- 降职调动 (卷六) ---
+# 开门受克文官降职调动,杜门受克武官降职调动
+降职调动_label=降职调动
+降职调动_source=卷六
+降职调动_role_wenguan=gate:开门
+降职调动_role_wuguan=gate:杜门
+降职调动_judge_01=wenguan?囚=>开门休囚,文官降职调动
+降职调动_judge_02=wuguan?囚=>杜门休囚,武官降职调动
+降职调动_judge_03=wenguan?返=>开门返吟,主调任
+降职调动_judge_04=wuguan?返=>杜门返吟,主调任
+降职调动_judge_05=wenguan?空=>开门空亡,必革职
+降职调动_judge_06=wuguan?空=>杜门空亡,必革职
+降职调动_judge_07=wenguan?墓=>开门入墓,不惟降罢仍招罪戾
+降职调动_judge_08=wuguan?墓=>杜门入墓,不惟降罢仍招罪戾
+降职调动_judge_09=wenguan?旺+wenguan?奇+wenguan?吉格=>开门旺相得奇吉格,虽参不妨
+降职调动_judge_10=wuguan?旺+wuguan?奇+wuguan?吉格=>杜门旺相得奇吉格,虽参不妨
+
+# --- 求官 (卷六) ---
+# 以开门落宫与日干决之
+求官_label=求官
+求官_source=卷六
+求官_role_guanxing=gate:开门
+求官_role_rigan=ref:日干
+求官_judge_01=guanxing>rigan+guanxing?奇+guanxing?吉格=>开门生日干得三奇吉格,得官必速
+求官_judge_02=guanxing>rigan=>开门生日干不得三奇吉格,得官必迟
+求官_judge_03=guanxing!rigan=>开门克日干,不得官
+求官_judge_04=guanxing?空=>开门空亡,求官无望
+求官_judge_05=guanxing?墓=>开门入墓,求官受阻
+求官_judge_06=guanxing=rigan=>开门比和日干,可得但须等待
+
+# --- 见贵人 (卷六) ---
+# 以开门甲子戊(值符)为贵人,日干为求谒之人
+见贵人_label=见贵人
+见贵人_source=卷六
+见贵人_role_guiren=ref:值符
+见贵人_role_rigan=ref:日干
+见贵人_judge_01=guiren?旺+guiren?奇+guiren?吉格+guiren>rigan=>贵人旺相得奇吉格生日干,去谒必见且有益
+见贵人_judge_02=guiren=rigan=>贵人比和日干,求谒可见但稍迟
+见贵人_judge_03=guiren@rigan=>贵人与日干同宫,贵人有客宜稍待
+见贵人_judge_04=guiren?返=>贵人返吟,贵人他往不得见
+见贵人_judge_05=guiren?墓=>贵人入墓,不得见
+见贵人_judge_06=guiren!rigan=>贵人克日干,主贵人不喜枉费羞辱
+见贵人_judge_07=guiren?空=>贵人空亡,贵人有忧事不见
+
+# --- 求人办事 (卷六) ---
+# 以休门为所见之人,时干为往见之人
+求人办事_label=求人办事
+求人办事_source=卷六
+求人办事_role_suojian=gate:休门
+求人办事_role_shigan=ref:时干
+求人办事_judge_01=suojian>shigan+suojian?奇=>休门生时干得奇,所求如意
+求人办事_judge_02=suojian>shigan=>休门生时干,可见但所求不全遂
+求人办事_judge_03=suojian!shigan=>休门克时干,不得见或不喜悦所求不遂
+求人办事_judge_04=suojian?旺+shigan?旺=>彼此二宫旺相,相见投契
+求人办事_judge_05=suojian?囚=>休门休囚,所见之人无力相助
+求人办事_judge_06=shigan?囚=>时干休囚,往见不利
+
+# --- 访人 (卷六) ---
+# 以所往方天盘为我,地盘为他
+# 天地二盘相比和者必见
+访人_label=访人
+访人_source=卷六
+访人_role_rigan=ref:日干
+访人_role_shigan=ref:时干
+访人_judge_01=rigan>shigan=>日干生时干,我有益于彼可见
+访人_judge_02=shigan>rigan=>时干生日干,彼有益于我可见
+访人_judge_03=rigan=shigan=>比和,必见相投
+访人_judge_04=rigan!shigan=>日干克时干,主猜疑不见
+访人_judge_05=shigan!rigan=>时干克日干,彼有敌意不宜见
+访人_judge_06=shigan?墓=>时干入墓,彼在家不肯见
+访人_judge_07=shigan?空=>时干空亡,彼实不在家
+
+# --- 人来访 (卷六) ---
+# 以来人方天盘星为来人(客),地盘为我(主)
+# 天盘星得奇门来生地盘为贵客
+人来访_label=人来访
+人来访_source=卷六
+人来访_role_keren=ref:时干
+人来访_role_zhuren=ref:日干
+人来访_judge_01=keren>zhuren+keren?奇+keren?吉门=>来人得奇吉门生我,贵客有益可见
+人来访_judge_02=keren>zhuren=>来人生我,客有善意可见
+人来访_judge_03=keren!zhuren+keren?凶门+keren?凶格=>来人克我乘凶门凶格,必损我不可见
+人来访_judge_04=keren!zhuren=>来人克我,来意不善宜慎
+人来访_judge_05=keren=zhuren=>比和,平常往来无害
+
+# --- 请客 (卷六) ---
+# 以值符为客,日干为主
+# 天乙(日干)所乘之宫来生值符者必来
+请客_label=请客
+请客_source=卷六
+请客_role_ke=ref:值符
+请客_role_zhu=ref:日干
+请客_judge_01=zhu>ke=>主生客,客必来
+请客_judge_02=ke>zhu=>客生主,客亦来
+请客_judge_03=zhu=ke=>比和,客来
+请客_judge_04=zhu!ke=>主克客,客不来
+请客_judge_05=ke!zhu=>客克主,客不来且有嫌隙
+请客_judge_06=ke?空=>客空亡,必不来
+
+# --- 求人推荐 (卷七) ---
+# 以甲子戊(值符)为求荐之人,天乙(时干)为推荐之人
+求人推荐_label=求人推荐
+求人推荐_source=卷七
+求人推荐_role_qiujian=ref:值符
+求人推荐_role_tuijian=ref:时干
+求人推荐_judge_01=tuijian>qiujian=>推荐人生求荐人,必推荐
+求人推荐_judge_02=tuijian=qiujian=>比和,愿荐但力度有限
+求人推荐_judge_03=tuijian!qiujian=>推荐人克求荐人,不荐
+求人推荐_judge_04=tuijian?空=>推荐人空亡,无人可推荐
+求人推荐_judge_05=tuijian?墓=>推荐人入墓,有心无力
+
+# --- 求职 (卷七) ---
+# 以天辅为求求职之人,开门为官宦
+求职_label=求职
+求职_source=卷七
+求职_role_qiumu=star:天辅
+求职_role_guanhuan=gate:开门
+求职_judge_01=guanhuan?吉格+guanhuan>qiumu=>开门乘吉格生天辅,显官来聘
+求职_judge_02=guanhuan>qiumu=>开门生天辅无吉格,贵人举荐
+求职_judge_03=guanhuan=qiumu=>比和,主宾投契
+求职_judge_04=guanhuan!qiumu=>开门克天辅,主宾不利
+求职_judge_05=qiumu?返=>天辅返吟,中途而废
+求职_judge_06=qiumu?空=>天辅空亡,不得馆
+求职_judge_07=qiumu?墓=>天辅入墓,不得馆
+
+# --- 任职 (卷七) ---
+# 以开门为官长,日干为役人
+任职_label=任职
+任职_source=卷七
+任职_role_guanzhang=gate:开门
+任职_role_yiren=ref:日干
+任职_judge_01=yiren?旺+yiren?奇+yiren?吉格+guanzhang>yiren=>日干旺相得奇吉格开门来生,必得重用
+任职_judge_02=guanzhang>yiren=>开门生日干,上官看重
+任职_judge_03=guanzhang!yiren=>开门克日干,任职不利
+任职_judge_04=guanzhang=yiren=>比和,平常差遣
+任职_judge_05=yiren?囚=>日干休囚,任职辛苦无益
+
+# --- 退役 (卷七) ---
+# 以开门为官长,日干为退役人
+退役_label=退役
+退役_source=卷七
+退役_role_guanzhang=gate:开门
+退役_role_tuiren=ref:日干
+退役_judge_01=guanzhang=tuiren=>开门比和日干,官有眷恋不准退
+退役_judge_02=guanzhang!tuiren=>开门克日干,准退但有怒责
+退役_judge_03=guanzhang>tuiren=>开门生日干,官挽留不舍
+退役_judge_04=tuiren!guanzhang=>日干克开门,必退
+退役_judge_05=tuiren?空=>日干空亡,退而无碍
+
+# --- 迁移 (卷七) ---
+# 以九星九宫分方,三奇吉门者可迁
+迁移_label=迁移
+迁移_source=卷七
+迁移_role_rigan=ref:日干
+迁移_role_shigan=ref:时干
+迁移_judge_01=shigan?奇+shigan?吉门=>所往方得三奇吉门,迁移大吉
+迁移_judge_02=shigan?吉门=>所往方得吉门,迁移可行
+迁移_judge_03=shigan?凶门+shigan?凶格=>所往方凶门凶格,不宜迁移
+迁移_judge_04=shigan?空=>所往方空亡,迁后不安
+迁移_judge_05=rigan?旺+shigan>rigan=>我旺相彼来生,迁移有益
+迁移_judge_06=shigan!rigan=>所往方克我,迁后不利
+
+# --- 行人安否 (卷七) ---
+# 以行人年命日干决之(此处用时干代表行人)
+行人安否_label=行人安否
+行人安否_source=卷七
+行人安否_role_xingren=ref:时干
+行人安否_judge_01=xingren?旺+xingren?吉格=>行人旺相得吉格,在外名利遂心
+行人安否_judge_02=xingren?旺=>行人旺相,在外平安
+行人安否_judge_03=xingren?囚=>行人休囚,在外不如意非病即困
+行人安否_judge_04=xingren?墓=>行人入墓,其人恐不在世
+行人安否_judge_05=xingren?空=>行人空亡,音信全无恐有不测
+行人安否_judge_06=xingren?内=>行人在内四宫,距离近
+行人安否_judge_07=xingren?外=>行人在外四宫,距离远
+
+# --- 行人归期 (卷七) ---
+# 以庚为阻隔,庚加年干为年格年内归
+行人归期_label=行人归期
+行人归期_source=卷七
+行人归期_role_xingren=ref:时干
+行人归期_role_jiaren=ref:日干
+行人归期_judge_01=庚格:时=>时格,时辰内可归
+行人归期_judge_02=庚格:日=>日格,当日可归
+行人归期_judge_03=庚格:月=>月格,当月可归
+行人归期_judge_04=庚格:年=>年格,年内可归
+行人归期_judge_05=!庚格=>无庚格,行人不归
+行人归期_judge_06=xingren?旺=>行人旺相,路途顺利
+行人归期_judge_07=xingren?囚=>行人休囚,路途困顿
+行人归期_judge_08=xingren?空=>行人空亡,音信全无
+行人归期_judge_09=xingren!jiaren=>行人克家人,归则生事
+行人归期_judge_10=jiaren!xingren=>家人克行人,行人在外受制
+
+# --- 求财 (卷八) ---
+# 以甲子戊(值符)为财神,生门为财方
+求财_label=求财
+求财_source=卷八
+求财_role_caishen=ref:值符
+求财_role_caifang=gate:生门
+求财_judge_01=caishen?奇+caishen?吉格+caifang?奇+caifang?吉格=>财神财方俱得奇门吉格,所求如意得财多
+求财_judge_02=caifang?奇+caifang?吉格=>财方得奇门吉格,得财
+求财_judge_03=caishen?奇=>得奇不得门,得之不多
+求财_judge_04=caifang?吉门=>得门不得奇,得之不多
+求财_judge_05=caishen?空+caifang?空=>财神财方俱落空亡,必不得财反招是非
+求财_judge_06=caishen?空=>财神空亡,求财无望
+求财_judge_07=caifang?空=>财方空亡,无财可得
+求财_judge_08=caishen?墓=>财神入墓,求财受阻
+求财_judge_09=caifang?墓=>财方入墓,财路堵塞
+求财_judge_10=caifang?内=>财方在内四宫,求财近且易得
+求财_judge_11=caifang?外=>财方在外四宫,求财远须奔走
+
+# --- 贸易 (卷八) ---
+# 以甲子戊(值符)为资本,生门为利息
+贸易_label=贸易
+贸易_source=卷八
+贸易_role_ziben=ref:值符
+贸易_role_lixi=gate:生门
+贸易_judge_01=lixi?奇+lixi?吉格+lixi>ziben=>生门得奇吉格生值符,必获倍利
+贸易_judge_02=lixi>ziben=>生门生值符,有利润
+贸易_judge_03=lixi=ziben=>比和,得中利
+贸易_judge_04=ziben>lixi=>值符生生门,加添资本仍得利息
+贸易_judge_05=lixi!ziben+lixi?凶格=>生门克值符乘凶格,必折本
+贸易_judge_06=lixi?墓+lixi?凶格=>生门落墓乘凶格,必耗尽资本大凶
+贸易_judge_07=lixi?空=>生门空亡,无利可图
+
+# --- 合伙求财 (卷八) ---
+# 以日干为我,时干为合计(合伙人)
+合伙求财_label=合伙求财
+合伙求财_source=卷八
+合伙求财_role_wo=ref:日干
+合伙求财_role_biren=ref:时干
+合伙求财_judge_01=biren?奇+biren?吉格+biren>wo=>合伙人得奇吉格生我,合计有益于我
+合伙求财_judge_02=wo?奇+wo?吉格+wo>biren=>我得奇吉格生彼,有益于他
+合伙求财_judge_03=wo=biren=>比和,合伙公平各无猜忌
+合伙求财_judge_04=biren!wo+biren?凶格=>合伙人克我乘凶格,不利于我
+合伙求财_judge_05=wo!biren=>我克彼,彼有损失
+合伙求财_judge_06=biren?空=>合伙人空亡,合伙不成
+
+# --- 开店 (卷八) ---
+# 以开门主之
+开店_label=开店
+开店_source=卷八
+开店_role_dianpu=gate:开门
+开店_role_rigan=ref:日干
+开店_judge_01=dianpu?旺+dianpu?奇+dianpu?吉格+dianpu>rigan=>开门旺相得奇吉格生日干,开店大吉
+开店_judge_02=dianpu>rigan=>开门生日干,开店可行
+开店_judge_03=dianpu=rigan=>比和不克,次吉
+开店_judge_04=dianpu?墓=>开门入墓,开店不利
+开店_judge_05=dianpu?返=>开门返吟,开店不利反复
+开店_judge_06=dianpu?空=>开门空亡,不利
+开店_judge_07=dianpu!rigan+dianpu?凶格=>开门克日干乘凶格,大不利
+
+# --- 交易 (卷八) ---
+# 以日干为我,时干为他,六合为经纪
+交易_label=交易
+交易_source=卷八
+交易_role_wo=ref:日干
+交易_role_ta=ref:时干
+交易_role_jingji=deity:六合
+交易_judge_01=wo>ta=>日干生时干,买主愿意成交
+交易_judge_02=ta>wo=>时干生日干,卖主愿意成交
+交易_judge_03=wo!ta=>日干克时干,买主不愿成交
+交易_judge_04=ta!wo=>时干克日干,卖主不愿成交
+交易_judge_05=wo=ta=>比和,双方公平交易可成
+交易_judge_06=jingji>wo=>六合生日干,经纪人向卖主说和
+交易_judge_07=jingji>ta=>六合生时干,经纪人向买主说和
+交易_judge_08=wo?空|ta?空=>一方空亡,交易不成
+
+# --- 买货 (卷八) ---
+# 以日干为买货人,时干为货物
+买货_label=买货
+买货_source=卷八
+买货_role_mairen=ref:日干
+买货_role_huowu=ref:时干
+买货_judge_01=huowu?旺+huowu?奇+huowu?吉格=>时干旺相得奇吉格,货物上佳为美货
+买货_judge_02=huowu?囚=>时干休囚不得奇门吉格,为废品
+买货_judge_03=huowu>mairen=>货物生买主,不拘美恶皆有利
+买货_judge_04=huowu!mairen=>货物克买主,买后不利
+买货_judge_05=huowu?墓=>货物入墓,不利不必买
+买货_judge_06=huowu?空=>货物空亡,不利不必买
+
+# --- 借贷 (卷八) ---
+# 以所往方天盘为求借人,地盘为借贷家
+# 此处以时干为求借人,日干为借贷家
+借贷_label=借贷
+借贷_source=卷八
+借贷_role_qiujie=ref:时干
+借贷_role_jiedai=ref:日干
+借贷_judge_01=jiedai>qiujie=>借贷家生求借人,必得借
+借贷_judge_02=jiedai=qiujie=>比和,虽借但主迟疑
+借贷_judge_03=jiedai!qiujie=>借贷家克求借人,不借反遭羞辱
+借贷_judge_04=qiujie?墓=>求借人入墓,主吝惜不肯借
+借贷_judge_05=qiujie?空=>求借人空亡,彼实无不必去借
+
+# --- 放债 (卷八) ---
+# 以值符为放贷人,时干为借贷人
+放债_label=放债
+放债_source=卷八
+放债_role_fangdai=ref:值符
+放债_role_jieren=ref:时干
+放债_judge_01=jieren?旺+jieren>fangdai=>借贷人旺相生放贷人,借置必还
+放债_judge_02=jieren?凶格+jieren!fangdai=>借贷人乘凶格克放贷人,必不还
+放债_judge_03=jieren?空=>借贷人空亡,主死亡负价不还
+放债_judge_04=jieren?墓=>借贷人入墓,主赖帐不还
+放债_judge_05=jieren=fangdai=>比和,尚能归还
+放债_judge_06=jieren>fangdai=>借贷人生放贷人,必还
+
+# --- 讨债 (卷八) ---
+# 以时干为欠债人,勾陈为讨债人
+讨债_label=讨债
+讨债_source=卷八
+讨债_role_qianren=ref:时干
+讨债_role_taozhai=deity:勾陈
+讨债_judge_01=taozhai!qianren=>勾陈克时干,讨之必得
+讨债_judge_02=qianren!taozhai=>时干克勾陈,不敢讨
+讨债_judge_03=qianren=taozhai=>比和,彼此推脱不讨
+讨债_judge_04=qianren>taozhai=>欠债人生勾陈,受贿贿赂不讨
+讨债_judge_05=qianren?旺+qianren>fangdai=>欠债人旺相,有心还但力未逮
+讨债_judge_06=qianren?空=>欠债人空亡,无力偿还
+讨债_judge_07=qianren!taozhai=>欠债人克讨债人,安心不还不可讨
+
+# --- 考试 (卷九) ---
+# 以值符为主考,丁奇为文章,日干为士子
+考试_label=考试
+考试_source=卷九
+考试_role_zhukao=ref:值符
+考试_role_wenzhang=stem:丁
+考试_role_shizi=ref:日干
+考试_judge_01=zhukao>shizi+wenzhang?奇+wenzhang?吉格=>主考生士子文章得奇吉格,必高中
+考试_judge_02=zhukao>shizi=>主考生士子,可中
+考试_judge_03=wenzhang?旺+wenzhang?吉门=>文章旺相得吉门,文采出众
+考试_judge_04=wenzhang?空=>丁奇空亡,文卷不完
+考试_judge_05=wenzhang?墓=>丁奇入墓,文章不明
+考试_judge_06=zhukao!shizi=>主考克士子,不中
+考试_judge_07=shizi?空=>士子空亡,榜上无名
+考试_judge_08=shizi?囚+wenzhang?囚=>士子文章俱休囚,不中
+
+# --- 病吉凶 (卷九) ---
+# 以天芮为病神,生死二门为生死
+病吉凶_label=病吉凶
+病吉凶_source=卷九
+病吉凶_role_bingshen=star:天芮
+病吉凶_role_shengmen=gate:生门
+病吉凶_role_simen=gate:死门
+病吉凶_role_rigan=ref:日干
+病吉凶_judge_01=bingshen@shengmen=>天芮得生门,病可生
+病吉凶_judge_02=bingshen@simen=>天芮得死门,病难愈恐死
+病吉凶_judge_03=bingshen?旺=>天芮旺相,病势凶猛不能治
+病吉凶_judge_04=bingshen?囚=>天芮休囚,病虽缠绵可医治
+病吉凶_judge_05=bingshen?空=>天芮空亡,新病者生久病者死
+病吉凶_judge_06=rigan?墓=>日干入墓,病人危重
+病吉凶_judge_07=rigan?囚+rigan?凶格=>日干休囚乘凶格,亦主死
+病吉凶_judge_08=bingshen!rigan=>病神克日干,病重难治
+病吉凶_judge_09=rigan!bingshen=>日干克病神,病可不药而愈
+病吉凶_judge_10=rigan?旺+rigan?奇=>日干旺相得奇,虽病无碍
+
+# --- 请医 (卷九) ---
+# 以天心为医者,乙奇为良医
+请医_label=请医
+请医_source=卷九
+请医_role_yizhe=star:天心
+请医_role_liangyi=stem:乙
+请医_role_bingshen=star:天芮
+请医_judge_01=liangyi?奇+liangyi?吉格=>乙奇得奇门吉格,为良医
+请医_judge_02=yizhe?旺=>天心旺相,为良医
+请医_judge_03=yizhe?囚=>天心休囚,为庸医
+请医_judge_04=yizhe!bingshen=>天心克天芮,医必有功
+请医_judge_05=liangyi!bingshen=>乙奇克天芮,良医能治
+请医_judge_06=bingshen?空=>天芮空亡,虽良医不能治(病已入骨)
+请医_judge_07=bingshen!yizhe=>病神克医者,病重医难治
+
+# --- 失物 (卷十) ---
+# 以日干为失主,时干为失物
+失物_label=失物
+失物_source=卷十
+失物_role_shizhu=ref:日干
+失物_role_shiwu=ref:时干
+失物_judge_01=shiwu?旺+shiwu>shizhu=>时干旺相生日干,失物仍得
+失物_judge_02=shiwu?返=>时干返吟,失而复得
+失物_judge_03=shiwu?空=>时干空亡,不得
+失物_judge_04=shiwu?墓=>时干入墓,不得
+失物_judge_05=shiwu>shizhu=>时干生日干,可得
+失物_judge_06=shiwu!shizhu=>时干克日干,不得且有损
+失物_judge_07=shiwu?内=>时干在内四宫,失物在近处
+失物_judge_08=shiwu?外=>时干在外四宫,失物在远处
+
+# --- 走失 (卷十) ---
+# 以时干为失主,六合为逃亡之物
+走失_label=走失
+走失_source=卷十
+走失_role_shizhu=ref:时干
+走失_role_taowang=deity:六合
+走失_judge_01=taowang?内+shizhu?内=>六合与失主俱在内四宫,近处易寻
+走失_judge_02=taowang?外+shizhu?外=>六合与失主俱在外四宫,远处难寻
+走失_judge_03=taowang?内+shizhu?外=>六合在内失主在外,易寻
+走失_judge_04=taowang?外+shizhu?内=>六合在外失主在内,难寻
+走失_judge_05=taowang?旺+taowang?吉门=>六合旺相得吉门,逃亡之物不可得
+走失_judge_06=taowang?囚=>六合休囚,可得
+走失_judge_07=taowang?空=>六合空亡,其物又往他方难寻
+走失_judge_08=庚格:日=>日格,当日可获
+走失_judge_09=庚格:月=>月格,当月可获
+走失_judge_10=!庚格=>无庚格,不获
+
+# --- 捕盗 (卷十) ---
+# 以天蓬为大贼,元武为小盗,勾陈为捕盗人
+捕盗_label=捕盗
+捕盗_source=卷十
+捕盗_role_dazei=star:天蓬
+捕盗_role_xiaodao=deity:玄武
+捕盗_role_buren=deity:勾陈
+捕盗_judge_01=buren!dazei=>勾陈克天蓬,捕之必获
+捕盗_judge_02=buren!xiaodao=>勾陈克玄武,捕小盗必获
+捕盗_judge_03=dazei!buren=>天蓬克勾陈,贼旺捕人不敢捕
+捕盗_judge_04=dazei=buren=>天蓬比和勾陈,捕人与贼通同
+捕盗_judge_05=dazei@buren=>天蓬勾陈同宫,捕人即为盗
+捕盗_judge_06=dazei>buren=>天蓬生勾陈,捕人受贿纵之不捕
+捕盗_judge_07=庚格:时=>时格,时辰可获
+捕盗_judge_08=庚格:日=>日格,当日可获
+捕盗_judge_09=庚格:月=>月格,当月可获
+捕盗_judge_10=!庚格=>无庚格,不获
+
+# --- 远方消息 (卷十) ---
+# 以景门为信
+远方消息_label=远方消息
+远方消息_source=卷十
+远方消息_role_xin=gate:景门
+远方消息_judge_01=xin?外=>景门临外界,来信迟
+远方消息_judge_02=xin?内=>景门临内界,来信速
+远方消息_judge_03=xin?吉格=>景门得吉格,信吉
+远方消息_judge_04=xin?凶格=>景门得凶格,信凶
+远方消息_judge_05=xin?空=>景门空亡,无信
+远方消息_judge_06=xin?墓=>景门入墓,信阻不至
+
+# --- 信息虚实 (卷十) ---
+# 以景门朱雀为信息
+信息虚实_label=信息虚实
+信息虚实_source=卷十
+信息虚实_role_xin=gate:景门
+信息虚实_role_zhuque=deity:朱雀
+信息虚实_judge_01=xin?旺+xin?奇=>景门旺相得三奇,为确实之信可信
+信息虚实_judge_02=xin?囚=>景门休囚不得奇,为虚假之信不可听
+信息虚实_judge_03=xin?空=>景门空亡,道路传言不可信
+信息虚实_judge_04=xin?墓=>景门入墓,信息混乱不明
+信息虚实_judge_05=zhuque?旺=>朱雀旺相,消息确凿
+信息虚实_judge_06=zhuque?空=>朱雀空亡,无确切消息
+
+# --- 诉讼 (卷十) ---
+# 以值符为原告,值符地盘为被告
+诉讼_label=诉讼
+诉讼_source=卷十
+诉讼_role_yuangao=ref:值符
+诉讼_role_beigao=stem:乙
+诉讼_judge_01=yuangao!beigao=>原告克被告,原告胜
+诉讼_judge_02=beigao!yuangao=>被告克原告,被告胜
+诉讼_judge_03=yuangao=beigao=>比和,势均力敌宜和解
+诉讼_judge_04=yuangao>beigao=>原告生被告,原告损财和解
+诉讼_judge_05=beigao>yuangao=>被告生原告,被告损财和解
+诉讼_judge_06=yuangao?旺+beigao?囚=>原告旺被告囚,原告占优
+诉讼_judge_07=beigao?旺+yuangao?囚=>被告旺原告囚,被告占优
+
+# --- 官司 (卷十) ---
+# 以值符为原告,乙为被告,开门为问官,六合为干证
+官司_label=官司
+官司_source=卷十
+官司_role_yuangao=ref:值符
+官司_role_beigao=stem:乙
+官司_role_wenguan=gate:开门
+官司_role_ganzheng=deity:六合
+官司_judge_01=yuangao!beigao=>原告克被告,原告胜
+官司_judge_02=beigao!yuangao=>被告克原告,被告胜
+官司_judge_03=yuangao=beigao=>比和,主客均势,宜和解
+官司_judge_04=yuangao>beigao=>原告生被告,原告损财和解
+官司_judge_05=beigao>yuangao=>被告生原告,被告损财和解
+官司_judge_06=wenguan?墓=>问官入墓,审理不明
+官司_judge_07=wenguan?空=>问官空亡,此案不审
+官司_judge_08=wenguan?返=>问官返吟,须换官审理
+官司_judge_09=ganzheng?空=>干证空亡,无人作证
+官司_judge_10=yuangao?旺+beigao?囚=>原告旺相被告休囚,原告占优
+官司_judge_11=beigao?旺+yuangao?囚=>被告旺相原告休囚,被告占优
+官司_judge_12=wenguan>yuangao=>问官生原告,官偏向原告
+官司_judge_13=wenguan>beigao=>问官生被告,官偏向被告
+
+# --- 囚禁 (卷十) ---
+# 以甲午辛为罪人,壬为地牢,癸为地网
+囚禁_label=囚禁
+囚禁_source=卷十
+囚禁_role_zuiren=stem:辛
+囚禁_role_dilao=stem:壬
+囚禁_role_diwang=stem:癸
+囚禁_role_wenguan=gate:开门
+囚禁_judge_01=zuiren?空=>辛落空亡,为空狱主不囚禁
+囚禁_judge_02=zuiren?墓=>辛入墓,终不出狱
+囚禁_judge_03=zuiren@dilao=>辛壬同宫,入天牢久囚
+囚禁_judge_04=zuiren@diwang=>辛癸同宫,天网蒙头久禁
+囚禁_judge_05=wenguan>zuiren=>开门生辛,问官怜悯不加罪
+囚禁_judge_06=wenguan=zuiren=>开门比和辛,罪必轻
+囚禁_judge_07=wenguan!zuiren+wenguan?凶格=>开门克辛乘凶格,罪必重
+囚禁_judge_08=zuiren?空+zuiren?奇+wenguan>zuiren=>辛空得奇开门生,有罪赦宥
+
+# --- 婚姻 (卷十二) ---
+# 以乙为女,庚为男,六合为媒
+婚姻_label=婚姻
+婚姻_source=卷十二
+婚姻_role_nv=stem:乙
+婚姻_role_nan=stem:庚
+婚姻_role_meiren=deity:六合
+婚姻_role_rigan=ref:日干
+婚姻_judge_01=nan>nv=>男生女,成婚,男方主动
+婚姻_judge_02=nv>nan=>女生男,成婚,女方主动
+婚姻_judge_03=nan!nv=>男克女,不成,相克不合
+婚姻_judge_04=nv!nan=>女克男,不成,女强男弱难谐
+婚姻_judge_05=nan=nv=>比和,成婚,门当户对
+婚姻_judge_06=nan@nv=>乙庚同宫,必成,情投意合
+婚姻_judge_07=nan?墓+nan?凶格=>男入墓乘凶格,刑夫之象
+婚姻_judge_08=nv?墓+nv?凶格=>女入墓乘凶格,克妻之象
+婚姻_judge_09=meiren?空=>媒人空亡,无人说合
+婚姻_judge_10=meiren>nv=>媒人生女,媒向女家说
+婚姻_judge_11=meiren>nan=>媒人生男,媒向男家说
+婚姻_judge_12=nan?奇+nan?吉门=>男乘三奇吉门,男方条件优
+婚姻_judge_13=nv?奇+nv?吉门=>女乘三奇吉门,女方条件优
+婚姻_judge_14=nan?空=>男方空亡,男无心婚事
+婚姻_judge_15=nv?空=>女方空亡,女无心婚事
+
+# --- 房产 (卷十二) ---
+# 以值符为买主,生门为住宅,死门为地主
+房产_label=房产
+房产_source=卷十二
+房产_role_maizhu=ref:值符
+房产_role_zhuzhai=gate:生门
+房产_role_dizhu=gate:死门
+房产_judge_01=zhuzhai?奇+zhuzhai?吉格+zhuzhai>maizhu=>生门得奇吉格生值符,买后大发
+房产_judge_02=dizhu?奇+dizhu?吉格+dizhu>maizhu=>死门得奇吉格生值符,买后大发
+房产_judge_03=zhuzhai>maizhu=>生门生值符,买后有益
+房产_judge_04=zhuzhai=maizhu=>比和,买后平安
+房产_judge_05=zhuzhai?囚+zhuzhai?凶格+zhuzhai!maizhu=>生门休废凶格克值符,买后败家
+房产_judge_06=dizhu?囚+dizhu?凶格+dizhu!maizhu=>死门休废凶格克值符,买后败家
+房产_judge_07=maizhu>zhuzhai=>值符生生门,因宅产萧索不利
+房产_judge_08=zhuzhai?空=>生门空亡,此宅不宜买
+房产_judge_09=dizhu?空=>死门空亡,地主不诚
+
+# --- 产育 (卷九) ---
+# 以天芮为产妇,生门为婴儿
+产育_label=产育
+产育_source=卷九
+产育_role_chanfu=star:天芮
+产育_role_yinger=gate:生门
+产育_judge_01=chanfu?旺+yinger?旺=>母子俱旺,母子平安
+产育_judge_02=chanfu?囚+yinger?旺=>母弱子旺,子安母虑
+产育_judge_03=chanfu?旺+yinger?囚=>母旺子弱,子虑
+产育_judge_04=chanfu?囚+yinger?囚=>母子俱囚,母子俱虑
+产育_judge_05=yinger?空=>婴儿空亡,恐子不保
+产育_judge_06=chanfu?空=>产妇空亡,恐母不保
+产育_judge_07=chanfu?墓=>产妇入墓,产难
+
+# --- 用药 (卷九) ---
+# 以天心为药,生门为效
+用药_label=用药
+用药_source=卷九
+用药_role_yao=star:天心
+用药_role_xiao=gate:生门
+用药_role_bingshen=star:天芮
+用药_judge_01=yao!bingshen+yao?旺=>药克病神且旺相,药到病除
+用药_judge_02=yao!bingshen=>药克病神,用药有效
+用药_judge_03=bingshen!yao=>病神克药,药不对症
+用药_judge_04=yao?空=>天心空亡,无药可用
+用药_judge_05=xiao?空=>生门空亡,用药无效
+用药_judge_06=yao?旺+xiao?旺=>药与效俱旺,用药速愈
+用药_judge_07=yao?囚=>天心休囚,药效不佳
+
+# --- 家宅 (卷十一) ---
+# 以生门为宅,天柱为堂柱,日干为宅主
+家宅_label=家宅
+家宅_source=卷十一
+家宅_role_zhai=gate:生门
+家宅_role_tangzhu=star:天柱
+家宅_role_zhaizhu=ref:日干
+家宅_judge_01=zhai?旺+zhai?奇+zhai?吉格=>生门旺相得奇吉格,宅运大吉
+家宅_judge_02=zhai>zhaizhu=>生门生日干,居之吉利
+家宅_judge_03=zhai!zhaizhu=>生门克日干,居之不利
+家宅_judge_04=zhai?囚+zhai?凶格=>生门休囚凶格,宅运衰败
+家宅_judge_05=zhai?空=>生门空亡,此宅空虚不旺
+家宅_judge_06=tangzhu?囚=>天柱休囚,房屋破损
+家宅_judge_07=tangzhu?墓=>天柱入墓,宅基不安
+家宅_judge_08=zhai@zhaizhu=>生门与日干同宫,人宅合一大吉
+
+# --- 坟墓 (卷十一) ---
+# 以死门为坟,天柱为碑,日干为后人
+坟墓_label=坟墓
+坟墓_source=卷十一
+坟墓_role_fen=gate:死门
+坟墓_role_bei=star:天柱
+坟墓_role_houren=ref:日干
+坟墓_judge_01=fen?旺+fen?奇=>死门旺相得奇,祖坟安妥荫后
+坟墓_judge_02=fen>houren=>死门生日干,祖坟荫庇后人
+坟墓_judge_03=fen!houren=>死门克日干,祖坟妨后人
+坟墓_judge_04=fen?囚+fen?凶格=>死门休囚凶格,坟墓损坏
+坟墓_judge_05=fen?空=>死门空亡,坟墓不安
+坟墓_judge_06=fen?墓=>死门入墓,坟地不佳
+坟墓_judge_07=bei?囚=>天柱休囚,碑石残缺
+
+# --- 出行 (卷十一) ---
+# 以开门为行,值符为行人,时干为目的地
+出行_label=出行
+出行_source=卷十一
+出行_role_xingmen=gate:开门
+出行_role_xingren=ref:值符
+出行_role_mudi=ref:时干
+出行_judge_01=xingmen?旺+xingmen?奇+xingmen?吉格=>开门旺相得奇吉格,出行大吉
+出行_judge_02=xingmen>xingren=>开门生值符,路途顺利
+出行_judge_03=mudi>xingren=>时干生值符,到达有益
+出行_judge_04=xingmen?凶格+xingmen?囚=>开门休囚凶格,出行不利
+出行_judge_05=xingmen?空=>开门空亡,不宜出行
+出行_judge_06=xingren?空=>值符空亡,人不宜动
+出行_judge_07=mudi!xingren=>时干克值符,目的地不利
+出行_judge_08=mudi?凶门+mudi?凶格=>目的地凶门凶格,到达有碍
+
+# --- 求学 (卷十一) ---
+# 以天辅为学业,景门为文采,日干为学子
+求学_label=求学
+求学_source=卷十一
+求学_role_xueye=star:天辅
+求学_role_wencai=gate:景门
+求学_role_xuezi=ref:日干
+求学_judge_01=xueye?旺+xueye?奇+wencai?旺=>天辅旺相得奇景门旺相,学业有成
+求学_judge_02=xueye>xuezi=>天辅生日干,学业顺遂
+求学_judge_03=xueye?旺=>天辅旺相,学业进步
+求学_judge_04=xueye?囚=>天辅休囚,学业不振
+求学_judge_05=wencai?空=>景门空亡,文思枯涩
+求学_judge_06=xueye?墓=>天辅入墓,学业受阻
+求学_judge_07=wencai?旺+wencai?奇=>景门旺相得奇,文采卓著
+
+# --- 怀孕 (卷十二) ---
+# 以天芮为胎,六合为子
+怀孕_label=怀孕
+怀孕_source=卷十二
+怀孕_role_tai=star:天芮
+怀孕_role_zi=deity:六合
+怀孕_role_mu=ref:日干
+怀孕_judge_01=tai?旺+zi?旺=>胎星子神俱旺,必有胎且安
+怀孕_judge_02=tai?空=>天芮空亡,无胎
+怀孕_judge_03=zi?空=>六合空亡,子息难得
+怀孕_judge_04=tai?旺+zi?囚=>有胎但子弱
+怀孕_judge_05=tai?囚+zi?旺=>胎弱子旺,妊娠辛苦但终得子
+怀孕_judge_06=tai?墓=>天芮入墓,堕胎之虑
+怀孕_judge_07=mu?旺+tai?旺=>母旺胎旺,母子平安
+
+# --- 天气 (卷十三) ---
+# 以天蓬为雨,天英为晴,景门为晴
+天气_label=天气
+天气_source=卷十三
+天气_role_yushen=star:天蓬
+天气_role_qingshen=star:天英
+天气_role_jingmen=gate:景门
+天气_judge_01=yushen?旺=>天蓬旺相,主有雨
+天气_judge_02=qingshen?旺+jingmen?旺=>天英景门俱旺,主晴
+天气_judge_03=yushen?囚+qingshen?旺=>天蓬休囚天英旺,必晴
+天气_judge_04=yushen?旺+qingshen?囚=>天蓬旺天英囚,必雨
+天气_judge_05=yushen?空=>天蓬空亡,虽阴不雨
+天气_judge_06=qingshen?空=>天英空亡,难得晴天
+天气_judge_07=jingmen?空=>景门空亡,阴晦不明
+
+# --- 农事 (卷十三) ---
+# 以天任为田土,生门为收成
+农事_label=农事
+农事_source=卷十三
+农事_role_tiantu=star:天任
+农事_role_shoucheng=gate:生门
+农事_judge_01=tiantu?旺+shoucheng?旺=>天任生门俱旺,五谷丰登
+农事_judge_02=tiantu?旺+shoucheng?囚=>田土旺收成弱,劳多得少
+农事_judge_03=tiantu?囚+shoucheng?旺=>田土囚收成旺,不种而获
+农事_judge_04=tiantu?囚+shoucheng?囚=>俱休囚,收成不佳
+农事_judge_05=tiantu?空=>天任空亡,田地荒芜
+农事_judge_06=shoucheng?空=>生门空亡,颗粒无收
+农事_judge_07=tiantu?墓=>天任入墓,田土有碍
+
+# --- 逃亡 (卷十) ---
+# 以逃者时干为主,开门为出路
+逃亡_label=逃亡
+逃亡_source=卷十
+逃亡_role_taozhe=ref:时干
+逃亡_role_chulu=gate:开门
+逃亡_judge_01=taozhe?旺+chulu?旺+chulu?奇=>逃者旺出路得奇,必逃脱
+逃亡_judge_02=taozhe?旺+chulu?旺=>逃者旺出路旺,可逃
+逃亡_judge_03=taozhe?囚=>逃者休囚,不能逃脱
+逃亡_judge_04=chulu?空=>开门空亡,无路可逃
+逃亡_judge_05=taozhe?空=>逃者空亡,人已不在
+逃亡_judge_06=taozhe?墓=>逃者入墓,被擒
+逃亡_judge_07=庚格:时=>时格,即时被捕
+逃亡_judge_08=庚格:日=>日格,当日被捕
+逃亡_judge_09=!庚格=>无庚格,久不获
+
+# --- 寻人 (卷十) ---
+# 以六合为所寻之人,日干为寻人者
+寻人_label=寻人
+寻人_source=卷十
+寻人_role_suoxun=deity:六合
+寻人_role_xunren=ref:日干
+寻人_judge_01=suoxun?内+xunren?内=>彼此俱在内,近处可寻
+寻人_judge_02=suoxun?外=>所寻之人在外,远处难寻
+寻人_judge_03=suoxun>xunren=>所寻之人生日干,彼愿相见
+寻人_judge_04=suoxun!xunren=>所寻之人克日干,彼不愿见
+寻人_judge_05=suoxun?空=>六合空亡,其人已远去
+寻人_judge_06=suoxun?墓=>六合入墓,其人隐匿不出
+寻人_judge_07=庚格:日=>日格,当日可见
+寻人_judge_08=庚格:月=>月格,当月可见
+寻人_judge_09=!庚格=>无庚格,寻之不得

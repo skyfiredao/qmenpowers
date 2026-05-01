@@ -32,6 +32,7 @@
 - 用户明确说"移神换将/移星换斗/化解/转化/合法/泄法" → `qmen_yishenhuanjiang`
 - 用户明确说"寻时借运/换局/幻化六十课/六十课" → `qmen_xunshijieyun`（60课起局选最优时柱，按新局万物类象重现有利时空布局）
 - 用户明确说"遥测/破阵/跨局分析" → `qmen_yaoce`
+- 用户明确说"占断/占卜/占事/断卦/占问" 或具体占题（占婚姻/占官司/占求财...） → `qmen_zhanduan`（古籍断法机械化执行）
 - 用户给了奇门符号要"描述场景/物品/人物画像" → `qmen_wanwu`
 
 ---
@@ -189,6 +190,7 @@ bin/qimen_qiju.sh "1973-04-24 19:30"
 | 用户意图 | 目标 Skill |
 |---------|-----------|
 | 问具体事件、占断、解卦、看运势 | `qmen_event` |
+| 古籍占断（占婚姻/占官司/占求财/占行人归期...） | `qmen_zhanduan` |
 | 想要奇门符号画像（基于宫位） | `qmen_wanwu` |
 
 #### 生日局（birth）路径
@@ -279,6 +281,7 @@ skill_qmenpowers/
     ├── qmen_huaqizhen/
     ├── qmen_yishenhuanjiang/
     ├── qmen_xunshijieyun/
+    ├── qmen_zhanduan/
     ├── qmen_wanwu/
     └── qmen_yaoce/
 ```
