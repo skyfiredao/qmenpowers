@@ -76,6 +76,7 @@ skill_qmenpowers/
 │   │   ├── qimen_wanwu.sh              # 万物类象提取 CLI
 │   │   ├── qimen_xingge.sh             # 性格分析 CLI
 │   │   ├── qimen_xunshijieyun.sh       # 寻时借运 CLI
+│   │   ├── qimen_show.sh               # 盘面 JSON 查看器
 │   │   ├── qimen_zhanduan.sh           # 古籍占断 CLI
 │   │   └── qimen_yaoce.sh              # 遥测/破阵分析 CLI（跨盘关联分析）
 │   ├── lib/
@@ -166,7 +167,9 @@ skill_qmenpowers/
 
 **`tools/bin/qimen_xunshijieyun.sh`** 是寻时借运 CLI 脚本。读取起局 JSON（默认 `./qmen_birth.json`），固定局数遍历60甲子时柱生成60个变盘，按保护天干的六害总数排名，输出可排序的 JSON 文件到 `./60ke/`。保护天干包括日干、时干、生年干、可选意象干、以及每课重新推导的值符/值使宫干。
 
-**`tools/bin/qimen_zhanduan.sh`** 是古籍占断 CLI。读取问事局 JSON（`./qmen_event.json`），根据用户指定的主题，从 `rules_zhanduan.dat` 加载角色定义和判断规则，将角色天干解析到盘面宫位，评估全部规则，收集命中结论，输出结构化文本/JSON。支持 `--list` 列举主题、`--list-cat=X` 按分类筛选、`--topic=X` 执行占断。自动写入 `./qmen_zhanduan.json`。
+**`tools/bin/qimen_show.sh`** 是盘面 JSON 查看器。读取任意起局 JSON 文件，以文本格式显示完整盘面（与 `qimen_qiju.sh` 输出一致）。可选 `--output=PATH` 将 JSON 复制到指定路径。寻时借运选课后用此脚本展示所选课盘面。
+
+**`tools/bin/qimen_zhanduan.sh`** 是古籍占断 CLI。读取问事局 JSON（`./qmen_event.json`），并可选读取 `./qmen_birth.json` 获取年命天干。指定 `--topic=X` 时从 `rules_zhanduan.dat` 加载角色定义和判断规则，将角色天干解析到盘面宫位，评估全部规则，收集命中结论，输出结构化文本/JSON。不带 `--topic` 时显示帮助和全部主题列表。自动写入 `./qmen_zhanduan.json`。
 
 **`tools/bin/qimen_wanwu.sh`** 是万物类象提取 CLI。支持两种模式：盘面模式（`--palace=N`）从盘面 JSON 提取指定宫位的全部万物类象，手工模式（`--stem/--star/--gate/--deity/--state`）直接接受符号组合。每个参数可选，至少提供一个。输出结构化文本和 JSON。
 
@@ -601,9 +604,36 @@ tools/bin/qimen_xunshijieyun.sh --input=./qmen_event.json --output-dir=./results
 依赖：./qmen_birth.json（由 qimen_qiju.sh --type=birth 生成）
 ```
 
+## 盘面查看脚本
+
+盘面查看脚本 `qimen_show.sh` 读取任意起局 JSON，以文本格式显示完整盘面（与 `qimen_qiju.sh` 输出一致）。可选复制 JSON 到指定路径。
+
+### 使用流程
+
+```bash
+# 显示60课中的某一课
+tools/bin/qimen_show.sh ./60ke/001_甲子_liuhai2.json
+
+# 显示并复制到目标路径
+tools/bin/qimen_show.sh ./60ke/001_甲子_liuhai2.json --output=./qmen_selected.json
+```
+
+### CLI 参考
+
+```
+用法: qimen_show.sh INPUT [--output=PATH]
+
+参数:
+  INPUT               输入 JSON 文件（必填）
+
+选项:
+  --output=PATH       复制 JSON 到指定路径（可选）
+  -h, --help          显示帮助
+```
+
 ## 古籍占断脚本
 
-古籍占断脚本 `qimen_zhanduan.sh` 基于《奇门旨归》卷六至卷十三的全部占断方法，机械化执行判断规则。读取 `rules_zhanduan.dat` 中按主题编码的角色定义和 DSL 规则，将角色天干解析到问事局宫位，逐条评估条件表达式，收集全部命中结论并原样输出。脚本输出即最终答案 -- AI 不做任何形式的解读、总结或建议。
+古籍占断脚本 `qimen_zhanduan.sh` 基于《奇门旨归》卷六至卷十三的全部占断方法执行判断规则。读取 `rules_zhanduan.dat` 中按主题编码的角色定义和 DSL 规则，将角色天干解析到问事局宫位，逐条评估条件表达式，收集全部命中结论。AI 用白话解释结论。
 
 ### 流水线
 
@@ -612,13 +642,10 @@ tools/bin/qimen_xunshijieyun.sh --input=./qmen_event.json --output-dir=./results
 tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
 
 # 执行占断
-tools/bin/qimen_zhanduan.sh --topic=占婚姻
+tools/bin/qimen_zhanduan.sh --topic=婚姻
 
-# 列出所有主题
-tools/bin/qimen_zhanduan.sh --list
-
-# 按分类筛选主题
-tools/bin/qimen_zhanduan.sh --list-cat=社交
+# 列出所有主题（不带 --topic 执行）
+tools/bin/qimen_zhanduan.sh
 ```
 
 ### CLI 参考
@@ -628,13 +655,13 @@ Usage: qimen_zhanduan.sh [OPTIONS]
 
 选项：
   --input=PATH        输入问事局 JSON（默认：./qmen_event.json）
-  --topic=TOPIC       占断主题（如 占婚姻、占官司、占行人归期）
-  --list              列出全部可用主题及分类
-  --list-cat=CAT      列出指定分类下的主题
-  --output=PATH       输出 JSON 路径（默认：./qmen_zhanduan.json）
+  --topic=TOPIC       占断主题（如 婚姻、官司、行人归期）
   -h, --help          显示帮助
 
+不带 --topic：显示帮助和全部主题列表。
+
 依赖：./qmen_event.json（由 qimen_qiju.sh --type=event 生成）
+可选：./qmen_birth.json（存在时自动读取年命天干）
 ```
 
 ## 万物类象提取脚本
@@ -735,7 +762,7 @@ Options:
 
 **`qmen_xunshijieyun`**（寻时借运）驱动幻化六十课机制 -- 解局三法之"换局"，独立于灭象和布阵：生成60变盘 → 按保护天干六害排名 → 展示最优课 → 引导用户按各宫万物类象安排物理环境，重现有利时空布局。问事局场景下与用户交互确定意象干，命盘场景直接执行。处理多课并列最优时的选择。
 
-**`qmen_zhanduan`**（古籍占断）机械化执行《奇门旨归》卷六至卷十三全部占断方法。脚本根据主题加载角色（日干/时干/年干/用神/自定义），将角色天干定位到问事局盘面宫位，逐条评估 DSL 编码的判断规则（五行生克关系+状态查询），收集全部命中结论并原样输出。AI 不做解读、不做总结、不给建议 -- 脚本输出即最终答案。
+**`qmen_zhanduan`**（古籍占断）执行《奇门旨归》卷六至卷十三全部占断方法。脚本根据主题加载角色（日干/时干/年干/用神/自定义），将角色天干定位到问事局盘面宫位，逐条评估 DSL 编码的判断规则（五行生克关系+状态查询），收集全部命中结论。AI 用白话解释结论。
 
 **`qmen_wanwu`**（万物类象画像）基于奇门符号组合生成创意画像描述。三种模式：场景（环境/氛围）、物品（形状/颜色/材质/功能）、人物（外貌/气质/行为）。符号灵活分配到不同维度（每个符号只用一次），十二长生优先级最低。支持迭代修改（风格、领域、时代调整），始终在万物类象数据范围内。
 
@@ -828,13 +855,10 @@ tools/bin/qimen_xunshijieyun.sh --yixiang=财富
 
 # 古籍占断
 tools/bin/qimen_qiju.sh --type=event "2026-04-18 10:00"
-tools/bin/qimen_zhanduan.sh --topic=占婚姻
+tools/bin/qimen_zhanduan.sh --topic=婚姻
 
-# 古籍占断：列出全部主题
-tools/bin/qimen_zhanduan.sh --list
-
-# 古籍占断：按分类筛选
-tools/bin/qimen_zhanduan.sh --list-cat=社交
+# 古籍占断：列出全部主题（不带 --topic 执行）
+tools/bin/qimen_zhanduan.sh
 ```
 
 完整命令行参考：

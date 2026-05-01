@@ -24,6 +24,7 @@ OPT_STAR=""
 OPT_GATE=""
 OPT_DEITY=""
 OPT_STATE=""
+OPT_FILTER=""
 
 show_help() {
   cat <<'HELP'
@@ -48,6 +49,7 @@ show_help() {
 
 通用选项:
   --output=PATH           输出 JSON（默认: ./qmen_wanwu.json）
+  --filter=F1,F2,...      只输出匹配的字段（子串匹配，如: 颜色,形态,器物,物象）
   -h, --help              显示帮助
 HELP
 }
@@ -56,6 +58,7 @@ while (( $# > 0 )); do
   case "$1" in
     --input=*)    INPUT_PATH="${1#--input=}"; shift ;;
     --output=*)   OUTPUT_PATH="${1#--output=}"; shift ;;
+    --filter=*)   OPT_FILTER="${1#--filter=}"; shift ;;
     --palace=*)   PALACE_NUM="${1#--palace=}"; shift ;;
     --stem=*)     OPT_STEM="${1#--stem=}"; shift ;;
     --star=*)     OPT_STAR="${1#--star=}"; shift ;;
@@ -148,6 +151,16 @@ _ww_lookup() {
   done
 }
 
+_ww_field_passes_filter() {
+  local field="$1"
+  [[ -z "$OPT_FILTER" ]] && return 0
+  local IFS=',' f
+  for f in $OPT_FILTER; do
+    [[ "$field" == *"$f"* || "$f" == *"$field"* ]] && return 0
+  done
+  return 1
+}
+
 # --- Text output ---
 _ww_print_section() {
   local label="$1" symbol="$2" type_lower="$3"
@@ -159,12 +172,15 @@ _ww_print_section() {
   for ((i=0; i<${#_DL_KEYS[@]}; i++)); do
     k="${_DL_KEYS[$i]}"
     if [[ "$k" == "ww_${type_lower}_"* ]]; then
+      field="${k#ww_${type_lower}_}"
+      if ! _ww_field_passes_filter "$field"; then
+        continue
+      fi
       if (( found == 0 )); then
         echo ""
         echo "[$label] $symbol"
         found=1
       fi
-      field="${k#ww_${type_lower}_}"
       v="${_DL_VALS[$i]}"
       echo "  ${field}: ${v}"
     fi
@@ -189,6 +205,10 @@ _ww_emit_json_section() {
   for ((i=0; i<${#_DL_KEYS[@]}; i++)); do
     k="${_DL_KEYS[$i]}"
     if [[ "$k" == "ww_${type_lower}_"* ]]; then
+      field="${k#ww_${type_lower}_}"
+      if ! _ww_field_passes_filter "$field"; then
+        continue
+      fi
       if (( found == 0 )); then
         if [[ "${!is_first_ref}" == "1" ]]; then
           eval "$is_first_ref=0"
@@ -199,7 +219,6 @@ _ww_emit_json_section() {
         printf '      "symbol": "%s"' "$(_ww_json_escape "$symbol")" >&"$fd"
         found=1
       fi
-      field="${k#ww_${type_lower}_}"
       v="$(_ww_json_escape "${_DL_VALS[$i]}")"
       printf ',\n      "%s": "%s"' "$field" "$v" >&"$fd"
     fi
@@ -215,11 +234,18 @@ echo "万物类象提取"
 
 if [[ "$MANUAL_MODE" -eq 0 ]]; then
   echo "盘面: $INPUT_PATH"
-  echo "宫位: ${PALACE_NUM}宫"
 
-  # Print palace info
   dl_get_v "palace_${PALACE_NUM}_name" 2>/dev/null || true
-  [[ -n "$_DL_RET" ]] && echo "宫名: $_DL_RET"
+  local_pname="$_DL_RET"
+  dl_get_v "palace_${PALACE_NUM}_direction" 2>/dev/null || true
+  local_pdir="$_DL_RET"
+  if [[ -n "$local_pname" && -n "$local_pdir" ]]; then
+    echo "宫位: ${local_pname}｜${local_pdir}"
+  elif [[ -n "$local_pname" ]]; then
+    echo "宫位: $local_pname"
+  else
+    echo "宫位: ${PALACE_NUM}宫"
+  fi
 fi
 
 echo ""
@@ -247,9 +273,10 @@ _ww_print_section "八神" "$OPT_DEITY" "deity"
 
 # State section (simple, no dat lookup — just display name)
 if [[ -n "$OPT_STATE" ]]; then
-  echo ""
-  echo "[十二长生] $OPT_STATE"
-  case "$OPT_STATE" in
+  if _ww_field_passes_filter "含义"; then
+    echo ""
+    echo "[十二长生] $OPT_STATE"
+    case "$OPT_STATE" in
     长生) echo "  含义: 初生,萌发,新生力量,充满希望" ;;
     沐浴) echo "  含义: 沐浴更衣,不稳定,桃花,轻浮,变动" ;;
     冠带) echo "  含义: 成长,装饰,初具规模,开始崭露头角" ;;
@@ -263,6 +290,7 @@ if [[ -n "$OPT_STATE" ]]; then
     胎)   echo "  含义: 孕育,酝酿,尚未成形,潜在可能" ;;
     养)   echo "  含义: 养育,培养,等待时机,蓄势待发" ;;
   esac
+  fi
 fi
 
 # --- Write JSON ---
@@ -313,31 +341,33 @@ _ww_emit_json_section 3 "deity" "$OPT_DEITY" "local_ww_first"
 
 # State in JSON
 if [[ -n "$OPT_STATE" ]]; then
-  state_meaning=""
-  case "$OPT_STATE" in
-    长生) state_meaning="初生,萌发,新生力量,充满希望" ;;
-    沐浴) state_meaning="沐浴更衣,不稳定,桃花,轻浮,变动" ;;
-    冠带) state_meaning="成长,装饰,初具规模,开始崭露头角" ;;
-    临官) state_meaning="当官,有权,成熟,独当一面,事业上升" ;;
-    帝旺) state_meaning="极盛,鼎盛,最强状态,物极必反" ;;
-    衰)   state_meaning="开始衰退,力不从心,守成,保守" ;;
-    病)   state_meaning="病弱,困顿,需要调养,虚弱无力" ;;
-    死)   state_meaning="死寂,终结,僵化,毫无生气" ;;
-    墓)   state_meaning="入墓,收藏,封闭,隐藏,积蓄" ;;
-    绝)   state_meaning="断绝,消亡,最低谷,绝处逢生" ;;
-    胎)   state_meaning="孕育,酝酿,尚未成形,潜在可能" ;;
-    养)   state_meaning="养育,培养,等待时机,蓄势待发" ;;
-  esac
-  if [[ -n "$state_meaning" ]]; then
-    if [[ "$local_ww_first" -eq 1 ]]; then
-      local_ww_first=0
-    else
-      printf ',\n' >&3
+  if _ww_field_passes_filter "含义"; then
+    state_meaning=""
+    case "$OPT_STATE" in
+      长生) state_meaning="初生,萌发,新生力量,充满希望" ;;
+      沐浴) state_meaning="沐浴更衣,不稳定,桃花,轻浮,变动" ;;
+      冠带) state_meaning="成长,装饰,初具规模,开始崭露头角" ;;
+      临官) state_meaning="当官,有权,成熟,独当一面,事业上升" ;;
+      帝旺) state_meaning="极盛,鼎盛,最强状态,物极必反" ;;
+      衰)   state_meaning="开始衰退,力不从心,守成,保守" ;;
+      病)   state_meaning="病弱,困顿,需要调养,虚弱无力" ;;
+      死)   state_meaning="死寂,终结,僵化,毫无生气" ;;
+      墓)   state_meaning="入墓,收藏,封闭,隐藏,积蓄" ;;
+      绝)   state_meaning="断绝,消亡,最低谷,绝处逢生" ;;
+      胎)   state_meaning="孕育,酝酿,尚未成形,潜在可能" ;;
+      养)   state_meaning="养育,培养,等待时机,蓄势待发" ;;
+    esac
+    if [[ -n "$state_meaning" ]]; then
+      if [[ "$local_ww_first" -eq 1 ]]; then
+        local_ww_first=0
+      else
+        printf ',\n' >&3
+      fi
+      printf '    "state": {\n' >&3
+      printf '      "symbol": "%s",\n' "$(_ww_json_escape "$OPT_STATE")" >&3
+      printf '      "含义": "%s"\n' "$(_ww_json_escape "$state_meaning")" >&3
+      printf '    }' >&3
     fi
-    printf '    "state": {\n' >&3
-    printf '      "symbol": "%s",\n' "$(_ww_json_escape "$OPT_STATE")" >&3
-    printf '      "含义": "%s"\n' "$(_ww_json_escape "$state_meaning")" >&3
-    printf '    }' >&3
   fi
 fi
 
