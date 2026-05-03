@@ -1,3 +1,8 @@
+---
+name: qmen_wanwu
+description: "Generate 万物类象 imagery portraits: scene/object/person descriptions from stem+star+gate+deity combinations"
+---
+
 # 万物类象画像描述 (Wanwu Imagery Portrait)
 
 > 基于奇门遁甲符号（天干、九星、八门、八神、十二长生）的万物类象数据，生成场景、物品或人物的画像式描述。

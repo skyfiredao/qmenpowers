@@ -392,9 +392,9 @@ Options:
   -h, --help          Show this help
 ```
 
-## Huaqi Analysis Script (八门化气阵)
+## Caiguan Script (财官诊断)
 
-The huaqi script `qimen_caiguan.sh` reads the birth plate (`./qmen_birth.json`) only. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and auto-derives industry symbols from the plate. The birth year stem is auto-read from `./qmen_birth.json`.
+The caiguan script `qimen_caiguan.sh` reads the birth plate (`./qmen_birth.json`) only. It performs wealth/career deep analysis. It locates seven hazard elements (七要害) for both wealth and career dimensions, detects six-harm (六害: punishment, tomb, Geng, White Tiger, gate oppression, void) at each palace, computes monthly decree wuxing relationships with Chinese meaning labels (扩张/稳健/努力/损耗/大亏), traces controlled-wealth stems (干财) with five-combination fallback (missing 甲 uses zhifu palace stem instead of 己), and auto-derives industry symbols from the plate. The birth year stem is auto-read from `./qmen_birth.json`.
 
 ### Pipeline
 

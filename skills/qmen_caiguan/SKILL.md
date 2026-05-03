@@ -1,3 +1,8 @@
+---
+name: qmen_caiguan
+description: "Diagnose 财富/事业 wealth and career: seven-hazard六害 analysis on birth plate, monthly decree, industry mapping"
+---
+
 # 财官诊断 — 财富事业双维度深度分析
 
 > 基于奇门遁甲起局，从财富和事业两个维度进行七要害诊断，定位六害（刑墓庚虎迫空），给出化解方向和"踩一捧一"建议。

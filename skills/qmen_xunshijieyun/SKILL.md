@@ -1,3 +1,8 @@
+---
+name: qmen_xunshijieyun
+description: "寻时借运 time-borrowing: cycle 60 time pillars to find the optimal plate with minimal 六害 six-harm"
+---
+
 # 寻时借运 — 幻化六十课
 
 > 固定局数，遍历60甲子时柱，按保护天干六害总数排名，找到最优盘面。换局（移星换斗）的核心机制。

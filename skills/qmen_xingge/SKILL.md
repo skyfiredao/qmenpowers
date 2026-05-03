@@ -1,3 +1,8 @@
+---
+name: qmen_xingge
+description: "Analyze 性格 personality: inner character from 日干 day stem, outer character from 时干 hour stem"
+---
+
 # 出生局性格分析 — 内在 外在性格取象
 
 > 基于奇门遁甲出生局，分析内在性格（日干）与外在性格（时干），结合宫位星门神综合取象，由 AI 综合成性格画像。

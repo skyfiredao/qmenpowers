@@ -1,3 +1,8 @@
+---
+name: qmen_event
+description: "Interpret 问事局 event plates: narrative reading of star/gate/deity patterns with yongshen analysis"
+---
+
 # 奇门遁甲问事局 (Qi Men Dun Jia Event Reading)
 
 > 对话式奇门遁甲问事局解读技能。由 `qmen_dunjia` 路由器完成仪轨和排局后调用本技能进行分析和解读。

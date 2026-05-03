@@ -1,3 +1,8 @@
+---
+name: qmen_huaqizhen
+description: "Place 化气阵 counter-array: 灭象 removal of harmful symbols + 布阵 physical object placement per palace"
+---
+
 # 化气阵 — 灭象+布阵
 
 > 基于奇门遁甲起局，生成灭象清单和八宫布阵——在具体方位摆放对应物品来压制六害。

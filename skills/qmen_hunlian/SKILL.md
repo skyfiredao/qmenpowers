@@ -1,3 +1,8 @@
+---
+name: qmen_hunlian
+description: "Analyze 婚恋 marriage/romance: partner detection, 桃花 peach blossom, 孤辰寡宿 lonely star, taohua remedies"
+---
+
 # 婚恋分析 — 脱单 厮守 桃花 情趣
 
 > 基于奇门遁甲起局，分析婚恋情感状态，提供脱单造象、厮守守护、催桃花、斩桃花、增加情趣等方案。

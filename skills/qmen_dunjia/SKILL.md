@@ -1,3 +1,8 @@
+---
+name: qmen_dunjia
+description: "Router for all 奇门遁甲 requests: determines birth vs event plate, runs qimen_qiju.sh, dispatches to the correct sub-skill"
+---
+
 # 奇门遁甲入口 八门化气大阵（化气阵）(Qi Men Dun Jia Router)
 
 > 奇门遁甲统一入口。负责确认起局时间类型（问事/生日）、完成入局祝福与排局，然后路由到对应分析技能。

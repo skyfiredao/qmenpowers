@@ -1,3 +1,8 @@
+---
+name: qmen_zhanduan
+description: "古籍占断 divination judgment: evaluate DSL rules from《奇门旨归》against event plate, AI explains in plain language"
+---
+
 # 奇门遁甲古籍占断
 
 > 基于《奇门旨归》卷六至卷十三，脚本机械化评估判断规则并输出结论，AI 用白话解释结论含义。

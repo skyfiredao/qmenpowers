@@ -1,3 +1,8 @@
+---
+name: qmen_yishenhuanjiang
+description: "移神换将 化解 transformation: dissolve 六害 via 合/泄/冲/补 instead of suppression"
+---
+
 # 移神换将 — 化解
 
 > 基于奇门遁甲起局，诊断六害问题并计算化解路径——用转化式手法（合、泄、冲、补）消解凶象，而非直接压制。
