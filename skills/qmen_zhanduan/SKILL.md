@@ -1,6 +1,6 @@
 ---
 name: qmen_zhanduan
-description: "古籍占断 divination judgment: evaluate DSL rules from《奇门旨归》against event plate, AI explains in plain language"
+description: "占断/断卦/判断吉凶/古籍断语 - Divination judgment: evaluate DSL rules from《奇门旨归》against event plate, explain in plain language"
 ---
 
 # 奇门遁甲古籍占断

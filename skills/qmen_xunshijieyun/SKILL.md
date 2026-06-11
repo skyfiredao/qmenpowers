@@ -1,6 +1,6 @@
 ---
 name: qmen_xunshijieyun
-description: "寻时借运 time-borrowing: cycle 60 time pillars to find the optimal plate with minimal 六害 six-harm"
+description: "择时/选时/借运/寻时/最佳时间/什么时候 - 寻时借运: cycle 60 time pillars to find optimal plate with minimal 六害"
 ---
 
 # 寻时借运 — 幻化六十课

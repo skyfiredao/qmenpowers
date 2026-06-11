@@ -1,6 +1,6 @@
 ---
 name: qmen_yishenhuanjiang
-description: "移神换将 化解 transformation: dissolve 六害 via 合/泄/冲/补 instead of suppression"
+description: "化解/移神换将/解灾/转运/改运 - Transformation: dissolve 六害 via 合/泄/冲/补 instead of suppression"
 ---
 
 # 移神换将 — 化解

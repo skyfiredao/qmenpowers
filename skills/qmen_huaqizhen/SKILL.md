@@ -1,6 +1,6 @@
 ---
 name: qmen_huaqizhen
-description: "Place 化气阵 counter-array: 灭象 removal of harmful symbols + 布阵 physical object placement per palace"
+description: "化解/布阵/布局/摆阵/风水阵/化气阵 - Place counter-array: 灭象 removal of harmful symbols + 布阵 physical object placement per palace"
 ---
 
 # 化气阵 — 灭象+布阵

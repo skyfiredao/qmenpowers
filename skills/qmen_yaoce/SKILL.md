@@ -1,6 +1,6 @@
 ---
 name: qmen_yaoce
-description: "遥测/破阵 remote sensing: diagnose natural array on event plate, locate harm on birth stems, plan counter-layout"
+description: "遥测/破阵/环境/场地/空间/阵法/风水阵 - Remote sensing: diagnose natural array on event plate, locate harm on birth stems, plan counter-layout"
 ---
 
 # 遥测分析 — 诊断天然阵 定位受害 重新布局

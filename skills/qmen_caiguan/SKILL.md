@@ -1,6 +1,6 @@
 ---
 name: qmen_caiguan
-description: "Diagnose 财富/事业 wealth and career: seven-hazard六害 analysis on birth plate, monthly decree, industry mapping"
+description: "财运/事业/工作/赚钱/财富/升职/行业 - Diagnose wealth and career: 六害 analysis on birth plate, monthly decree, industry mapping"
 ---
 
 # 财官诊断 — 财富事业双维度深度分析

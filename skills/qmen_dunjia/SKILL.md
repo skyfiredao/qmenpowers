@@ -1,6 +1,6 @@
 ---
 name: qmen_dunjia
-description: "Router for all 奇门遁甲 requests: determines birth vs event plate, runs qimen_qiju.sh, dispatches to the correct sub-skill"
+description: "奇门遁甲/起局/排盘/命盘/八字/算命/占卜 - MUST USE for ANY 奇门 request. Router: determines birth vs event plate, runs qimen_qiju.sh, dispatches to correct sub-skill"
 ---
 
 # 奇门遁甲入口 八门化气大阵（化气阵）(Qi Men Dun Jia Router)

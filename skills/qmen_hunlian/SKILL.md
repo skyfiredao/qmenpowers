@@ -1,6 +1,6 @@
 ---
 name: qmen_hunlian
-description: "Analyze 婚恋 marriage/romance: partner detection, 桃花 peach blossom, 孤辰寡宿 lonely star, taohua remedies"
+description: "婚姻/恋爱/感情/桃花/配偶/对象/婚恋/姻缘 - Analyze marriage/romance: partner detection, 桃花 peach blossom, 孤辰寡宿, taohua remedies"
 ---
 
 # 婚恋分析 — 脱单 厮守 桃花 情趣

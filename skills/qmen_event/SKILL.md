@@ -1,6 +1,6 @@
 ---
 name: qmen_event
-description: "Interpret 问事局 event plates: narrative reading of star/gate/deity patterns with yongshen analysis"
+description: "问事/占事/测事/预测/事件局/时局 - Interpret 问事局 event plates: star/gate/deity narrative reading with yongshen analysis"
 ---
 
 # 奇门遁甲问事局 (Qi Men Dun Jia Event Reading)

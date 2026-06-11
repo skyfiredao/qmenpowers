@@ -1,6 +1,6 @@
 ---
 name: qmen_wanwu
-description: "Generate 万物类象 imagery portraits: scene/object/person descriptions from stem+star+gate+deity combinations"
+description: "万物类象/象意/取象/类象/意象 - Generate imagery portraits: scene/object/person descriptions from stem+star+gate+deity combinations"
 ---
 
 # 万物类象画像描述 (Wanwu Imagery Portrait)

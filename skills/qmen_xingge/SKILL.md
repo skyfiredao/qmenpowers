@@ -1,6 +1,6 @@
 ---
 name: qmen_xingge
-description: "Analyze 性格 personality: inner character from 日干 day stem, outer character from 时干 hour stem"
+description: "性格/人格/个性/脾气/为人 - Analyze personality: inner character from 日干 day stem, outer from 时干 hour stem"
 ---
 
 # 出生局性格分析 — 内在 外在性格取象
