@@ -312,6 +312,11 @@ QM_ZHISHI_GATE_INDEX=-1
 QM_KONGWANG_1=-1
 QM_KONGWANG_2=-1
 QM_YIMA=-1
+QM_TIANMA=-1
+QM_DINGMA=-1
+QM_SPECIAL_PATTERNS=()
+QM_YIGUA_FUSHI=""
+QM_YIGUA_MENFANG=()
 
 QM_TIANQIN_FOLLOW_PALACE=0
 
@@ -342,12 +347,14 @@ _qm_reset_arrays() {
     QM_RUMU_STAR=()
     QM_RUMU_GATE=()
     QM_MENPO=()
+    QM_POZHI=()
     QM_STAR_FANYIN=()
     QM_GATE_FANYIN=()
     QM_STAR_FUYIN=()
     QM_GATE_FUYIN=()
     QM_GAN_FANYIN=()
     QM_GAN_FUYIN=()
+    QM_SPECIAL_PATTERNS=()
 
     for ((p=1; p<=9; p++)); do
         QM_EARTH[$p]=""
@@ -363,6 +370,7 @@ _qm_reset_arrays() {
         QM_RUMU_STAR[$p]=0
         QM_RUMU_GATE[$p]=0
         QM_MENPO[$p]=0
+        QM_POZHI[$p]=0
         QM_STAR_FANYIN[$p]=0
         QM_GATE_FANYIN[$p]=0
         QM_STAR_FUYIN[$p]=0
@@ -901,6 +909,131 @@ qm_calc_yima() {
     fi
 }
 
+# qm_calc_tianma day_gz_index
+# 天马: based on day branch (日支)
+# 寅申→午, 卯酉→申, 辰戌→戌, 巳亥→子, 午子→寅, 丑未→辰
+qm_calc_tianma() {
+    local day_gz_index="$1"
+    local day_branch=$((day_gz_index % 12))
+    # DI_ZHI: 子0 丑1 寅2 卯3 辰4 巳5 午6 未7 申8 酉9 戌10 亥11
+    local tianma_branch=-1
+    case $day_branch in
+        2|8)  tianma_branch=6  ;;  # 寅申→午
+        3|9)  tianma_branch=8  ;;  # 卯酉→申
+        4|10) tianma_branch=10 ;;  # 辰戌→戌
+        5|11) tianma_branch=0  ;;  # 巳亥→子
+        6|0)  tianma_branch=2  ;;  # 午子→寅
+        1|7)  tianma_branch=4  ;;  # 丑未→辰
+    esac
+    QM_TIANMA=$tianma_branch
+}
+
+# qm_calc_dingma day_gz_index
+# 丁马: based on day pillar's 旬首 (liujia head)
+# 甲子→卯, 甲戌→丑, 甲申→亥, 甲午→酉, 甲辰→未, 甲寅→巳
+qm_calc_dingma() {
+    local day_gz_index="$1"
+    local xun=$((day_gz_index - (day_gz_index % 10)))
+    # xun values: 0=甲子, 10=甲戌, 20=甲申, 30=甲午, 40=甲辰, 50=甲寅
+    local dingma_branch=-1
+    case $xun in
+        0)  dingma_branch=3  ;;  # 甲子→卯
+        10) dingma_branch=1  ;;  # 甲戌→丑
+        20) dingma_branch=11 ;;  # 甲申→亥
+        30) dingma_branch=9  ;;  # 甲午→酉
+        40) dingma_branch=7  ;;  # 甲辰→未
+        50) dingma_branch=5  ;;  # 甲寅→巳
+    esac
+    QM_DINGMA=$dingma_branch
+}
+
+# qm_calc_special_patterns
+# Detects all named stem-on-stem patterns from wanwu_geju.dat + 玉女守门
+qm_calc_special_patterns() {
+    QM_SPECIAL_PATTERNS=()
+    local p tian_gan di_gan
+
+    # Find zhishi palace for 玉女守门
+    local zhishi_palace=0
+    local g_idx="$QM_ZHISHI_GATE_INDEX"
+    for ((p=1; p<=9; p++)); do
+        if (( p == 5 )); then continue; fi
+        if (( QM_HUMAN[p] == g_idx )); then
+            zhishi_palace=$p
+            break
+        fi
+    done
+
+    for ((p=1; p<=9; p++)); do
+        if (( p == 5 )); then continue; fi
+        tian_gan="${QM_HEAVEN_STEM[$p]}"
+        di_gan="${QM_EARTH[$p]}"
+
+        # Lookup named pattern: "天干加地干_名称" in data
+        local pattern_key="${tian_gan}加${di_gan}_名称"
+        local pattern_name
+        pattern_name=$(dl_get "$pattern_key" 2>/dev/null)
+        if [[ -n "$pattern_name" ]]; then
+            QM_SPECIAL_PATTERNS+=("${pattern_name}:$p")
+        fi
+
+        # 玉女守门: 丁奇到宫 = 值使门所临宫
+        if [[ "$di_gan" == "丁" ]] && (( zhishi_palace > 0 && zhishi_palace == p )); then
+            QM_SPECIAL_PATTERNS+=("玉女守门:$p")
+        fi
+    done
+}
+
+# qm_calc_yigua — 演卦: 值符值使演卦 + 每宫门方演卦
+_PALACE_BAGUA=(坎 坤 震 巽 中 乾 兑 艮 离)
+
+qm_calc_yigua() {
+    QM_YIGUA_FUSHI=""
+    QM_YIGUA_MENFANG=()
+
+    local zf_palace="$QM_ZHIFU_TARGET_PALACE"
+    local zs_palace=0
+    local g_idx="$QM_ZHISHI_GATE_INDEX"
+    local p
+    for ((p=1; p<=9; p++)); do
+        if (( p == 5 )); then continue; fi
+        if (( QM_HUMAN[p] == g_idx )); then
+            zs_palace=$p
+            break
+        fi
+    done
+
+    local inner="${_PALACE_BAGUA[$((zf_palace - 1))]}"
+    local outer="${_PALACE_BAGUA[$((zs_palace - 1))]}"
+    if [[ -n "$inner" && "$inner" != "中" && -n "$outer" && "$outer" != "中" ]]; then
+        local gua_name
+        gua_name=$(dl_get "GUA_${outer}${inner}" 2>/dev/null) || true
+        if [[ -n "$gua_name" ]]; then
+            QM_YIGUA_FUSHI="${gua_name}(外${outer}内${inner})"
+        fi
+    fi
+
+    for ((p=1; p<=9; p++)); do
+        if (( p == 5 )); then
+            QM_YIGUA_MENFANG[$p]=""
+            continue
+        fi
+        local gate_idx=${QM_HUMAN[$p]}
+        local gate_name="${GATE_NAMES[$gate_idx]}"
+        local short_gate="${gate_name:0:1}"
+        local door_bagua
+        door_bagua=$(dl_get "DOOR_BAGUA_${short_gate}" 2>/dev/null) || true
+        local palace_bagua="${_PALACE_BAGUA[$((p - 1))]}"
+        if [[ -n "$door_bagua" && -n "$palace_bagua" && "$palace_bagua" != "中" ]]; then
+            local mf_gua
+            mf_gua=$(dl_get "GUA_${door_bagua}${palace_bagua}" 2>/dev/null) || true
+            QM_YIGUA_MENFANG[$p]="${mf_gua:-}"
+        else
+            QM_YIGUA_MENFANG[$p]=""
+        fi
+    done
+}
+
 # qm_calc_twelve_states
 qm_calc_twelve_states() {
     local p
@@ -1072,6 +1205,17 @@ qm_calc_patterns() {
             fi
         fi
 
+        # 十干迫制: 天盘干克地盘干
+        local di_gan_wx_tmp
+        di_gan_wx_tmp=$(_qm_stem_wuxing "${QM_EARTH[$p]}")
+        if [[ -n "$stem_wx" && -n "$di_gan_wx_tmp" ]]; then
+            local pozhi_target
+            pozhi_target=$(_qm_wx_ke_target "$stem_wx")
+            if [[ "$pozhi_target" == "$di_gan_wx_tmp" ]]; then
+                QM_POZHI[$p]=1
+            fi
+        fi
+
         if (( star_idx >= 0 && star_idx <= 8 )); then
             local star_home=${STAR_DEFAULT_PALACE[$star_idx]}
             local opp
@@ -1166,5 +1310,9 @@ qm_compute_plate() {
     qm_calc_liuyi_jixing || return 1
     qm_calc_kongwang "$hour_gz" || return 1
     qm_calc_yima "$hour_gz" || return 1
+    qm_calc_tianma "$day_gz"
+    qm_calc_dingma "$day_gz"
     qm_calc_patterns || return 1
+    qm_calc_special_patterns
+    qm_calc_yigua
 }

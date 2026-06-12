@@ -78,6 +78,7 @@ skill_qmenpowers/
 │   │   ├── qimen_xingge.sh             # Personality analysis CLI
 │   │   ├── qimen_xunshijieyun.sh       # Xunshijieyun (寻时借运) CLI
 │   │   ├── qimen_show.sh               # Plate JSON viewer (read & display)
+│   │   ├── qimen_luming.sh             # Six-relation (六亲) destiny analysis
 │   │   ├── qimen_zhanduan.sh           # Zhanduan (古籍占断) divination CLI
 │   │   └── qimen_yaoce.sh              # Yaoce (cross-plate array-breaking) CLI
 │   ├── lib/
@@ -122,6 +123,8 @@ skill_qmenpowers/
 │       ├── buzhen_xiangshu.dat         # Buzhen: stem/branch imagery (colors, materials, animals)
 │       ├── rules_hunlian.dat           # Hunlian: gan-he combinations, muyu positions, guchen/guasu groups, taohua deity/sanqi rules
 │       ├── rules_zhanduan.dat          # Zhanduan: ancient divination judgment rules (DSL format)
+│       ├── rules_luming.dat            # Luming: eight-gate/eight-deity verdicts, pozhi, pattern judgments
+│       ├── yigua_64.dat                # Yigua: 64 hexagram names, palace→trigram, door→trigram
 │       └── wanwu_huaqizhen.dat         # Huaqi: personality analysis correspondences
 ├── install.sh                          # Installation script
 ├── README.md
@@ -169,6 +172,8 @@ skill_qmenpowers/
 **`tools/bin/qimen_xunshijieyun.sh`** is the xunshijieyun (寻时借运) CLI. It reads a plate JSON (default `./qmen_birth.json`), generates 60 variant plates by cycling the time pillar through all 60 甲子 while keeping the 局数 fixed, ranks them by total 六害 count on protected stems, and outputs sortable JSON files to `./60ke/`. Protected stems include day stem, hour stem, birth year stem, optional yixiang concept stems, and per-course zhifu/zhishi palace stems.
 
 **`tools/bin/qimen_show.sh`** is a plate JSON viewer. It reads any plate JSON file and displays the full text-format plate (identical to `qimen_qiju.sh` output). Optionally copies the JSON to a specified output path via `--output=PATH`. Used by xunshijieyun to display selected courses from `./60ke/`.
+
+**`tools/bin/qimen_luming.sh`** is the six-relation (六亲禄命) analysis CLI. It reads the birth plate (`./qmen_birth.json`), determines the reference stem (year stem by default, day stem optional via `--reference=day`), locates the benming palace (本命宫), assigns six relations (父母/兄弟/子孙/官禄/妻财/疾厄) to each palace based on wuxing relationships, and outputs verdict texts from `rules_luming.dat`. Writes to `./qmen_luming.json`.
 
 **`tools/bin/qimen_zhanduan.sh`** is the zhanduan (古籍占断) divination CLI. It reads an event plate JSON (`./qmen_event.json`) and optionally `./qmen_birth.json` for the birth year stem. Given a topic via `--topic=X`, it applies judgment rules from `rules_zhanduan.dat` and outputs structured text/JSON with all matched conclusions. Without `--topic`, it displays help and the full topic list. Writes to `./qmen_zhanduan.json`.
 
@@ -219,6 +224,8 @@ Comprehensive correspondence tables for Qi Men interpretation. These files are n
 | `wanwu_prefix_map.dat` | Symbol name to wanwu file prefix mapping: maps Chinese names to data file key prefixes |
 | `rules_yishenhuanjiang.dat` | Yishenhuanjiang: per-problem-type resolution paths, wuxing sheng/xie/ke mappings, mu (tomb) branches, chong/he pairs, jinji prohibitions, yindong activation methods, override examples |
 | `rules_zhanduan.dat` | Zhanduan (古籍占断): per-topic divination rules in custom DSL format; role definitions (stem assignments), condition expressions (wuxing relationships + state queries), conclusions as original ancient text |
+| `rules_luming.dat` | Luming (禄命): eight-gate destiny verdicts per liuqin, eight-deity personality/destiny, deity palace preferences, ten-stem suppression rules, pattern auspiciousness judgments |
+| `yigua_64.dat` | Yigua (演卦): 64 hexagram name lookup (upper+lower trigram → name), palace-to-trigram mapping, door-to-trigram mapping |
 
 ### Huaqi Data
 
@@ -284,6 +291,7 @@ The engine function `qm_compute_plate` executes the following steps in order:
 | `[击刑]` | 六仪击刑 | Six-instrument punishment |
 | `[空亡]` | 空亡 | Void/empty |
 | `[驿马]` | 驿马 | Courier horse (mobility indicator) |
+| `[迫制]` | 十干迫制 | Heaven stem's wuxing overcomes earth stem's wuxing (suppression) |
 
 ## Output
 
@@ -300,6 +308,12 @@ Two output modes are available.
 值使: 休门
 空亡: 午(9宫) 未(2宫)
 驿马: 申(2宫)
+天马: 午(9宫)
+丁马: 亥(6宫)
+旺衰: 木旺,火相,水休,金囚,土死
+演卦: 雷天大壮(外震内乾)
+格局: 值符飞宫(坎1宫)
+格局: 青龙逃走(坤2宫)
 
 [ 巽4宫｜东南｜木 ]
   地支: 辰巳
@@ -766,6 +780,8 @@ Requires: ./qmen_birth.json (for day stem, hour stem, birth year stem, zhifu/zhi
 **`qmen_xunshijieyun`** (寻时借运) drives the 幻化六十课 mechanism — the third resolution method (换局) independent of miexiang and buzhen: generates 60 variant plates → ranks by liuhai on protected stems → presents optimal course(s) → guides user to recreate the favorable time-space layout by arranging physical objects per palace's wanwu correspondences. For event plates, interacts with user to determine yixiang concept stem. For birth plates, runs directly. Handles tie-breaking when multiple courses share the lowest liuhai count.
 
 **`qmen_zhanduan`** (古籍占断) executes divination judgments based on ancient text rules from "Qi Men Zhi Gui" (《奇门旨归》volumes 6-13). The script evaluates DSL-encoded rules against the event plate: resolves role stems (日干/时干/年干/用神/custom) to palace positions, evaluates wuxing relationships and state conditions between roles, and collects all matched conclusions. AI then explains the conclusions in plain language.
+
+**`qmen_luming`** (禄命总览 / Full Life Overview) provides a complete six-relation life reading with 4 perspective modes. It calls `qimen_luming.sh` for deterministic six-relation computation, then AI interprets across six life domains (parents, siblings, children, career, spouse/wealth, health). Four perspective modes: 奇门大师 (comprehensive), 占卜师 (divination-focused), 军师 (strategy-focused), 法术奇门 (ritual-focused). Also serves as the fallback route when user intent is unclear.
 
 **`qmen_wanwu`** (万物类象画像) generates creative imagery portraits from Qi Men symbol combinations. Three modes: scene (environment/atmosphere), object (shape/color/material/function), and person (appearance/temperament/behavior). Symbols are flexibly mapped to dimensions (each symbol used once), with twelve growth stages as lowest-priority modifier. Supports iterative refinement (style, domain, era adjustments) within wanwu data bounds.
 

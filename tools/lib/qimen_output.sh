@@ -97,6 +97,40 @@ _qm_json_escape() {
     echo "$s"
 }
 
+# 五行旺衰: term_index(0-23) → 季节 → 五行强弱
+# 春:木旺火相水休金囚土死  夏:火旺土相木休水囚金死
+# 秋:金旺水相土休火囚木死  冬:水旺木相金休土囚火死
+_qm_wuxing_seasonal_strength() {
+    local term_idx="$1"
+    # term 0-5=春, 6-11=夏, 12-17=秋, 18-23=冬
+    # Actually: 小寒0大寒1立春2雨水3惊蛰4春分5清明6谷雨7立夏8小满9芒种10夏至11
+    #           小暑12大暑13立秋14处暑15白露16秋分17寒露18霜降19立冬20小雪21大雪22冬至23
+    # Seasons: 春=2-7(立春→谷雨), 夏=8-13(立夏→大暑), 秋=14-19(立秋→霜降), 冬=20-23,0-1(立冬→大寒)
+    if (( term_idx >= 2 && term_idx <= 7 )); then
+        echo "木旺,火相,水休,金囚,土死"
+    elif (( term_idx >= 8 && term_idx <= 13 )); then
+        echo "火旺,土相,木休,水囚,金死"
+    elif (( term_idx >= 14 && term_idx <= 19 )); then
+        echo "金旺,水相,土休,火囚,木死"
+    else
+        echo "水旺,木相,金休,土囚,火死"
+    fi
+}
+
+# 从五行旺衰字符串中查找某五行的状态
+_qm_wx_strength_lookup() {
+    local wx="$1" strength_str="$2"
+    local item
+    local OLD_IFS="$IFS"; IFS=','; set -- $strength_str; IFS="$OLD_IFS"
+    for item in "$@"; do
+        if [[ "${item:0:1}" == "$wx" ]]; then
+            echo "${item:1}"
+            return
+        fi
+    done
+    echo ""
+}
+
 _qm_stem_wuxing() {
     local stem_char="$1"
     local idx
@@ -155,8 +189,33 @@ qm_output_text() {
         "$kw1" "$kw1_palace" "$kw2" "$kw2_palace"
     printf '驿马: %s(%d宫)\n' "$ym" "$ym_palace"
 
+    local tm_char dm_char tm_p dm_p
+    tm_char="${DI_ZHI[$QM_TIANMA]:-}"
+    dm_char="${DI_ZHI[$QM_DINGMA]:-}"
+    tm_p=$(_qm_branch_to_palace "$QM_TIANMA")
+    dm_p=$(_qm_branch_to_palace "$QM_DINGMA")
+    printf '天马: %s(%d宫)\n' "$tm_char" "$tm_p"
+    printf '丁马: %s(%d宫)\n' "$dm_char" "$dm_p"
+
+    local _txt_term_idx _txt_wx_str
+    _txt_term_idx=$(st_current_jieqi "$QM_YEAR" "$QM_MONTH" "$QM_DAY" "$QM_HOUR" "$QM_MIN" 2>/dev/null) || _txt_term_idx=0
+    _txt_wx_str=$(_qm_wuxing_seasonal_strength "$_txt_term_idx")
+    printf '旺衰: %s\n' "$_txt_wx_str"
+    if [[ -n "${QM_YIGUA_FUSHI:-}" ]]; then
+        printf '演卦: %s\n' "$QM_YIGUA_FUSHI"
+    fi
+
+    if (( ${#QM_SPECIAL_PATTERNS[@]} > 0 )); then
+        local sp pname_sp palace_num_sp
+        for sp in "${QM_SPECIAL_PATTERNS[@]}"; do
+            local sp_name="${sp%%:*}"
+            palace_num_sp="${sp##*:}"
+            pname_sp="${PALACE_NAMES[$((palace_num_sp - 1))]}"
+            printf '格局: %s(%s)\n' "$sp_name" "$pname_sp"
+        done
+    fi
+
     # --- Per-palace listing ---
-    # Directional order: 巽4(东南) 震3(正东) 艮8(东北) 坎1(正北) 乾6(西北) 兑7(正西) 坤2(西南) 离9(正南) 中5
     local _dir_order=(4 3 8 1 6 7 2 9 5)
     local p _di
     for _di in "${_dir_order[@]}"; do
@@ -261,6 +320,7 @@ qm_output_text() {
         if (( QM_RUMU_STAR[p] == 1 )); then markers+=" [星墓]"; fi
         if (( QM_RUMU_GATE[p] == 1 )); then markers+=" [门墓]"; fi
         if (( QM_MENPO[p] == 1 )); then markers+=" [门迫]"; fi
+        if (( QM_POZHI[p] == 1 )); then markers+=" [迫制]"; fi
         if (( QM_STAR_FANYIN[p] == 1 )); then markers+=" [星反吟]"; fi
         if (( QM_GATE_FANYIN[p] == 1 )); then markers+=" [门反吟]"; fi
         if (( QM_STAR_FUYIN[p] == 1 )); then markers+=" [星伏吟]"; fi
@@ -341,6 +401,33 @@ _qm_generate_json() {
         "$(_qm_json_escape "$kw2")" "$(_qm_branch_to_palace "$QM_KONGWANG_2")" >&"$fd"
     printf '  "yi_ma": {"branch": "%s", "palace": %d},\n' \
         "$(_qm_json_escape "$ym")" "$(_qm_branch_to_palace "$QM_YIMA")" >&"$fd"
+
+    local tm dm
+    tm="${DI_ZHI[$QM_TIANMA]:-}"
+    dm="${DI_ZHI[$QM_DINGMA]:-}"
+    printf '  "tian_ma": {"branch": "%s", "palace": %d},\n' \
+        "$(_qm_json_escape "$tm")" "$(_qm_branch_to_palace "$QM_TIANMA")" >&"$fd"
+    printf '  "ding_ma": {"branch": "%s", "palace": %d},\n' \
+        "$(_qm_json_escape "$dm")" "$(_qm_branch_to_palace "$QM_DINGMA")" >&"$fd"
+
+    printf '  "special_patterns": [' >&"$fd"
+    local sp_first=1 sp
+    if (( ${#QM_SPECIAL_PATTERNS[@]} > 0 )); then
+        for sp in "${QM_SPECIAL_PATTERNS[@]}"; do
+            if (( sp_first == 0 )); then printf ', ' >&"$fd"; fi
+            sp_first=0
+            printf '"%s"' "$(_qm_json_escape "$sp")" >&"$fd"
+        done
+    fi
+    printf '],\n' >&"$fd"
+
+    local _term_idx
+    _term_idx=$(st_current_jieqi "$QM_YEAR" "$QM_MONTH" "$QM_DAY" "$QM_HOUR" "$QM_MIN" 2>/dev/null) || _term_idx=0
+    local _wx_strength
+    _wx_strength=$(_qm_wuxing_seasonal_strength "$_term_idx")
+    printf '  "wuxing_strength": "%s",\n' "$(_qm_json_escape "$_wx_strength")" >&"$fd"
+    printf '  "yigua_fushi": "%s",\n' "$(_qm_json_escape "${QM_YIGUA_FUSHI:-}")" >&"$fd"
+
     printf '  "tianqin_host_palace": %d,\n' "${QM_TIANQIN_FOLLOW_PALACE:-2}" >&"$fd"
     printf '  "palaces": {\n' >&"$fd"
 
@@ -487,12 +574,19 @@ _qm_generate_json() {
         printf '      "rumu_star": %s,\n' "$is_rumu_star" >&"$fd"
         printf '      "rumu_gate": %s,\n' "$is_rumu_gate" >&"$fd"
         printf '      "men_po": %s,\n' "$is_menpo" >&"$fd"
+        local is_pozhi="false"
+        if (( QM_POZHI[p] == 1 )); then is_pozhi="true"; fi
+        printf '      "pozhi": %s,\n' "$is_pozhi" >&"$fd"
         printf '      "star_fan_yin": %s,\n' "$is_star_fanyin" >&"$fd"
         printf '      "gate_fan_yin": %s,\n' "$is_gate_fanyin" >&"$fd"
         printf '      "star_fu_yin": %s,\n' "$is_star_fuyin" >&"$fd"
         printf '      "gate_fu_yin": %s,\n' "$is_gate_fuyin" >&"$fd"
         printf '      "gan_fan_yin": %s,\n' "$is_gan_fanyin" >&"$fd"
-        printf '      "gan_fu_yin": %s\n' "$is_gan_fuyin" >&"$fd"
+        printf '      "gan_fu_yin": %s,\n' "$is_gan_fuyin" >&"$fd"
+        local p_wx_season
+        p_wx_season=$(_qm_wx_strength_lookup "${PALACE_WUXING[$((p - 1))]}" "$_wx_strength")
+        printf '      "seasonal_strength": "%s",\n' "$(_qm_json_escape "$p_wx_season")" >&"$fd"
+        printf '      "yigua_menfang": "%s"\n' "$(_qm_json_escape "${QM_YIGUA_MENFANG[$p]:-}")" >&"$fd"
         printf '    }' >&"$fd"
     done
 
