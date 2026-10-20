@@ -94,6 +94,11 @@ _lm_liuqin() {
   esac
 }
 
+# 断语键别名: rules_luming.dat 沿用古籍称谓「妻妾」, 脚本分类器为「妻财」, 查询时须映射
+_lm_lq_key() {
+  if [[ "$1" == "妻财" ]]; then echo "妻妾"; else echo "$1"; fi
+}
+
 # --- Extract reference stem ---
 _lm_ref_stem=""
 _lm_ref_gz=""
@@ -208,14 +213,17 @@ for lq in 父母 兄弟 子孙 官禄 妻财 疾厄; do
       printf '  %s: 天%s地%s %s %s %s %s%s\n' \
         "$epname" "$etg" "$edg" "$estar" "$egate" "$edeity" "$estate" "$bm_mark"
       short_gate="${egate:0:1}"
-      verdict_key="门_${short_gate}_${lq}"
+      verdict_key="门_${short_gate}_$(_lm_lq_key "$lq")"
       verdict=""
       verdict=$(dl_get "$verdict_key" 2>/dev/null) || true
       if [[ -n "$verdict" ]]; then
         printf '    门断: %s\n' "$verdict"
       fi
       short_deity=$(_lm_deity_short "$edeity")
-      deity_pref=$(dl_get "神喜忌_${short_deity}_${lq}" 2>/dev/null) || true
+      deity_pref=$(dl_get "神喜忌_${short_deity}_$(_lm_lq_key "$lq")" 2>/dev/null) || true
+      if [[ -z "$deity_pref" && "$ep" == "$_lm_benming_palace" ]]; then
+        deity_pref=$(dl_get "神喜忌_${short_deity}_本命" 2>/dev/null) || true
+      fi
       if [[ -z "$deity_pref" ]]; then
         deity_pref=$(dl_get "神喜忌_${short_deity}_默认" 2>/dev/null) || true
       fi
@@ -249,9 +257,12 @@ done
     is_bm="false"
     if (( ep == _lm_benming_palace )); then is_bm="true"; fi
     j_short_gate="${egate:0:1}"
-    j_gate_verdict=$(dl_get "门_${j_short_gate}_${elq}" 2>/dev/null) || true
+    j_gate_verdict=$(dl_get "门_${j_short_gate}_$(_lm_lq_key "$elq")" 2>/dev/null) || true
     j_short_deity=$(_lm_deity_short "$edeity")
-    j_deity_pref=$(dl_get "神喜忌_${j_short_deity}_${elq}" 2>/dev/null) || true
+    j_deity_pref=$(dl_get "神喜忌_${j_short_deity}_$(_lm_lq_key "$elq")" 2>/dev/null) || true
+    if [[ -z "$j_deity_pref" && "$ep" == "$_lm_benming_palace" ]]; then
+      j_deity_pref=$(dl_get "神喜忌_${j_short_deity}_本命" 2>/dev/null) || true
+    fi
     if [[ -z "$j_deity_pref" ]]; then
       j_deity_pref=$(dl_get "神喜忌_${j_short_deity}_默认" 2>/dev/null) || true
     fi
