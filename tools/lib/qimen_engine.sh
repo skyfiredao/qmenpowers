@@ -992,8 +992,8 @@ qm_calc_special_patterns() {
     local fuyin_count=0 fanyin_count=0
     for ((p=1; p<=9; p++)); do
         if (( p == 5 )); then continue; fi
-        (( QM_STAR_FUYIN[p] == 1 )) && (( fuyin_count++ ))
-        (( QM_STAR_FANYIN[p] == 1 )) && (( fanyin_count++ ))
+        (( QM_STAR_FUYIN[p] == 1 )) && fuyin_count=$((fuyin_count + 1))
+        (( QM_STAR_FANYIN[p] == 1 )) && fanyin_count=$((fanyin_count + 1))
     done
     if (( fuyin_count == 8 )); then
         QM_SPECIAL_PATTERNS+=("全盘伏吟:0")
